@@ -1,5 +1,8 @@
 package com.example.busition_driver.ui.login
 
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -13,9 +16,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import com.example.busition_driver.MainActivity
 import com.example.busition_driver.R
 import com.example.busition_driver.databinding.FragmentLoginBinding
+import com.example.busition_driver.main_screen.MainScreen
 
 class LoginFragment : Fragment() {
 
@@ -48,6 +51,8 @@ class LoginFragment : Fragment() {
         val loginButton = binding.login
         val registerButton = binding.register
         val loadingProgressBar = binding.loading
+
+        val passbtn = binding.pass
 
 
         loginViewModel.loginFormState.observe(viewLifecycleOwner,
@@ -110,11 +115,22 @@ class LoginFragment : Fragment() {
                 usernameEditText.text.toString(),
                 passwordEditText.text.toString()
             )
+            val intent = Intent(getActivity(), MainScreen::class.java)
+            intent.flags =
+                Intent.FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK or FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
         }
 
         registerButton.setOnClickListener {
             val action = LoginFragmentDirections.actionRegisterToLoginFragment()
             it.findNavController().navigate(action)
+        }
+
+        passbtn.setOnClickListener {
+            val intent = Intent(getActivity(), MainScreen::class.java)
+            intent.flags =
+                Intent.FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK or FLAG_ACTIVITY_CLEAR_TOP
+            startActivity(intent)
         }
     }
 
