@@ -45,7 +45,6 @@ class ScheduleList : Fragment() {
                 adapter = MyItemRecyclerViewAdapter(PlaceholderContent.ITEMS)
             }
 
-
         }
 
         return view

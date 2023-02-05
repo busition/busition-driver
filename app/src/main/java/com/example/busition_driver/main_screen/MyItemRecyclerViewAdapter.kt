@@ -16,7 +16,6 @@ class MyItemRecyclerViewAdapter(
     : RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-    val view = LayoutInflater.from(parent.context).inflate(R.layout.fragment_schedule_item,parent,false)
     return ViewHolder(FragmentScheduleItemBinding.inflate(LayoutInflater.from(parent.context), parent, false))
 
     }
