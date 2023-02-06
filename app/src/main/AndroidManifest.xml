@@ -15,6 +15,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Busition_driver"
         tools:targetApi="31">
+
+        <!--
+             TODO: Before you run your application, you need a Google Maps API key.
+
+             To get one, follow the directions here:
+
+                https://developers.google.com/maps/documentation/android-sdk/get-api-key
+
+             Once you have your API key (it starts with "AIza"), define a new property in your
+             project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
+             "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
+        -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAWS2sY7T5k6AWMmm1nhMKTie8hU3HINus" />
@@ -22,8 +34,8 @@
         <activity
             android:name=".main_screen.MainScreen"
             android:exported="true"
-            android:theme="@style/Theme.Busition_driver"
-            android:label = "busition driver" />
+            android:label="busition driver"
+            android:theme="@style/Theme.Busition_driver" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

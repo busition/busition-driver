@@ -11,11 +11,11 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 
 
-class fragment_item_detial_screen : Fragment(), OnMapReadyCallback {
+class fragment_item_detial_screen : Fragment() {
 
     private lateinit var binding: FragmentItemDetailScreenBinding
     private lateinit var itemId: String
-    private lateinit var map: GoogleMap
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val arg = requireArguments()
@@ -28,9 +28,7 @@ class fragment_item_detial_screen : Fragment(), OnMapReadyCallback {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentItemDetailScreenBinding.bind(view)
-        val mapView = binding.mapView
-        mapView.onCreate(savedInstanceState)
-        mapView.getMapAsync(this)
+
 
 //        binding.itemId.text = itemId
     }
@@ -39,12 +37,8 @@ class fragment_item_detial_screen : Fragment(), OnMapReadyCallback {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentItemDetailScreenBinding.inflate(inflater, container, false)
+
         return inflater.inflate(R.layout.fragment_item_detail_screen, container, false)
-    }
-
-    override fun onMapReady(p0: GoogleMap) {
-
     }
 
 
