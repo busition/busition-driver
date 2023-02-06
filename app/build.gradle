@@ -58,8 +58,8 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")
     //google maps
-    implementation 'com.google.maps.android:android-maps-utils:2.3.0'
-    implementation 'com.google.maps.android:maps-utils-ktx:3.4.0'
+    implementation 'com.google.android.gms:play-services-maps:18.1.0'
+    implementation 'com.google.android.gms:play-services-location:21.0.1'
     //fragment
     implementation("androidx.fragment:fragment-ktx:1.5.5")
 }
