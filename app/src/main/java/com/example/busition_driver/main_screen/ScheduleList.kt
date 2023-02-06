@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import com.example.busition_driver.R
+import com.example.busition_driver.databinding.FragmentLoginBinding
+import com.example.busition_driver.databinding.FragmentScheduleListBinding
 import com.example.busition_driver.main_screen.placeholder.PlaceholderContent
 
 
@@ -21,7 +23,7 @@ import com.example.busition_driver.main_screen.placeholder.PlaceholderContent
 class ScheduleList : Fragment() {
 
     private var columnCount = 1
-
+    private var binding: FragmentScheduleListBinding? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -31,18 +33,23 @@ class ScheduleList : Fragment() {
 
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val view = inflater.inflate(R.layout.fragment_schedule_list, container, false)
         // Set the adapter
-        Log.d("asdsad",view.toString())
+        Log.d("asdsad", view.toString())
         if (view is RecyclerView) {
+            binding = FragmentScheduleListBinding.inflate(inflater, container, false)
             with(view) {
                 layoutManager = when {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = MyItemRecyclerViewAdapter(PlaceholderContent.ITEMS)
+                adapter = MyItemRecyclerViewAdapter(PlaceholderContent.ITEMS, binding)
             }
 
         }
@@ -50,19 +57,18 @@ class ScheduleList : Fragment() {
         return view
     }
 
+
     companion object {
 
-        // TODO: Customize parameter argument names
         const val ARG_COLUMN_COUNT = "column-count"
 
-        // TODO: Customize parameter initialization
         @JvmStatic
         fun newInstance(columnCount: Int) =
-                ScheduleList().apply {
-                    arguments = Bundle().apply {
-                        putInt(ARG_COLUMN_COUNT, columnCount)
-                    }
+            ScheduleList().apply {
+                arguments = Bundle().apply {
+                    putInt(ARG_COLUMN_COUNT, columnCount)
                 }
+            }
     }
 }
 

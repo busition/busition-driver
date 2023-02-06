@@ -8,5 +8,15 @@
         android:id="@+id/scheduleList"
         android:name="com.example.busition_driver.main_screen.ScheduleList"
         android:label="Schedule"
-        tools:layout="@layout/fragment_schedule_list" />
+        tools:layout="@layout/fragment_schedule_list" >
+        <action
+            android:id="@+id/action_scheduleList_to_fragment_item_detial_screen"
+            app:destination="@id/fragment_item_detial_screen" />
+
+    </fragment>
+    <fragment
+        android:id="@+id/fragment_item_detial_screen"
+        android:name="com.example.busition_driver.fragment_item_detial_screen"
+        android:label="Item Detail"
+        tools:layout="@layout/fragment_item_detail_screen" />
 </navigation>

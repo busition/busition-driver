@@ -1,5 +1,7 @@
 package com.example.busition_driver.main_screen.placeholder
 
+import android.util.Log
+import com.example.busition_driver.main_screen.MyItemRecyclerViewAdapter
 import java.util.ArrayList
 import java.util.HashMap
 
@@ -51,4 +53,8 @@ object PlaceholderContent {
     data class PlaceholderItem(val typeData: String, val destinationData: String, val timeData: String) {
         override fun toString(): String = destinationData
     }
+
+
+
+
 }
