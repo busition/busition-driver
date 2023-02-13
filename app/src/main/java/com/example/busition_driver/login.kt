@@ -11,4 +11,10 @@ import android.view.ViewGroup
 private val ARG_PARAM1 = "param1"
 private val ARG_PARAM2 = "param2"
 
+fun View.show() {
+    visibility = View.VISIBLE
+}
 
+fun View.gone() {
+    visibility = View.GONE
+}

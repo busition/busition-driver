@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/fragment_item_detial_screen"
-        android:name="com.example.busition_driver.fragment_item_detial_screen"
+        android:name="com.example.busition_driver.main_screen.fragment_item_detial_screen"
         android:label="Item Detail"
         tools:layout="@layout/fragment_item_detail_screen" />
 </navigation>
