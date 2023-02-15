@@ -4,6 +4,7 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.DisplayMetrics
+import android.util.Log
 import android.view.*
 import android.view.View.OnTouchListener
 import android.widget.Button
@@ -17,9 +18,7 @@ class FloatingService: Service() {
     private lateinit var binding: FloatingViewBinding
     private  var layoutType: Int = 0
 
-    override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
+
 
     override fun onCreate() {
         super.onCreate()
@@ -42,7 +41,8 @@ class FloatingService: Service() {
             WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
         )
         windowManager.addView(floatView, floatWindowLayoutParam)
-
+        windowManager.updateViewLayout(floatView, floatWindowLayoutParam)
+        Log.d("FloatingService", "onCreate: ")
         exitBtn.setOnClickListener {
             stopSelf()
             windowManager.removeView(floatView)
@@ -80,6 +80,10 @@ class FloatingService: Service() {
             }
         })
 
+    }
+
+    override fun onBind(intent: Intent?): IBinder? {
+        return null
     }
 
 

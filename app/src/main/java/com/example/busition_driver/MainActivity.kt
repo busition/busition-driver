@@ -7,7 +7,6 @@ import android.provider.Settings
 import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
 import androidx.navigation.findNavController
@@ -34,9 +33,11 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
 
         binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "1:1 문의사항....", Snackbar.LENGTH_LONG)
-                .setAnchorView(R.id.fab)
-                .setAction("Action", null).show()
+//            Snackbar.make(view, "1:1 문의사항....", Snackbar.LENGTH_LONG)
+//                .setAnchorView(R.id.fab)
+//                .setAction("Action", null).show()
+            startService(Intent(this@MainActivity, FloatingService::class.java))
+
         }
         if (!checkOverDisplayPermission()) {
             requestOverDisplayPermission()
