@@ -1,12 +1,15 @@
 package com.example.busition_driver
 
+import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.example.busition_driver.databinding.FragmentItemDetailScreenBinding
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.busition_driver.databinding.FragmentStationItemScreenBinding
+import com.example.busition_driver.placeholder.PlaceholderContent
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -16,15 +19,16 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class StationDetailFragment: Fragment() {
     lateinit var binding: FragmentStationItemScreenBinding
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentStationItemScreenBinding.bind(view)
-        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
-        val listFragment = childFragmentManager.findFragmentById(R.id.stationList)
-        listFragment?.onCreate(savedInstanceState)
-        mapFragment?.getMapAsync(callback)
 
+        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
+        mapFragment?.getMapAsync(callback)
+        binding.test.setOnClickListener {
+            activity?.startService(Intent(activity, FloatingService::class.java))
+            Log.d("error","error")
+            Log.d("error",activity.toString())
+        }
 
     }
     private val callback = OnMapReadyCallback { googleMap ->
@@ -42,7 +46,11 @@ class StationDetailFragment: Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-
-        return inflater.inflate(R.layout.fragment_station_item_screen, container, false)
+        val view = inflater.inflate(R.layout.fragment_station_item_screen, container, false)
+        //recycler view adapter set up
+        binding = FragmentStationItemScreenBinding.bind(view)
+        binding.stationItemList.stationList.layoutManager = LinearLayoutManager(context)
+        binding.stationItemList.stationList.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS)
+        return view
     }
 }

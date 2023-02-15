@@ -21,7 +21,7 @@ object PlaceholderContent {
      */
     val ITEM_MAP: MutableMap<String, PlaceholderItem> = HashMap()
 
-    private val COUNT = 2
+    private val COUNT = 3
 
     init {
         // Add some sample items.
@@ -36,7 +36,10 @@ object PlaceholderContent {
     }
 
     private fun createPlaceholderItem(position: Int): PlaceholderItem {
-        return PlaceholderItem(position.toString(), "Item " + position, makeDetails(position))
+        if(position == 3){
+            return PlaceholderItem(position.toString(), "Item " + position, makeDetails(position), "test")
+        }
+        return PlaceholderItem(position.toString(), "Item " + position, makeDetails(position), "")
     }
 
     private fun makeDetails(position: Int): String {
@@ -51,7 +54,7 @@ object PlaceholderContent {
     /**
      * A placeholder item representing a piece of content.
      */
-    data class PlaceholderItem(val id: String, val content: String, val details: String) {
+    data class PlaceholderItem(val id: String, val content: String, val details: String, val type: String){
         override fun toString(): String = content
     }
 }

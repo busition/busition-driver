@@ -10,4 +10,7 @@
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context=".StationItemFragment"
-    tools:listitem="@layout/fragment_station_item" />
+    tools:listitem="@layout/fragment_station_item"
+    android:layout_gravity="center"
+    android:overScrollMode="never"
+    android:layout_marginTop="20dp"/>

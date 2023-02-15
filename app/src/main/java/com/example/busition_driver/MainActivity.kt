@@ -1,6 +1,12 @@
 package com.example.busition_driver
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.provider.Settings
+import android.util.Log
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.WindowCompat
@@ -23,7 +29,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
 
-
         val navController = findNavController(R.id.main_nav)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
@@ -33,6 +38,10 @@ class MainActivity : AppCompatActivity() {
                 .setAnchorView(R.id.fab)
                 .setAction("Action", null).show()
         }
+        if (!checkOverDisplayPermission()) {
+            requestOverDisplayPermission()
+        }
+
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -41,5 +50,34 @@ class MainActivity : AppCompatActivity() {
                 || super.onSupportNavigateUp()
     }
 
+
+    private fun requestOverDisplayPermission() {
+        val intent =
+            Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
+
+        val getResult =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                Log.d("permission result", result.resultCode.toString())
+                if (!checkOverDisplayPermission()) {
+                    finish()
+                }
+            }
+        AlertDialog.Builder(this)
+            .setTitle("권한 요청")
+            .setMessage("권한을 허용하지 않으면 앱을 사용할 수 없습니다.")
+            .setPositiveButton("확인") { dialog, which ->
+                getResult.launch(intent)
+            }
+            .setNegativeButton("취소") { dialog, which ->
+                finish()
+            }
+            .show()
+
+    }
+
+    private fun checkOverDisplayPermission(): Boolean {
+        Log.d("permission", Settings.canDrawOverlays(this).toString())
+        return Settings.canDrawOverlays(this)
+    }
 
 }
