@@ -1,6 +1,7 @@
 package com.example.busition_driver
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
@@ -8,11 +9,14 @@ import android.util.Log
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import com.example.busition_driver.Gps.LocationTraker
 import com.example.busition_driver.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -32,16 +36,23 @@ class MainActivity : AppCompatActivity() {
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
+
+
+
+
         binding.fab.setOnClickListener { view ->
 //            Snackbar.make(view, "1:1 문의사항....", Snackbar.LENGTH_LONG)
 //                .setAnchorView(R.id.fab)
 //                .setAction("Action", null).show()
-            startService(Intent(this@MainActivity, FloatingService::class.java))
+//            startService(Intent(this@MainActivity, FloatingService::class.java))
+//            startForegroundService(Intent(this@MainActivity, FloatingService::class.java))
+//            val lc = LocationTraker(this,this)
 
         }
         if (!checkOverDisplayPermission()) {
             requestOverDisplayPermission()
         }
+
 
     }
 
@@ -72,7 +83,54 @@ class MainActivity : AppCompatActivity() {
             .setNegativeButton("취소") { dialog, which ->
                 finish()
             }
+            .setCancelable(false)
             .show()
+    }
+
+    private fun gpsPermissionRequest() {
+
+
+        // 권한 체크해서 권한이 있을 때
+        if (ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+            && ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+            && ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            Log.d("permission", "권한 있음")
+        }
+
+        // 권한이 없을 때 권한을 요구함
+        else {
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                    ),
+                    1
+                )
+            } else {
+                ActivityCompat.requestPermissions(
+                    this,
+                    arrayOf(
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                        android.Manifest.permission.ACCESS_FINE_LOCATION
+                    ),
+                    1
+                )
+            }
+
+        }
 
     }
 
