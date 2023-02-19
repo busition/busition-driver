@@ -9,7 +9,10 @@ import android.util.Log
 import android.view.*
 import android.view.View.OnTouchListener
 import android.widget.Button
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.busition_driver.databinding.FloatingViewBinding
+import com.example.busition_driver.placeholder.PlaceholderContent
 
 class FloatingService: Service() {
     private lateinit var floatView : ViewGroup
@@ -26,14 +29,24 @@ class FloatingService: Service() {
         val metrics: DisplayMetrics = applicationContext.resources.displayMetrics
         val width = metrics.widthPixels
         val height = metrics.heightPixels
-        binding = FloatingViewBinding.inflate(LayoutInflater.from(this))
 
+
+        val layoutManger= LinearLayoutManager(this)
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         val inflater = baseContext.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         floatView = inflater.inflate(R.layout.floating_view, null) as ViewGroup
+        binding = FloatingViewBinding.inflate(inflater)
+        binding.stationItemList.stationList.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS)
+        binding.stationItemList.stationList.layoutManager = layoutManger
         exitBtn = binding.exitBtn
+
         layoutType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 
+//        val recyclerView = RecyclerView(this).apply {
+//            layoutManager = layoutManger
+//            adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS)
+//
+//        }
         floatWindowLayoutParam = WindowManager.LayoutParams(
             (width * 0.55f).toInt(),
             (height * 0.58f).toInt(),
@@ -46,18 +59,19 @@ class FloatingService: Service() {
         floatWindowLayoutParam.x= 0
         floatWindowLayoutParam.y= 0
 
+
         windowManager.addView(floatView, floatWindowLayoutParam)
 
         Log.d("FloatingService", "onCreate: ")
         exitBtn.setOnClickListener {
+            Log.d("re", "error")
             stopSelf()
             windowManager.removeView(floatView)
 
         }
 
 
-        //Another feature of the floating window is, the window is movable.
-        //The window can be moved at any position on the screen.
+
         floatView.setOnTouchListener(object : OnTouchListener {
             val floatWindowLayoutUpdateParam = floatWindowLayoutParam
             var x = 0.0
@@ -87,6 +101,7 @@ class FloatingService: Service() {
         })
 
     }
+
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
