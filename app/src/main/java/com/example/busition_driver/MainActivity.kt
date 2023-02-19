@@ -44,8 +44,10 @@ class MainActivity : AppCompatActivity() {
 //            Snackbar.make(view, "1:1 문의사항....", Snackbar.LENGTH_LONG)
 //                .setAnchorView(R.id.fab)
 //                .setAction("Action", null).show()
-//            startService(Intent(this@MainActivity, FloatingService::class.java))
+//            startService(Intent(this, FloatingWindowGFG::class.java))
+            startService(Intent(this, FloatingService::class.java))
 //            startForegroundService(Intent(this@MainActivity, FloatingService::class.java))
+            finish()
 //            val lc = LocationTraker(this,this)
 
         }

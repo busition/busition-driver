@@ -2,6 +2,7 @@ package com.example.busition_driver
 
 import android.app.Service
 import android.content.Intent
+import android.graphics.PixelFormat
 import android.os.IBinder
 import android.util.DisplayMetrics
 import android.util.Log
@@ -34,14 +35,19 @@ class FloatingService: Service() {
         layoutType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 
         floatWindowLayoutParam = WindowManager.LayoutParams(
-            width * (0.55f).toInt(),
-            height * (0.58f).toInt(),
+            (width * 0.55f).toInt(),
+            (height * 0.58f).toInt(),
             layoutType,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
-            WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
+            PixelFormat.TRANSLUCENT
         )
+
+        floatWindowLayoutParam.gravity = Gravity.CENTER
+        floatWindowLayoutParam.x= 0
+        floatWindowLayoutParam.y= 0
+
         windowManager.addView(floatView, floatWindowLayoutParam)
-        windowManager.updateViewLayout(floatView, floatWindowLayoutParam)
+
         Log.d("FloatingService", "onCreate: ")
         exitBtn.setOnClickListener {
             stopSelf()

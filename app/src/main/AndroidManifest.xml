@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Busition_driver"
         tools:targetApi="31" >
-        <service android:name=".FloatingService"/>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyAWS2sY7T5k6AWMmm1nhMKTie8hU3HINus" />
@@ -39,6 +39,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <service android:name=".FloatingService"/>
+
     </application>
 
 </manifest>
