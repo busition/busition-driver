@@ -35,18 +35,14 @@ class FloatingService: Service() {
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         val inflater = baseContext.getSystemService(LAYOUT_INFLATER_SERVICE) as LayoutInflater
         floatView = inflater.inflate(R.layout.floating_view, null) as ViewGroup
-        binding = FloatingViewBinding.inflate(inflater)
-        binding.stationItemList.stationList.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS)
-        binding.stationItemList.stationList.layoutManager = layoutManger
-        exitBtn = binding.exitBtn
+
+        exitBtn = floatView.findViewById(R.id.exitBtn)
 
         layoutType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 
-//        val recyclerView = RecyclerView(this).apply {
-//            layoutManager = layoutManger
-//            adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS)
-//
-//        }
+        val recyclerView = floatView.findViewById(R.id.station_item_list) as RecyclerView
+        recyclerView.layoutManager = layoutManger
+        recyclerView.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS)
         floatWindowLayoutParam = WindowManager.LayoutParams(
             (width * 0.55f).toInt(),
             (height * 0.58f).toInt(),
