@@ -12,6 +12,7 @@ import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.busition_driver.databinding.FloatingViewBinding
+import com.example.busition_driver.main_screen.MainScreen
 import com.example.busition_driver.placeholder.PlaceholderContent
 
 class FloatingService: Service() {
@@ -60,9 +61,13 @@ class FloatingService: Service() {
 
         Log.d("FloatingService", "onCreate: ")
         exitBtn.setOnClickListener {
-            Log.d("re", "error")
+            Log.d("re", "exitBtn")
             stopSelf()
             windowManager.removeView(floatView)
+            val endService = Intent(this, MainScreen::class.java)
+            endService.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+            endService.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED)
+            startActivity(endService)
 
         }
 
@@ -103,5 +108,10 @@ class FloatingService: Service() {
         return null
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        stopSelf()
+        windowManager.removeView(floatView)
+    }
 
 }

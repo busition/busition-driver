@@ -1,5 +1,6 @@
 package com.example.busition_driver
 
+import android.app.PendingIntent.getActivity
 import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,11 +10,12 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.busition_driver.databinding.FragmentStationItemBinding
+import com.example.busition_driver.main_screen.MainScreen
 import com.example.busition_driver.placeholder.PlaceholderContent.PlaceholderItem
 
 
 class StationItemRecyclerAdapter(
-    private val values: List<PlaceholderItem>
+    private val values: List<PlaceholderItem>, private val activity: MainScreen? = null
 ) : RecyclerView.Adapter<StationItemRecyclerAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -36,14 +38,18 @@ class StationItemRecyclerAdapter(
             holder.station_time.text = "test"
             holder.station_id.text = "test"
             holder.btn.setOnClickListener {
-                Log.d("btn", "test")
+                if(activity != null){
+                    activity.startService(Intent(activity, FloatingService::class.java))
+                    activity.finish()
+                }
+
 
             }
         } else {
             holder.station_id.text = item.id
             holder.station_time.text = item.content
             holder.btn.setOnClickListener {
-                Log.d("btn", "1")
+                Log.d("btn", "test")
             }
         }
 
@@ -59,7 +65,7 @@ class StationItemRecyclerAdapter(
         val station_time: TextView = binding.stationTime
         val station_lay: LinearLayout = binding.stationTiemLay
         val btn: Button = binding.button
-        val _binding = binding
+
 
         override fun toString(): String {
             return super.toString() + " '" + "'"

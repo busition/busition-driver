@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.busition_driver.databinding.FragmentStationItemScreenBinding
+import com.example.busition_driver.main_screen.MainScreen
 import com.example.busition_driver.placeholder.PlaceholderContent
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -24,11 +25,11 @@ class StationDetailFragment: Fragment() {
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
-        binding.test.setOnClickListener {
-            activity?.startService(Intent(activity, FloatingService::class.java))
-            Log.d("error","error")
-            Log.d("error",activity.toString())
-        }
+//        binding.test.setOnClickListener {
+//            activity?.startService(Intent(activity, FloatingService::class.java))
+//            Log.d("error","error")
+//            Log.d("error",activity.toString())
+//        }
 
     }
     private val callback = OnMapReadyCallback { googleMap ->
@@ -50,7 +51,7 @@ class StationDetailFragment: Fragment() {
         //recycler view adapter set up
         binding = FragmentStationItemScreenBinding.bind(view)
         binding.stationItemList.stationList.layoutManager = LinearLayoutManager(context)
-        binding.stationItemList.stationList.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS)
+        binding.stationItemList.stationList.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS,activity as MainScreen)
         return view
     }
 }
