@@ -20,11 +20,13 @@ import com.google.android.gms.maps.model.MarkerOptions
 
 class StationDetailFragment: Fragment() {
     lateinit var binding: FragmentStationItemScreenBinding
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+
 //        binding.test.setOnClickListener {
 //            activity?.startService(Intent(activity, FloatingService::class.java))
 //            Log.d("error","error")
@@ -50,8 +52,13 @@ class StationDetailFragment: Fragment() {
         val view = inflater.inflate(R.layout.fragment_station_item_screen, container, false)
         //recycler view adapter set up
         binding = FragmentStationItemScreenBinding.bind(view)
+        routeId = arguments?.getString("item").toString()
         binding.stationItemList.stationList.layoutManager = LinearLayoutManager(context)
         binding.stationItemList.stationList.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS,activity as MainScreen)
         return view
+    }
+
+    companion object {
+        lateinit var routeId: String
     }
 }

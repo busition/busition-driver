@@ -13,4 +13,4 @@
     tools:listitem="@layout/fragment_station_item"
     android:layout_gravity="center"
     android:overScrollMode="never"
-    android:layout_marginTop="20dp"/>
+    />

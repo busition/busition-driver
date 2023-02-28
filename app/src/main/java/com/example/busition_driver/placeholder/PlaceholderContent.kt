@@ -1,32 +1,22 @@
 package com.example.busition_driver.placeholder
 
+import com.example.busition_driver.StationDetailFragment
 import java.util.ArrayList
 import java.util.HashMap
 
-/**
- * Helper class for providing sample content for user interfaces created by
- * Android template wizards.
- *
- * TODO: Replace all uses of this class before publishing your app.
- */
+
 object PlaceholderContent {
 
-    /**
-     * An array of sample (placeholder) items.
-     */
-    val ITEMS: MutableList<PlaceholderItem> = ArrayList()
 
-    /**
-     * A map of sample (placeholder) items, by ID.
-     */
+    val ITEMS: MutableList<PlaceholderItem> = ArrayList()
     val ITEM_MAP: MutableMap<String, PlaceholderItem> = HashMap()
 
     private val COUNT = 3
 
     init {
-        // Add some sample items.
+        var id = StationDetailFragment.routeId
         for (i in 1..COUNT) {
-            addItem(createPlaceholderItem(i))
+            addItem(createPlaceholderItem(i,id))
         }
     }
 
@@ -35,9 +25,9 @@ object PlaceholderContent {
         ITEM_MAP.put(item.id, item)
     }
 
-    private fun createPlaceholderItem(position: Int): PlaceholderItem {
+    private fun createPlaceholderItem(position: Int, id:String): PlaceholderItem {
         if(position == 3){
-            return PlaceholderItem(position.toString(), "Item " + position, makeDetails(position), "test")
+            return PlaceholderItem(id, "Item " + position, makeDetails(position), "test")
         }
         return PlaceholderItem(position.toString(), "Item " + position, makeDetails(position), "")
     }

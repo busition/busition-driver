@@ -7,16 +7,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import com.example.busition_driver.R
 import com.example.busition_driver.databinding.FragmentScheduleItemBinding
 import com.example.busition_driver.databinding.FragmentScheduleListBinding
-
-import com.example.busition_driver.main_screen.placeholder.PlaceholderContent.PlaceholderItem
+import com.example.busition_driver.main_screen.placeholder.ScheduleClass
 
 
 class MyItemRecyclerViewAdapter(
-    private val values: List<PlaceholderItem>, private val binding: FragmentScheduleListBinding?
+    private val values: MutableList<ScheduleClass>, private val binding: FragmentScheduleListBinding?
 ) : RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -32,17 +30,16 @@ class MyItemRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        holder.typeView.text = item.typeData
-        holder.destinationView.text = item.destinationData
-        holder.timeView.text = item.timeData
+        holder.typeView.text = item.getShuttleDirection()
+        holder.destinationView.text = item.getDestination()
+        holder.timeView.text = item.getDepartureTime()
         viewItemDetails(holder, item)
 
-
     }
-    private fun viewItemDetails(holder:ViewHolder,item: PlaceholderItem) {
+    private fun viewItemDetails(holder:ViewHolder, item: ScheduleClass) {
         holder.itemView.setOnClickListener {
             Log.d("onBindViewHolder ", item.toString())
-            val bundle = bundleOf("item" to item.destinationData)
+            val bundle = bundleOf("item" to item.getRouteId())
             val navController = Navigation.findNavController(holder.itemView)
             navController.navigate(R.id.action_scheduleList_to_fragment_item_detial_screen,bundle)
 

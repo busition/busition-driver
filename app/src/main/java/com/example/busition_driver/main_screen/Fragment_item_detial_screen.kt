@@ -36,10 +36,12 @@ class fragment_item_detial_screen : Fragment() {
         binding = FragmentItemDetailScreenBinding.bind(view)
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
+
+        binding.numberOfStation.text = itemId
         binding.runBtn.setOnClickListener {
             val bundle = bundleOf("item" to binding.estimatedTime.text)
             val navController = Navigation.findNavController(view)
-            navController.navigate(R.id.action_fragment_item_detial_screen_to_fragment_station_item_screen)
+            navController.navigate(R.id.action_fragment_item_detial_screen_to_fragment_station_item_screen,bundle)
 //                val loc = LocationTraker(binding.root.context, activity as MainScreen, gmap)
         }
 //        val bundle = bundleOf("item" to item.destinationData)

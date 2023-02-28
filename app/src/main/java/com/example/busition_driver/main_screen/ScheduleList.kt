@@ -3,16 +3,13 @@ package com.example.busition_driver.main_screen
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.RecyclerView.OnItemTouchListener
 import com.example.busition_driver.R
-import com.example.busition_driver.databinding.FragmentLoginBinding
 import com.example.busition_driver.databinding.FragmentScheduleListBinding
 import com.example.busition_driver.main_screen.placeholder.PlaceholderContent
 
