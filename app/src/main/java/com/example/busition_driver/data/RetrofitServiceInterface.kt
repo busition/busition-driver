@@ -1,11 +1,17 @@
 package com.example.busition_driver.data
 
+import com.example.busition_driver.data.schedule_all.ScheduleDataList
+import com.example.busition_driver.data.schedule_route.RouteData
 import retrofit2.Call
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface RetrofitServiceInterface {
 
     @GET("schedule/all")
     fun getSchedule(@Query("driver_id") driver_id: Int): Call<ScheduleDataList>
+
+    @GET("route/{route_id}")
+    fun getRoute(@Path("route_id") route_id: Int): Call<RouteData>
 }

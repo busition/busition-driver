@@ -1,4 +1,4 @@
-package com.example.busition_driver.data
+package com.example.busition_driver.data.schedule_all
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName

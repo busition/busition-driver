@@ -10,10 +10,10 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.busition_driver.R
-import com.example.busition_driver.data.DayTime
-import com.example.busition_driver.data.DepartureTime
+import com.example.busition_driver.data.schedule_all.DayTime
+import com.example.busition_driver.data.schedule_all.DepartureTime
 import com.example.busition_driver.data.RetrofitServiceInterface
-import com.example.busition_driver.data.ScheduleDataList
+import com.example.busition_driver.data.schedule_all.ScheduleDataList
 
 import com.example.busition_driver.databinding.FragmentScheduleListBinding
 import com.example.busition_driver.main_screen.placeholder.PlaceholderContent

@@ -1,6 +1,6 @@
 package com.example.busition_driver.main_screen.placeholder
 
-import com.example.busition_driver.data.DepartureTime
+import com.example.busition_driver.data.schedule_all.DepartureTime
 import com.example.busition_driver.main_screen.MainScreen
 import java.io.Serializable
 import java.util.ArrayList

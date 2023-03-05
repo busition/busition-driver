@@ -1,8 +1,6 @@
-package com.example.busition_driver.data
+package com.example.busition_driver.data.login
 
 import com.example.busition_driver.data.model.LoggedInUser
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
 /**

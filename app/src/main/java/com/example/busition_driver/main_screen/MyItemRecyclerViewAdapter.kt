@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import com.example.busition_driver.R
 import com.example.busition_driver.databinding.FragmentScheduleItemBinding
@@ -49,9 +50,7 @@ class MyItemRecyclerViewAdapter(
     private fun viewItemDetails(holder:ViewHolder,item: PlaceholderContent.PlaceholderItem) {
         holder.itemView.setOnClickListener {
             Log.d("onBindViewHolder ", item.toString())
-            val bundle = Bundle()
-            bundle.putSerializable("item", item)
-
+            val bundle = bundleOf("route_id" to item.route_id)
             val navController = Navigation.findNavController(holder.itemView)
             navController.navigate(R.id.action_scheduleList_to_fragment_item_detial_screen,bundle)
 

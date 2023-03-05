@@ -1,4 +1,4 @@
-package com.example.busition_driver.data
+package com.example.busition_driver.data.login
 
 /**
  * A generic class that holds a value with its loading status.

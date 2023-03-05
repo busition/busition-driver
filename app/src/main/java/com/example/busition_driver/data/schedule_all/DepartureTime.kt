@@ -1,5 +1,6 @@
-package com.example.busition_driver.data
+package com.example.busition_driver.data.schedule_all
 
+import com.example.busition_driver.data.schedule_all.DayTime
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
@@ -9,7 +10,7 @@ data class DepartureTime(
     var day_time: DayTime,
 
 
-){
+    ){
     fun getDayTime(): DayTime {
         return day_time
     }

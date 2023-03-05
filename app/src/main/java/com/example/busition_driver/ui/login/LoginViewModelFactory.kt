@@ -2,8 +2,8 @@ package com.example.busition_driver.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.busition_driver.data.LoginDataSource
-import com.example.busition_driver.data.LoginRepository
+import com.example.busition_driver.data.login.LoginDataSource
+import com.example.busition_driver.data.login.LoginRepository
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.

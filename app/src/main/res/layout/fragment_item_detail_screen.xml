@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".main_screen.fragment_item_detial_screen"
+    tools:context=".main_screen.FragmentItemDetailScreen"
     >
 
     <!-- TODO: Update blank fragment layout -->
@@ -74,7 +74,7 @@
                     android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
                 <TextView
-                    android:id="@+id/numberOfStudent"
+                    android:id="@+id/numberOfPasenger"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="TextView"

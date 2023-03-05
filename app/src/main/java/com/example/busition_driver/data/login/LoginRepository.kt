@@ -1,4 +1,4 @@
-package com.example.busition_driver.data
+package com.example.busition_driver.data.login
 
 import com.example.busition_driver.data.model.LoggedInUser
 
