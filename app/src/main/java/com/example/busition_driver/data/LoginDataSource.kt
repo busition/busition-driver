@@ -1,6 +1,8 @@
 package com.example.busition_driver.data
 
 import com.example.busition_driver.data.model.LoggedInUser
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 
 /**
@@ -8,10 +10,13 @@ import java.io.IOException
  */
 class LoginDataSource {
 
-    fun login(username: String, password: String): Result<LoggedInUser> {
+    fun login(username: String , password: String): Result<LoggedInUser> {
         try {
-            // TODO: handle loggedInUser authentication
-            val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe")
+
+
+
+
+            val fakeUser = LoggedInUser(java.util.UUID.randomUUID().toString(), "Jane Doe", 1)
             return Result.Success(fakeUser)
         } catch (e: Throwable) {
             return Result.Error(IOException("Error logging in", e))

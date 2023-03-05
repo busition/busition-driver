@@ -11,6 +11,7 @@ import androidx.navigation.Navigation
 import com.example.busition_driver.Gps.LocationTraker
 import com.example.busition_driver.R
 import com.example.busition_driver.databinding.FragmentItemDetailScreenBinding
+import com.example.busition_driver.main_screen.placeholder.PlaceholderContent
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -19,14 +20,15 @@ import com.google.android.gms.maps.SupportMapFragment
 class fragment_item_detial_screen : Fragment() {
 
     private lateinit var binding: FragmentItemDetailScreenBinding
-    private lateinit var itemId: String
+    private lateinit var itemId: PlaceholderContent.PlaceholderItem
     private lateinit var gmap : GoogleMap
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val arg = requireArguments()
-        itemId = arg.getString("item").toString()
+        itemId = arg.getSerializable("item") as PlaceholderContent.PlaceholderItem
 
-        Log.d("item", itemId)
+
+        Log.d("item", itemId.toString())
 
 
     }
@@ -37,7 +39,7 @@ class fragment_item_detial_screen : Fragment() {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
 
-        binding.numberOfStation.text = itemId
+
         binding.runBtn.setOnClickListener {
             val bundle = bundleOf("item" to binding.estimatedTime.text)
             val navController = Navigation.findNavController(view)

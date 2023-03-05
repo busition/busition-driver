@@ -65,4 +65,10 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.5.5")
     //worker
     implementation "androidx.work:work-runtime-ktx:2.8.0"
+    //network
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    //Gson
+    implementation 'com.squareup.retrofit2:converter-gson:2.6.4'
+    //scalars
+    implementation 'com.squareup.retrofit2:converter-scalars:2.6.4'
 }

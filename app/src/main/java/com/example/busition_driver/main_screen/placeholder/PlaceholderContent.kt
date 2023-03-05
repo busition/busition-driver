@@ -1,35 +1,37 @@
 package com.example.busition_driver.main_screen.placeholder
 
-import android.util.Log
-import com.example.busition_driver.main_screen.MyItemRecyclerViewAdapter
+import com.example.busition_driver.data.DepartureTime
+import com.example.busition_driver.main_screen.MainScreen
+import java.io.Serializable
 import java.util.ArrayList
 import java.util.HashMap
 
 object PlaceholderContent {
 
-    val ITEMS: MutableList<ScheduleClass> = ArrayList()
-
-    private val COUNT = 10
+    val ITEMS: MutableList<PlaceholderItem> = ArrayList()
+    val ITEM_MAP: MutableMap<String, PlaceholderItem> = HashMap()
+    val driver_id = MainScreen.driver_id
+    private val COUNT = 5
 
     init {
-        var test = ""
-        for (i in 1..COUNT) {
-            test = "test $i"
-            addItem(createPlaceholderItem("test", test, test, "19:00", "등교"))
-        }
+
     }
 
-    private fun addItem(item: ScheduleClass) {
+    fun addItem(item: PlaceholderItem) {
         ITEMS.add(item)
+
     }
 
-    private fun createPlaceholderItem(
-        routeId: String, departurePoint: String,
-        destination: String,
-        departureTime: String,
-        shuttleDirection: String
-    ): ScheduleClass {
-        return ScheduleClass(routeId, departurePoint, destination, departureTime, shuttleDirection)
+
+    data class PlaceholderItem(
+        val route_id: Int,
+        val departure_point: String,
+        val destination: String,
+        val departure_time: DepartureTime,
+        val shuttle_direction: Int,
+    ) : Serializable {
+
     }
+
 
 }

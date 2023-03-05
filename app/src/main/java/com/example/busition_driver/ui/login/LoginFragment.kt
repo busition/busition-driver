@@ -6,6 +6,7 @@ import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -115,6 +116,7 @@ class LoginFragment : Fragment() {
                 passwordEditText.text.toString()
             )
             val intent = Intent(getActivity(), MainScreen::class.java)
+
             intent.flags =
                 Intent.FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK or FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
@@ -126,7 +128,16 @@ class LoginFragment : Fragment() {
         }
 
         passbtn.setOnClickListener {
+            loginViewModel.login(
+                usernameEditText.text.toString(),
+                passwordEditText.text.toString()
+            )
             val intent = Intent(getActivity(), MainScreen::class.java)
+            loginViewModel.loginResult.value?.success?.let {
+                intent.putExtra("userName", it.displayName)
+                intent.putExtra("driver_id", it.driver_id)
+            }
+
             intent.flags =
                 Intent.FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK or FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
