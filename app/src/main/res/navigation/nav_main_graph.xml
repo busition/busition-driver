@@ -27,5 +27,14 @@
         android:id="@+id/fragment_station_item_screen"
         android:name="com.example.busition_driver.StationDetailFragment"
         android:label="Station Detail"
-        tools:layout="@layout/fragment_station_item_screen"/>
+        tools:layout="@layout/fragment_station_item_screen">
+        <action
+            android:id="@+id/action_fragment_station_item_screen_to_userInfoDataFragment"
+            app:destination="@id/userInfoDataFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/userInfoDataFragment"
+        android:name="com.example.busition_driver.UserInfoDataFragment"
+        android:label="fragment_user_info_item_list"
+        tools:layout="@layout/fragment_user_info_item_list" />
 </navigation>

@@ -12,8 +12,9 @@ import androidx.navigation.Navigation
 import com.example.busition_driver.R
 import com.example.busition_driver.data.RetrofitServiceInterface
 import com.example.busition_driver.data.schedule_route.RouteData
+import com.example.busition_driver.data.schedule_route.StationData
 import com.example.busition_driver.databinding.FragmentItemDetailScreenBinding
-import com.example.busition_driver.main_screen.placeholder.PlaceholderContent
+import com.example.busition_driver.placeholder.PlaceholderContent
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -99,9 +100,17 @@ class FragmentItemDetailScreen : Fragment() {
                     val route = response.body()
                     Log.d("route", route.toString())
                     station_count.text = route?.station_count.toString()
-//                    estimated_time.text = route?.estimated_time.toString()
-//                    passenger_count.text = route?.passenger_count.toString()
-//                    travel_distance.text = route?.travel_distance.toString()
+                    for (i in 0 until (route?.station_count ?: 0)){
+                        val tmp: StationData = StationData(
+                            route?.station_data?.get(i)?.station_id?:0,
+                            route?.station_data?.get(i)?.station_name?:"",
+                            route?.station_data?.get(i)?.stopping_order?:0,
+                            route?.station_data?.get(i)?.station_latitude?:0.0,
+                            route?.station_data?.get(i)?.station_longitude?:0.0
+                        )
+                        stationDataList.add(tmp)
+                    }
+                    PlaceholderContent.makeItem(stationDataList)
                 }else{
                     Log.d("route", "onResponse: ${response}")
                 }
@@ -113,4 +122,8 @@ class FragmentItemDetailScreen : Fragment() {
         })
     }
 
+
+    companion object{
+        val stationDataList : MutableList<StationData> = ArrayList()
+    }
 }
