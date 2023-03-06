@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 import com.example.busition_driver.data.schedule_route.StationData
@@ -39,8 +40,9 @@ class StationItemRecyclerAdapter(
             holder.station_time.text = item.station_id.toString()
             holder.btn.setOnClickListener {
                 Log.d("btn", "test")
+                val bundle = bundleOf("station_id" to item.station_id)
                 val navController = Navigation.findNavController(holder.itemView)
-                navController.navigate(R.id.action_fragment_station_item_screen_to_userInfoDataFragment)
+                navController.navigate(R.id.action_fragment_station_item_screen_to_userInfoDataFragment, bundle)
             }
 
 

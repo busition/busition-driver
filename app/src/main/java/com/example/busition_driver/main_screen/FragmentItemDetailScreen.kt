@@ -26,7 +26,7 @@ import kotlin.properties.Delegates
 class FragmentItemDetailScreen : Fragment() {
 
     private lateinit var binding: FragmentItemDetailScreenBinding
-    private var route_id by Delegates.notNull<Int>()
+
     private lateinit var gmap: GoogleMap
 
     private lateinit var station_count: TextView
@@ -125,5 +125,6 @@ class FragmentItemDetailScreen : Fragment() {
 
     companion object{
         val stationDataList : MutableList<StationData> = ArrayList()
+        var route_id:Int = 0
     }
 }

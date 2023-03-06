@@ -15,6 +15,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlin.properties.Delegates
 
 class StationDetailFragment: Fragment() {
     lateinit var binding: FragmentStationItemScreenBinding
@@ -50,13 +51,13 @@ class StationDetailFragment: Fragment() {
         val view = inflater.inflate(R.layout.fragment_station_item_screen, container, false)
         //recycler view adapter set up
         binding = FragmentStationItemScreenBinding.bind(view)
-        routeId = arguments?.getString("item").toString()
+        routeId = arguments?.getInt("item")!!
         binding.stationItemList.stationList.layoutManager = LinearLayoutManager(context)
         binding.stationItemList.stationList.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS,activity as MainScreen)
         return view
     }
 
     companion object {
-        lateinit var routeId: String
+        var routeId by Delegates.notNull<Int>()
     }
 }

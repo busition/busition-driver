@@ -1,5 +1,6 @@
 package com.example.busition_driver.data
 
+import com.example.busition_driver.data.passenger_list.PassengerListData
 import com.example.busition_driver.data.schedule_all.ScheduleDataList
 import com.example.busition_driver.data.schedule_route.RouteData
 import retrofit2.Call
@@ -14,4 +15,7 @@ interface RetrofitServiceInterface {
 
     @GET("route/{route_id}")
     fun getRoute(@Path("route_id") route_id: Int): Call<RouteData>
+
+    @GET("passenger/list")
+    fun getPassengerList(@Query("route_id,station_id") route_id: Int, station_id:Int): Call<PassengerListData>
 }
