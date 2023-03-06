@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 data class PassengerData(
     @SerializedName("passenger_id")
     @Expose
-    val passenger_id:Int,
+    val passenger_id:String,
 
     @SerializedName("passenger_name")
     @Expose

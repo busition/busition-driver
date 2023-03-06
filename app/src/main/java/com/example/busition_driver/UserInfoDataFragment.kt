@@ -10,11 +10,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.busition_driver.data.RetrofitServiceInterface
+import com.example.busition_driver.data.passenger_list.PassengerData
 import com.example.busition_driver.data.passenger_list.PassengerListData
 import com.example.busition_driver.data.schedule_route.RouteData
 import com.example.busition_driver.data.schedule_route.StationData
 import com.example.busition_driver.main_screen.FragmentItemDetailScreen
 import com.example.busition_driver.placeholder.PlaceholderContent
+import com.example.busition_driver.placeholder.UserInfoDataContent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -50,26 +52,38 @@ class UserInfoDataFragment : Fragment() {
                     .addConverterFactory(GsonConverterFactory.create())
                     .build()
                 val service = retrofit.create(RetrofitServiceInterface::class.java)
-//                service.getPassengerList(FragmentItemDetailScreen.route_id,station_id).enqueue(object : retrofit2.Callback<PassengerListData> {
-//                    override fun onResponse(
-//                        call: retrofit2.Call<PassengerListData>,
-//                        response: retrofit2.Response<PassengerListData>
-//                    ) {
-//                        if (response.isSuccessful) {
-//                            val route = response.body()
-//                            Log.d("route", route.toString())
-//                            // 리사이클러 업데이트 ㅍ추가가가가가가가
-//
-//                        }else{
-//                            Log.d("route", "onResponse: ${response}")
-//                        }
-//                    }
-//
-//                    override fun onFailure(call: retrofit2.Call<PassengerListData>, t: Throwable) {
-//                        Log.d("route", "onFailure: ${t.message}")
-//                    }
-//                })
-                adapter = MyuserInfoDataRecyclerViewAdapter(PlaceholderContent.ITEMS)
+                service.getPassengerList(FragmentItemDetailScreen.route_id,station_id).enqueue(object : retrofit2.Callback<PassengerListData> {
+                    override fun onResponse(
+                        call: retrofit2.Call<PassengerListData>,
+                        response: retrofit2.Response<PassengerListData>
+                    ) {
+                        if (response.isSuccessful) {
+                            val route = response.body()
+                            Log.d("route", route.toString())
+                            // 리사이클러 업데이트 ㅍ추가가가가가가가
+                            val tmpList = ArrayList<PassengerData>()
+                            for(i in 0 until route?.passengerList?.size!!){
+                                val tmp = PassengerData(
+                                    route.passengerList[i].passenger_id ?:"",
+                                    route.passengerList[i].passenger_name ?:"",
+                                    route.passengerList[i].passenger_phone ?:"",
+                                    route.passengerList[i].passenger_email ?:"",
+                                )
+                                tmpList.add(tmp)
+                            }
+
+                            UserInfoDataContent.makeItem(tmpList)
+                        }else{
+                            Log.d("route", "onResponse: ${response}")
+                        }
+                        adapter = MyuserInfoDataRecyclerViewAdapter(UserInfoDataContent.ITEMS)
+                    }
+
+                    override fun onFailure(call: retrofit2.Call<PassengerListData>, t: Throwable) {
+                        Log.d("route", "onFailure: ${t.message}")
+                    }
+                })
+
             }
         }
         return view

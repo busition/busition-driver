@@ -101,7 +101,7 @@ class FragmentItemDetailScreen : Fragment() {
                     Log.d("route", route.toString())
                     station_count.text = route?.station_count.toString()
                     for (i in 0 until (route?.station_count ?: 0)){
-                        val tmp: StationData = StationData(
+                        val tmp = StationData(
                             route?.station_data?.get(i)?.station_id?:0,
                             route?.station_data?.get(i)?.station_name?:"",
                             route?.station_data?.get(i)?.stopping_order?:0,

@@ -12,6 +12,10 @@ data class PassengerListData(
     @Expose
     val station_id:Int,
 
+    @SerializedName("passenger_count")
+    @Expose
+    val passenger_count:Int,
+
     @SerializedName("passenger_list")
     @Expose
     val passengerList: List<PassengerData>

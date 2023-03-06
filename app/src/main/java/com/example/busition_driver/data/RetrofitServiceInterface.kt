@@ -17,5 +17,8 @@ interface RetrofitServiceInterface {
     fun getRoute(@Path("route_id") route_id: Int): Call<RouteData>
 
     @GET("passenger/list")
-    fun getPassengerList(@Query("route_id,station_id") route_id: Int, station_id:Int): Call<PassengerListData>
+    fun getPassengerList(
+        @Query("route_id") route_id: Int,
+        @Query("station_id") station_id: Int
+    ): Call<PassengerListData>
 }

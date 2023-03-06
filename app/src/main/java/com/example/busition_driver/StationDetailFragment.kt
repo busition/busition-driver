@@ -51,7 +51,7 @@ class StationDetailFragment: Fragment() {
         val view = inflater.inflate(R.layout.fragment_station_item_screen, container, false)
         //recycler view adapter set up
         binding = FragmentStationItemScreenBinding.bind(view)
-        routeId = arguments?.getInt("item")!!
+        routeId = arguments?.getInt("route_id")!!
         binding.stationItemList.stationList.layoutManager = LinearLayoutManager(context)
         binding.stationItemList.stationList.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS,activity as MainScreen)
         return view

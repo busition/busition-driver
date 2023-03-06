@@ -12,12 +12,11 @@ object PlaceholderContent {
     val ITEMS: MutableList<StationData> = ArrayList()
 
 
-    private val COUNT = 3
-
     init {
 
     }
     fun makeItem(tmp:MutableList<StationData>){
+        ITEMS.clear()
         for(i in 0 until (tmp.size)){
             addItem(tmp.get(i))
         }
