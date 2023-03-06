@@ -1,6 +1,7 @@
 package com.example.busition_driver
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -52,8 +53,9 @@ class StationDetailFragment: Fragment() {
         //recycler view adapter set up
         binding = FragmentStationItemScreenBinding.bind(view)
         routeId = arguments?.getInt("route_id")!!
-        binding.stationItemList.stationList.layoutManager = LinearLayoutManager(context)
-        binding.stationItemList.stationList.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS,activity as MainScreen)
+
+        binding.stationItemList.stationListView.layoutManager = LinearLayoutManager(context)
+        binding.stationItemList.stationListView.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS,activity as MainScreen)
         return view
     }
 
