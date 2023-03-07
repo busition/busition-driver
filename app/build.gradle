@@ -6,11 +6,11 @@ plugins {
 }
 apply plugin: "androidx.navigation.safeargs.kotlin"
 android {
-    namespace 'com.example.busition_driver'
+    namespace 'com.busition.driver'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.example.busition_driver"
+        applicationId "com.busition.driver"
         minSdk 26
         targetSdk 33
         versionCode 1
