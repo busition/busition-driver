@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/BusitionLogin"
-        android:name="com.example.busition_driver.ui.login.LoginFragment"
+        android:name="com.busition.driver.ui.login.LoginFragment"
         android:label="@string/Login_Fragment_Label"
         tools:layout="@layout/fragment_login">
 
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/BusitionRegister"
-        android:name="com.example.busition_driver.ui.login.RegistFragment"
+        android:name="com.busition.driver.ui.login.RegistFragment"
         android:label="@string/Register_Fragment_Label"
         tools:layout="@layout/fragment_regist">
 
