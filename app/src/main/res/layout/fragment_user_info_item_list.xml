@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/list"
-    android:name="com.example.busition_driver.userInfoDataFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
-    app:layoutManager="LinearLayoutManager"
     tools:context=".UserInfoDataFragment"
-    tools:listitem="@layout/fragment_user_info_data" />
+    android:orientation="horizontal" >
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/userInfoList"
+        android:name="com.example.busition_driver.userInfoDataFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="LinearLayoutManager"
+        tools:context=".UserInfoDataFragment"
+        tools:listitem="@layout/fragment_user_info_data" />
+    <ProgressBar
+        android:id="@+id/loadBarUserInfo"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="1" />
+</LinearLayout>
+

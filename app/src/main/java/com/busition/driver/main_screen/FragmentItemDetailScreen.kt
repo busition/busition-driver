@@ -16,7 +16,9 @@ import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.data.schedule_route.RouteData
 import com.busition.driver.data.schedule_route.StationData
 import com.busition.driver.databinding.FragmentItemDetailScreenBinding
+import com.busition.driver.gone
 import com.busition.driver.placeholder.PlaceholderContent
+import com.busition.driver.show
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -34,6 +36,8 @@ class FragmentItemDetailScreen : Fragment() {
     private lateinit var estimated_time: TextView
     private lateinit var passenger_count: TextView
     private lateinit var travel_distance: TextView
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,6 +91,8 @@ class FragmentItemDetailScreen : Fragment() {
     }
 
     fun requestApiServer() {
+        binding.textList.gone()
+        binding.loadBar.show()
         val retrofit = Retrofit.Builder()
             .baseUrl("http://api.busition.com/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -114,9 +120,12 @@ class FragmentItemDetailScreen : Fragment() {
                         stationDataList.add(tmp)
                     }
                     PlaceholderContent.makeItem(stationDataList)
+
                 }else{
-                    Log.d("route", "onResponse: ${response}")
+                    Log.d("route", "onResponse: $response")
                 }
+                binding.loadBar.gone()
+                binding.textList.show()
             }
 
             override fun onFailure(call: retrofit2.Call<RouteData>, t: Throwable) {

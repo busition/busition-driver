@@ -26,14 +26,6 @@
             android:layout_weight="1"/>
 
 
-        <ProgressBar
-            android:id="@+id/progressBar"
-            style="?android:attr/progressBarStyle"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            tools:visibility="gone" />
-
         <include
             android:id="@+id/station_item_list"
             layout="@layout/fragment_station_item_list"
