@@ -8,6 +8,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.os.bundleOf
+import androidx.core.view.ViewCompat
+import androidx.core.view.marginBottom
 import androidx.navigation.Navigation
 import com.busition.driver.R
 import com.busition.driver.data.RetrofitServiceInterface
@@ -48,6 +50,7 @@ class FragmentItemDetailScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding = FragmentItemDetailScreenBinding.bind(view)
+
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
         station_count =  binding.numberOfStation
@@ -98,7 +101,8 @@ class FragmentItemDetailScreen : Fragment() {
                 if (response.isSuccessful) {
                     val route = response.body()
                     Log.d("route", route.toString())
-                    station_count.text = route?.station_count.toString()
+                    var tt:String = station_count.text as String
+                    station_count.text = appendString(station_count.text.toString(), route?.station_count.toString())
                     for (i in 0 until (route?.station_count ?: 0)){
                         val tmp = StationData(
                             route?.station_data?.get(i)?.station_id?:0,
@@ -122,6 +126,12 @@ class FragmentItemDetailScreen : Fragment() {
     }
 
 
+    fun appendString(a:String, b:String):String{
+        return buildString {
+            append(a)
+            append(b)
+        }
+    }
     companion object{
         val stationDataList : MutableList<StationData> = ArrayList()
         var route_id:Int = 0

@@ -16,6 +16,7 @@ import com.busition.driver.data.schedule_all.ScheduleDataList
 import com.busition.driver.databinding.FragmentScheduleListBinding
 import com.busition.driver.gone
 import com.busition.driver.main_screen.placeholder.PlaceholderContent
+import com.busition.driver.show
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -61,6 +62,8 @@ class ScheduleList : Fragment() {
     }
 
     fun attachData() {
+        binding?.loadingBar?.show()
+        binding?.recyclerScheduleList?.gone()
         val retrofit = Retrofit.Builder()
             .baseUrl("http://api.busition.com/")
             .addConverterFactory(GsonConverterFactory.create())
@@ -99,13 +102,15 @@ class ScheduleList : Fragment() {
                             }
                             Log.d("ITEMS", PlaceholderContent.ITEMS.toString())
                             recyclerViewAdapter?.notifyDataSetChanged()
-                            binding?.loadingBar?.gone()
+
+
                         }
 
                     } else {
                         Log.d("Error for network", response.toString())
                     }
-
+                    binding?.recyclerScheduleList?.show()
+                    binding?.loadingBar?.gone()
                 }
 
                 override fun onFailure(
