@@ -17,6 +17,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.marginBottom
 import androidx.navigation.Navigation
 import com.busition.driver.R
+import com.busition.driver.base_url
 import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.data.map.MapData
 import com.busition.driver.data.schedule_route.RouteData
@@ -56,6 +57,8 @@ class FragmentItemDetailScreen : Fragment() {
         super.onCreate(savedInstanceState)
         val arg = requireArguments()
         route_id = arg.getInt("route_id")
+        shuttle_direction = arg.getInt("shuttle_direction")
+        //imsi use key
         val ai: ApplicationInfo = requireContext().packageManager.getApplicationInfo(
             requireContext().packageName,
             PackageManager.GET_META_DATA
@@ -110,12 +113,12 @@ class FragmentItemDetailScreen : Fragment() {
         binding.textList.gone()
         binding.loadBar.show()
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://api.busition.com/")
+            .baseUrl(base_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
 
-        service.getRoute(route_id).enqueue(object : retrofit2.Callback<RouteData> {
+        service.getRoute(route_id, shuttle_direction).enqueue(object : retrofit2.Callback<RouteData> {
             override fun onResponse(
                 call: retrofit2.Call<RouteData>,
                 response: retrofit2.Response<RouteData>
@@ -126,13 +129,16 @@ class FragmentItemDetailScreen : Fragment() {
                     var tt: String = station_count.text as String
                     station_count.text =
                         appendString(station_count.text.toString(), route?.station_count.toString())
+                    passenger_count.text =
+                        appendString(passenger_count.text.toString(), route?.total_passenger_count.toString(), " 명")
                     for (i in 0 until (route?.station_count ?: 0)) {
                         val tmp = StationData(
                             route?.station_data?.get(i)?.station_id ?: 0,
                             route?.station_data?.get(i)?.station_name ?: "",
                             route?.station_data?.get(i)?.stopping_order ?: 0,
                             route?.station_data?.get(i)?.station_latitude ?: 0.0,
-                            route?.station_data?.get(i)?.station_longitude ?: 0.0
+                            route?.station_data?.get(i)?.station_longitude ?: 0.0,
+                            route?.station_data?.get(i)?.passenger_count ?: 0
                         )
                         stationDataList.add(tmp)
                     }
@@ -143,7 +149,7 @@ class FragmentItemDetailScreen : Fragment() {
                 }
                 binding.loadBar.gone()
                 binding.textList.show()
-                makeRoute()
+
 
             }
 
@@ -166,7 +172,7 @@ class FragmentItemDetailScreen : Fragment() {
                     .title(it.station_name)
             )
         }
-        getRouteUrl(list)
+
         gmap.animateCamera(
             CameraUpdateFactory.newLatLngZoom(
                 LatLng(
@@ -201,10 +207,11 @@ class FragmentItemDetailScreen : Fragment() {
         GetDirection(url).execute()
     }
 
-    fun appendString(a: String, b: String): String {
+    fun appendString(a: String, b: String,c:String=""): String {
         return buildString {
             append(a)
             append(b)
+            append(c)
         }
     }
 
@@ -278,5 +285,6 @@ class FragmentItemDetailScreen : Fragment() {
     companion object {
         val stationDataList: MutableList<StationData> = ArrayList()
         var route_id: Int = 0
+        var shuttle_direction: Int = 0
     }
 }

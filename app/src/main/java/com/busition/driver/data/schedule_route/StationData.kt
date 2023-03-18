@@ -23,4 +23,9 @@ data class StationData(
     @SerializedName("station_longitude")
     @Expose
     var station_longitude: Double,
+
+    @SerializedName("passenger_count")
+    @Expose
+    var passenger_count: Int,
+
 )

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.busition.driver.R
+import com.busition.driver.base_url
 import com.busition.driver.data.schedule_all.DayTime
 import com.busition.driver.data.schedule_all.DepartureTime
 import com.busition.driver.data.RetrofitServiceInterface
@@ -65,7 +66,7 @@ class ScheduleList : Fragment() {
         binding?.loadingBar?.show()
         binding?.recyclerScheduleList?.gone()
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://api.busition.com/")
+            .baseUrl(base_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
