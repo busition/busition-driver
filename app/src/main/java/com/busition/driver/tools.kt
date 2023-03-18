@@ -14,3 +14,5 @@ fun View.show() {
 fun View.gone() {
     visibility = View.GONE
 }
+
+val base_url ="http://api.dev.busition.com:8001/"

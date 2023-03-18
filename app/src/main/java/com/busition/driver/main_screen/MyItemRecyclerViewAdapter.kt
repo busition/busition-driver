@@ -36,7 +36,7 @@ class MyItemRecyclerViewAdapter(
         }else{
             type = "하교"
         }
-        val destinationText:String =  item.departure_point + item.destination
+        val destinationText:String =  item.departure_point + " -> " + item.destination
         holder.typeView.text = type
         holder.destinationView.text = destinationText
         holder.timeView.text = item.departure_time.day_time.time
@@ -49,7 +49,7 @@ class MyItemRecyclerViewAdapter(
     private fun viewItemDetails(holder:ViewHolder,item: PlaceholderContent.PlaceholderItem) {
         holder.itemView.setOnClickListener {
             Log.d("onBindViewHolder ", item.toString())
-            val bundle = bundleOf("route_id" to item.route_id)
+            val bundle = bundleOf("route_id" to item.route_id, "shuttle_direction" to item.shuttle_direction)
             val navController = Navigation.findNavController(holder.itemView)
             navController.navigate(R.id.action_scheduleList_to_fragment_item_detial_screen,bundle)
 

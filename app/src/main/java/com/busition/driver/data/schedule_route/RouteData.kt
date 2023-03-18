@@ -11,4 +11,8 @@ data class RouteData(
     @SerializedName("station_data")
     @Expose
     var station_data: List<StationData>,
+
+    @SerializedName("total_passenger_count")
+    @Expose
+    var total_passenger_count: Int,
 )
