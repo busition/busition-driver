@@ -14,6 +14,7 @@ import com.busition.driver.data.passenger_list.PassengerData
 import com.busition.driver.data.passenger_list.PassengerListData
 import com.busition.driver.databinding.FragmentUserInfoItemListBinding
 import com.busition.driver.main_screen.FragmentItemDetailScreen
+import com.busition.driver.main_screen.FragmentItemDetailScreen.Companion.shuttle_direction
 import com.busition.driver.placeholder.UserInfoDataContent
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -50,11 +51,11 @@ class UserInfoDataFragment : Fragment() {
         binding.userInfoList.gone()
         binding.loadBarUserInfo.show()
         val retrofit = Retrofit.Builder()
-            .baseUrl("http://api.busition.com/")
+            .baseUrl(base_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
-        service.getPassengerList(FragmentItemDetailScreen.route_id,station_id).enqueue(object : retrofit2.Callback<PassengerListData> {
+        service.getPassengerList(FragmentItemDetailScreen.route_id,station_id, shuttle_direction ).enqueue(object : retrofit2.Callback<PassengerListData> {
             override fun onResponse(
                 call: retrofit2.Call<PassengerListData>,
                 response: retrofit2.Response<PassengerListData>

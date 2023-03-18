@@ -14,11 +14,15 @@ interface RetrofitServiceInterface {
     fun getSchedule(@Query("driver_id") driver_id: Int): Call<ScheduleDataList>
 
     @GET("route/{route_id}")
-    fun getRoute(@Path("route_id") route_id: Int): Call<RouteData>
+    fun getRoute(
+        @Path("route_id") route_id: Int,
+        @Query("shuttle_direction") shuttle_direction: Int
+    ): Call<RouteData>
 
     @GET("passenger/list")
     fun getPassengerList(
         @Query("route_id") route_id: Int,
-        @Query("station_id") station_id: Int
+        @Query("station_id") station_id: Int,
+        @Query("shuttle_direction") shuttle_direction: Int
     ): Call<PassengerListData>
 }
