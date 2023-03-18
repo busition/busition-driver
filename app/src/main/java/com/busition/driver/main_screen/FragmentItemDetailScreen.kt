@@ -13,11 +13,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
-import androidx.core.view.marginBottom
 import androidx.navigation.Navigation
 import com.busition.driver.R
-import com.busition.driver.base_url
+import com.busition.driver.dev_api_url
 import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.data.map.MapData
 import com.busition.driver.data.schedule_route.RouteData
@@ -113,7 +111,7 @@ class FragmentItemDetailScreen : Fragment() {
         binding.textList.gone()
         binding.loadBar.show()
         val retrofit = Retrofit.Builder()
-            .baseUrl(base_url)
+            .baseUrl(dev_api_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
