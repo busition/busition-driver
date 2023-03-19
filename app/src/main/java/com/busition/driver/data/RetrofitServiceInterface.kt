@@ -1,8 +1,9 @@
 package com.busition.driver.data
 
+import com.busition.driver.data.bus_route.RouteData
 import com.busition.driver.data.passenger_list.PassengerListData
 import com.busition.driver.data.schedule_all.ScheduleDataList
-import com.busition.driver.data.schedule_route.RouteData
+import com.busition.driver.data.schedule_route.StationListData
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -13,11 +14,11 @@ interface RetrofitServiceInterface {
     @GET("schedule/all")
     fun getSchedule(@Query("driver_id") driver_id: Int): Call<ScheduleDataList>
 
-    @GET("route/{route_id}")
-    fun getRoute(
-        @Path("route_id") route_id: Int,
+    @GET("station")
+    fun getStation(
+        @Query("route_id") route_id: Int,
         @Query("shuttle_direction") shuttle_direction: Int
-    ): Call<RouteData>
+    ): Call<StationListData>
 
     @GET("passenger/list")
     fun getPassengerList(
@@ -25,4 +26,8 @@ interface RetrofitServiceInterface {
         @Query("station_id") station_id: Int,
         @Query("shuttle_direction") shuttle_direction: Int
     ): Call<PassengerListData>
+
+    @GET("route/{route_id}")
+    fun getRoute(@Path("route_id") route_id: Int,
+                 @Query("shuttle_direction") shuttle_direction: Int ): Call<RouteData>
 }

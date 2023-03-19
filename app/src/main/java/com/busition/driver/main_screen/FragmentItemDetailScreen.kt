@@ -13,15 +13,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
-import androidx.core.view.marginBottom
 import androidx.navigation.Navigation
 import com.busition.driver.R
-import com.busition.driver.base_url
+import com.busition.driver.dev_api_url
 import com.busition.driver.data.RetrofitServiceInterface
-import com.busition.driver.data.map.MapData
-import com.busition.driver.data.schedule_route.RouteData
+import com.busition.driver.data.bus_route.RouteData
 import com.busition.driver.data.schedule_route.StationData
+import com.busition.driver.data.schedule_route.StationListData
 import com.busition.driver.databinding.FragmentItemDetailScreenBinding
 import com.busition.driver.gone
 import com.busition.driver.placeholder.PlaceholderContent
@@ -31,11 +29,9 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.gson.Gson
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -53,17 +49,14 @@ class FragmentItemDetailScreen : Fragment() {
 
     private lateinit var secret: String
 
+    private var route_list = ArrayList<ArrayList<Double>>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val arg = requireArguments()
         route_id = arg.getInt("route_id")
         shuttle_direction = arg.getInt("shuttle_direction")
         //imsi use key
-        val ai: ApplicationInfo = requireContext().packageManager.getApplicationInfo(
-            requireContext().packageName,
-            PackageManager.GET_META_DATA
-        )
-        secret = ai.metaData["com.google.android.geo.API_KEY"].toString()
 
         Log.d("route_id", route_id.toString())
 
@@ -80,7 +73,9 @@ class FragmentItemDetailScreen : Fragment() {
         estimated_time = binding.estimatedTime
         passenger_count = binding.numberOfPasenger
         travel_distance = binding.travelDistance
+        requestRouteApiServer()
         requestApiServer()
+
         binding.runBtn.setOnClickListener {
             val bundle = bundleOf("item" to binding.estimatedTime.text)
             val navController = Navigation.findNavController(view)
@@ -99,6 +94,8 @@ class FragmentItemDetailScreen : Fragment() {
 
     private val callback = OnMapReadyCallback { googleMap ->
         gmap = googleMap
+
+
     }
 
     override fun onCreateView(
@@ -109,11 +106,9 @@ class FragmentItemDetailScreen : Fragment() {
         return inflater.inflate(R.layout.fragment_item_detail_screen, container, false)
     }
 
-    fun requestApiServer() {
-        binding.textList.gone()
-        binding.loadBar.show()
+    fun requestRouteApiServer(){
         val retrofit = Retrofit.Builder()
-            .baseUrl(base_url)
+            .baseUrl(dev_api_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
@@ -122,6 +117,37 @@ class FragmentItemDetailScreen : Fragment() {
             override fun onResponse(
                 call: retrofit2.Call<RouteData>,
                 response: retrofit2.Response<RouteData>
+            ) {
+                if (response.isSuccessful) {
+                    val route = response.body()
+                    Log.d("api", route.toString())
+                    Log.d("api", "onResponse: ${response.body()?.route?.traoptimal?.get(0)?.path}")
+
+                    route_list = route?.route?.traoptimal?.get(0)?.path as ArrayList<ArrayList<Double>>
+                    makePolyRoute()
+                } else {
+                    Log.d("api", "onResponse: $response")
+                }
+            }
+
+            override fun onFailure(call: retrofit2.Call<RouteData>, t: Throwable) {
+                Log.d("api", "onFailure: ${t.message}")
+            }
+        })
+    }
+    fun requestApiServer() {
+        binding.textList.gone()
+        binding.loadBar.show()
+        val retrofit = Retrofit.Builder()
+            .baseUrl(dev_api_url)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val service = retrofit.create(RetrofitServiceInterface::class.java)
+
+        service.getStation(route_id, shuttle_direction).enqueue(object : retrofit2.Callback<StationListData> {
+            override fun onResponse(
+                call: retrofit2.Call<StationListData>,
+                response: retrofit2.Response<StationListData>
             ) {
                 if (response.isSuccessful) {
                     val route = response.body()
@@ -145,23 +171,25 @@ class FragmentItemDetailScreen : Fragment() {
                     PlaceholderContent.makeItem(stationDataList)
 
                 } else {
-                    Log.d("route", "onResponse: $response")
+                    Log.d("response", "onResponse: $response")
                 }
                 binding.loadBar.gone()
                 binding.textList.show()
-
+                makeRoute()
 
             }
 
-            override fun onFailure(call: retrofit2.Call<RouteData>, t: Throwable) {
+            override fun onFailure(call: retrofit2.Call<StationListData>, t: Throwable) {
                 Log.d("route", "onFailure: ${t.message}")
             }
         })
+
     }
 
     fun makeRoute() {
         var list: MutableList<LatLng> = mutableListOf()
         var tmp:LatLng = LatLng(0.0,0.0)
+        var boundsBuilder = LatLngBounds.Builder()
         PlaceholderContent.ITEMS.forEach {
             tmp = LatLng(it.station_latitude, it.station_longitude)
             list.add(tmp)
@@ -171,42 +199,30 @@ class FragmentItemDetailScreen : Fragment() {
                     .position(tmp)
                     .title(it.station_name)
             )
+            boundsBuilder.include(tmp)
         }
+        var bounds = boundsBuilder.build()
+        gmap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
 
-        gmap.animateCamera(
-            CameraUpdateFactory.newLatLngZoom(
-                LatLng(
-                    PlaceholderContent.ITEMS[0].station_latitude,
-                    PlaceholderContent.ITEMS[0].station_longitude
-                ), 15f
-            )
+    }
+
+    fun makePolyRoute(){
+        var list: MutableList<LatLng> = mutableListOf()
+        var tmp:LatLng = LatLng(0.0,0.0)
+        list.clear()
+        for (i in 0 until route_list.size) {
+            tmp = LatLng(route_list[i][1], route_list[i][0])
+            list.add(tmp)
+            Log.d("route", tmp.toString())
+
+        }
+        gmap.addPolyline(
+            PolylineOptions()
+                .addAll(list)
+                .width(10f)
+                .color(Color.RED)
         )
     }
-
-    fun getRouteUrl(list: List<LatLng>) {
-        var origin: String = ""
-        var dest: String = ""
-        var waypoints: String = "&waypoints="
-        for (i in 0 until list.size) {
-            if (i == 0) {
-                origin = "origin=${list[i].latitude},${list[i].longitude}"
-            } else if (i == list.size - 1) {
-                dest = "&destination=${list[i].latitude},${list[i].longitude}"
-            } else {
-                waypoints = appendString(waypoints, "${list[i].latitude},${list[i].longitude}|")
-            }
-
-        }
-        val url = "https://maps.googleapis.com/maps/api/directions/json?" +
-                origin +
-                dest +
-                "&sensor=false" +
-
-                "&key=$secret"
-        Log.d("route", url)
-        GetDirection(url).execute()
-    }
-
     fun appendString(a: String, b: String,c:String=""): String {
         return buildString {
             append(a)
@@ -215,72 +231,91 @@ class FragmentItemDetailScreen : Fragment() {
         }
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private inner class GetDirection(val url: String) :
-        AsyncTask<Void, Void, List<List<LatLng>>>() {
-        override fun doInBackground(vararg params: Void?): List<List<LatLng>> {
-            val client = OkHttpClient()
-            val request = Request.Builder().url(url).build()
-            val response = client.newCall(request).execute()
-            val data = response.body()?.string()
-            Log.d("route", data.toString())
-            val result = ArrayList<List<LatLng>>()
-            try {
-                val respObj = Gson().fromJson(data, MapData::class.java)
-                val path = ArrayList<LatLng>()
-                for (i in 0 until respObj.routes[0].legs[0].steps.size) {
-                    path.addAll(decodePolyline(respObj.routes[0].legs[0].steps[i].polyline.points))
-                }
-                result.add(path)
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-            return result
-        }
 
-        override fun onPostExecute(result: List<List<LatLng>>) {
-            val lineoption = PolylineOptions()
-            for (i in result.indices) {
-                lineoption.addAll(result[i])
-                lineoption.width(10f)
-                lineoption.color(Color.GREEN)
-                lineoption.geodesic(true)
-            }
-            gmap.addPolyline(lineoption)
-        }
-    }
+    //in use global service google route api decode code
+//    fun getRouteUrl() {
+//        var origin: String = ""
+//        var dest: String = ""
+//        var waypoints: String = "&waypoints="
+//
+//        val url = "https://maps.googleapis.com/maps/api/directions/json?origin=Disneyland&destination=Universal+Studios+Hollywood"+
+//                "&key=AIzaSyBUNnlsuMCJth1VWvY4HV0pa5eoFmqya_A"
+//        Log.d("route", url)
+//        GetDirection(url).execute()
+//    }
 
-    fun decodePolyline(encoded: String): List<LatLng> {
-        val poly = ArrayList<LatLng>()
-        var index = 0
-        val len = encoded.length
-        var lat = 0
-        var lng = 0
-        while (index < len) {
-            var b: Int
-            var shift = 0
-            var result = 0
-            do {
-                b = encoded[index++].code - 63
-                result = result or (b and 0x1f shl shift)
-                shift += 5
-            } while (b >= 0x20)
-            val dlat = if (result and 1 != 0) (result shr 1).inv() else result shr 1
-            lat += dlat
-            shift = 0
-            result = 0
-            do {
-                b = encoded[index++].code - 63
-                result = result or (b and 0x1f shl shift)
-                shift += 5
-            } while (b >= 0x20)
-            val dlng = if (result and 1 != 0) (result shr 1).inv() else result shr 1
-            lng += dlng
-            val latLng = LatLng((lat.toDouble() / 1E5), (lng.toDouble() / 1E5))
-            poly.add(latLng)
-        }
-        return poly
-    }
+
+
+
+//    @SuppressLint("StaticFieldLeak")
+//    private inner class GetDirection(val url: String) :
+//        AsyncTask<Void, Void, List<List<LatLng>>>() {
+//        override fun doInBackground(vararg params: Void?): List<List<LatLng>> {
+//            val client = OkHttpClient()
+//            val request = Request.Builder().url(url).build()
+//            val response = client.newCall(request).execute()
+//            val data = response.body()?.string()
+//            Log.d("route", data.toString())
+//            val result = ArrayList<List<LatLng>>()
+//            try {
+//                val respObj = Gson().fromJson(data, MapData::class.java)
+//                val path = ArrayList<LatLng>()
+//                for (i in 0 until respObj.routes[0].legs[0].steps.size) {
+//                    path.addAll(decodePolyline(respObj.routes[0].legs[0].steps[i].polyline.points))
+//                }
+//                result.add(path)
+//            } catch (e: Exception) {
+//                e.printStackTrace()
+//            }
+//            return result
+//        }
+//
+//        override fun onPostExecute(result: List<List<LatLng>>) {
+//            val lineoption = PolylineOptions()
+//            for (i in result.indices) {
+//                lineoption.addAll(result[i])
+//                lineoption.width(10f)
+//                lineoption.color(Color.GREEN)
+//                lineoption.geodesic(true)
+//            }
+//            gmap.addPolyline(lineoption)
+//        }
+//    }
+
+
+//    fun decodePolyline(encoded: String): List<LatLng> {
+//        val poly = ArrayList<LatLng>()
+//        var index = 0
+//        val len = encoded.length
+//        var lat = 0
+//        var lng = 0
+//        while (index < len) {
+//            var b: Int
+//            var shift = 0
+//            var result = 0
+//            do {
+//                b = encoded[index++].code - 63
+//                result = result or (b and 0x1f shl shift)
+//                shift += 5
+//            } while (b >= 0x20)
+//            val dlat = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+//            lat += dlat
+//            shift = 0
+//            result = 0
+//            do {
+//                b = encoded[index++].code - 63
+//                result = result or (b and 0x1f shl shift)
+//                shift += 5
+//            } while (b >= 0x20)
+//            val dlng = if (result and 1 != 0) (result shr 1).inv() else result shr 1
+//            lng += dlng
+//            val latLng = LatLng((lat.toDouble() / 1E5), (lng.toDouble() / 1E5))
+//            poly.add(latLng)
+//        }
+//        Log.d("poly", poly.toString())
+//        return poly
+//
+//    }
 
     companion object {
         val stationDataList: MutableList<StationData> = ArrayList()

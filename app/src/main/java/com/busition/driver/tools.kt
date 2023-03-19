@@ -15,4 +15,8 @@ fun View.gone() {
     visibility = View.GONE
 }
 
-val base_url ="http://api.dev.busition.com:8001/"
+val prod_api_host = "api.busition.com"
+val prod_api_url = "https://${prod_api_host}/"
+
+val dev_api_host = "api.dev.busition.com"
+val dev_api_url = "http://${dev_api_host}:8001/"
