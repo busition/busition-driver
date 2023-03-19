@@ -3,7 +3,7 @@ package com.busition.driver.data.schedule_route
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
-data class RouteData(
+data class StationListData(
     @SerializedName("station_count")
     @Expose
     var station_count: Int,
