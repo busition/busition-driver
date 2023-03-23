@@ -1,6 +1,8 @@
 package com.busition.driver.main_screen
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.graphics.Color
@@ -12,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -84,6 +87,8 @@ class FragmentItemDetailScreen : Fragment() {
 //            )
             binding.textList.gone()
             binding.itemListLay.show()
+            activity?.startService(Intent(activity,GpsForegroundService::class.java))
+            Toast.makeText(activity,"service start", Toast.LENGTH_LONG).show()
 //                val loc = LocationTraker(binding.root.context, activity as MainScreen, gmap)
         }
 //        val bundle = bundleOf("item" to item.destinationData)
@@ -221,7 +226,7 @@ class FragmentItemDetailScreen : Fragment() {
         for (i in 0 until route_list.size) {
             tmp = LatLng(route_list[i][1], route_list[i][0])
             list.add(tmp)
-            Log.d("route", tmp.toString())
+
 
         }
         gmap.addPolyline(
