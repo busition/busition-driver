@@ -34,27 +34,30 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:orientation="horizontal"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:layout_gravity="center">
 
                     <TextView
-                        android:id="@+id/station_id"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/station_name"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="TextView"
+                        android:text="한국어는 여기에 길게 넣으면 씹히나요?"
                         android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textColor="@color/white"/>
+                        android:layout_margin="7dp"
+                        android:textColor="@color/white"
+                        android:autoSizeTextType="uniform"/>
 
                     <TextView
-                        android:id="@+id/station_id_contents"
-                        android:layout_width="wrap_content"
+                        android:id="@+id/station_passenger_num"
+                        android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="TextView"
+                        android:text="한국어는 여기에 길게 넣으면 씹히나요?"
                         android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textColor="@color/white"/>
+                        android:layout_margin="7dp"
+                        android:textColor="@color/white"
+                        android:autoSizeTextType="uniform"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -68,35 +71,38 @@
 
                     <TextView
                         android:id="@+id/station_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="TextView"
+                        android:text="Time"
                         android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textColor="@color/white"/>
+                        android:layout_margin="7dp"
+                        android:textColor="@color/white"
+                        android:autoSizeTextType="uniform"/>
 
                     <TextView
                         android:id="@+id/station_time_contents"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:layout_weight="1"
-                        android:text="TextView"
+                        android:text="delayTime"
                         android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textColor="@color/white"/>
+                        android:layout_margin="7dp"
+                        android:textColor="@color/white"
+                        android:autoSizeTextType="uniform"/>
                 </LinearLayout>
 
             </LinearLayout>
 
             <Button
                 android:id="@+id/button"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Button"
+                android:text="탑승확인"
                 android:layout_marginStart="10dp"
                 android:background="#537FE7"
-
+                android:autoSizeTextType="uniform"
+                android:layout_weight="2"
                 />
 
         </LinearLayout>

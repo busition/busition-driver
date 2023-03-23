@@ -14,16 +14,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
-import com.busition.driver.R
-import com.busition.driver.dev_api_url
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.busition.driver.*
 import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.data.bus_route.RouteData
 import com.busition.driver.data.schedule_route.StationData
 import com.busition.driver.data.schedule_route.StationListData
 import com.busition.driver.databinding.FragmentItemDetailScreenBinding
-import com.busition.driver.gone
 import com.busition.driver.placeholder.PlaceholderContent
-import com.busition.driver.show
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -46,6 +44,7 @@ class FragmentItemDetailScreen : Fragment() {
     private lateinit var estimated_time: TextView
     private lateinit var passenger_count: TextView
     private lateinit var travel_distance: TextView
+    private lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
 
     private lateinit var secret: String
 
@@ -65,7 +64,7 @@ class FragmentItemDetailScreen : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding = FragmentItemDetailScreenBinding.bind(view)
+
 
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
@@ -79,10 +78,12 @@ class FragmentItemDetailScreen : Fragment() {
         binding.runBtn.setOnClickListener {
             val bundle = bundleOf("item" to binding.estimatedTime.text)
             val navController = Navigation.findNavController(view)
-            navController.navigate(
-                R.id.action_fragment_item_detial_screen_to_fragment_station_item_screen,
-                bundle
-            )
+//            navController.navigate(
+//                R.id.action_fragment_item_detial_screen_to_fragment_station_item_screen,
+//                bundle
+//            )
+            binding.textList.gone()
+            binding.itemListLay.show()
 //                val loc = LocationTraker(binding.root.context, activity as MainScreen, gmap)
         }
 //        val bundle = bundleOf("item" to item.destinationData)
@@ -102,8 +103,14 @@ class FragmentItemDetailScreen : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        val view = inflater.inflate(R.layout.fragment_item_detail_screen,container,false)
+        binding = FragmentItemDetailScreenBinding.bind(view)
+        binding.itemList.stationListView.layoutManager = LinearLayoutManager(context)
+        stationItemRecyclerAdapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS,activity as MainScreen)
+        binding.itemList.stationListView.adapter = stationItemRecyclerAdapter
 
-        return inflater.inflate(R.layout.fragment_item_detail_screen, container, false)
+
+        return view
     }
 
     fun requestRouteApiServer(){
@@ -187,6 +194,7 @@ class FragmentItemDetailScreen : Fragment() {
     }
 
     fun makeRoute() {
+        gmap.clear()
         var list: MutableList<LatLng> = mutableListOf()
         var tmp:LatLng = LatLng(0.0,0.0)
         var boundsBuilder = LatLngBounds.Builder()
@@ -223,13 +231,7 @@ class FragmentItemDetailScreen : Fragment() {
                 .color(Color.RED)
         )
     }
-    fun appendString(a: String, b: String,c:String=""): String {
-        return buildString {
-            append(a)
-            append(b)
-            append(c)
-        }
-    }
+
 
 
     //in use global service google route api decode code

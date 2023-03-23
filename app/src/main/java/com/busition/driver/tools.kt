@@ -15,6 +15,14 @@ fun View.gone() {
     visibility = View.GONE
 }
 
+fun appendString(a: String, b: String,c:String=""): String {
+    return buildString {
+        append(a)
+        append(b)
+        append(c)
+    }
+}
+
 val prod_api_host = "api.busition.com"
 val prod_api_url = "https://${prod_api_host}/"
 

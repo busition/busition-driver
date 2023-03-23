@@ -20,16 +20,7 @@
         android:label="Item Detail"
         tools:layout="@layout/fragment_item_detail_screen" >
         <action
-            android:id="@+id/action_fragment_item_detial_screen_to_fragment_station_item_screen"
-            app:destination="@id/fragment_station_item_screen" />
-    </fragment>
-    <fragment
-        android:id="@+id/fragment_station_item_screen"
-        android:name="com.busition.driver.StationDetailFragment"
-        android:label="Station Detail"
-        tools:layout="@layout/fragment_station_item_screen">
-        <action
-            android:id="@+id/action_fragment_station_item_screen_to_userInfoDataFragment"
+            android:id="@+id/action_fragment_item_detial_screen_to_userInfoDataFragment"
             app:destination="@id/userInfoDataFragment" />
     </fragment>
     <fragment

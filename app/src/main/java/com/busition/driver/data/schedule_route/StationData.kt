@@ -28,4 +28,6 @@ data class StationData(
     @Expose
     var passenger_count: Int,
 
+    var nowPassengerNumber:Int =0,
+
 )
