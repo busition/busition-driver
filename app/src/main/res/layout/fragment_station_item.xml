@@ -1,17 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/stationCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:orientation="vertical"
-    android:layout_margin="10dp"
-    >
+
+    android:orientation="vertical">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_margin="15dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,42 +23,41 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_weight="1"
                 android:background="#4E31AA"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:weightSum="2"
-                android:layout_weight="1"
-                >
+                android:weightSum="2">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:orientation="horizontal"
                     android:gravity="center"
-                    android:layout_gravity="center">
+                    android:orientation="horizontal">
 
                     <TextView
                         android:id="@+id/station_name"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="한국어는 여기에 길게 넣으면 씹히나요?"
-                        android:gravity="center"
                         android:layout_margin="7dp"
-                        android:textColor="@color/white"
-                        android:autoSizeTextType="uniform"/>
+                        android:layout_weight="1"
+                        android:autoSizeTextType="uniform"
+                        android:gravity="center"
+                        android:text="한국어는 여기에 길게 넣으면 씹히나요?"
+                        android:textColor="@color/white" />
 
                     <TextView
                         android:id="@+id/station_passenger_num"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="한국어는 여기에 길게 넣으면 씹히나요?"
-                        android:gravity="center"
                         android:layout_margin="7dp"
-                        android:textColor="@color/white"
-                        android:autoSizeTextType="uniform"/>
+                        android:layout_weight="1"
+                        android:autoSizeTextType="uniform"
+                        android:gravity="center"
+                        android:text="한국어는 여기에 길게 넣으면 씹히나요?"
+                        android:textColor="@color/white" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -65,31 +65,31 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
+                    android:gravity="center"
                     android:orientation="horizontal"
-                    android:visibility="visible"
-                    android:gravity="center">
+                    android:visibility="visible">
 
                     <TextView
                         android:id="@+id/station_time"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="Time"
-                        android:gravity="center"
                         android:layout_margin="7dp"
-                        android:textColor="@color/white"
-                        android:autoSizeTextType="uniform"/>
+                        android:layout_weight="1"
+                        android:autoSizeTextType="uniform"
+                        android:gravity="center"
+                        android:text="Time"
+                        android:textColor="@color/white" />
 
                     <TextView
                         android:id="@+id/station_time_contents"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="delayTime"
-                        android:gravity="center"
                         android:layout_margin="7dp"
-                        android:textColor="@color/white"
-                        android:autoSizeTextType="uniform"/>
+                        android:layout_weight="1"
+                        android:autoSizeTextType="uniform"
+                        android:gravity="center"
+                        android:text="delayTime"
+                        android:textColor="@color/white" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -98,12 +98,11 @@
                 android:id="@+id/button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="탑승확인"
                 android:layout_marginStart="10dp"
-                android:background="#537FE7"
-                android:autoSizeTextType="uniform"
                 android:layout_weight="2"
-                />
+                android:autoSizeTextType="uniform"
+                android:background="#537FE7"
+                android:text="탑승확인" />
 
         </LinearLayout>
 
