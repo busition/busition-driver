@@ -49,7 +49,7 @@ class UserInfoDataFragment : Fragment() {
         binding.userInfoList.gone()
         binding.loadBarUserInfo.show()
         val retrofit = Retrofit.Builder()
-            .baseUrl(dev_api_url)
+            .baseUrl(base_api_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)

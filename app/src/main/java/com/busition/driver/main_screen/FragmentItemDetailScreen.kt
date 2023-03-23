@@ -1,12 +1,6 @@
 package com.busition.driver.main_screen
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Intent
-import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.graphics.Color
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -120,7 +114,7 @@ class FragmentItemDetailScreen : Fragment() {
 
     fun requestRouteApiServer(){
         val retrofit = Retrofit.Builder()
-            .baseUrl(dev_api_url)
+            .baseUrl(base_api_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
@@ -151,7 +145,7 @@ class FragmentItemDetailScreen : Fragment() {
         binding.textList.gone()
         binding.loadBar.show()
         val retrofit = Retrofit.Builder()
-            .baseUrl(dev_api_url)
+            .baseUrl(base_api_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
