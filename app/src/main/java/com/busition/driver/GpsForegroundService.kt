@@ -3,14 +3,18 @@ package com.busition.driver
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.busition.driver.Gps.LocationTraker
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.MainScreen
+
 
 class GpsForegroundService : Service() {
     var locationTraker: LocationTraker? = null
@@ -35,7 +39,12 @@ class GpsForegroundService : Service() {
     var mNotificationManager: NotificationManager? = null
     private val mNotificationId = 123
 
+    fun isNotificationEnabled(context: Context): Boolean {
+        return NotificationManagerCompat.from(context.applicationContext)
+            .areNotificationsEnabled()
+    }
     private fun generateForegroundNotification() {
+        isNotificationEnabled(this)
         val intentMainLanding = Intent(this, MainScreen::class.java)
         val pendingIntent =
             PendingIntent.getActivity(this, 0, intentMainLanding, PendingIntent.FLAG_MUTABLE)
@@ -64,7 +73,11 @@ class GpsForegroundService : Service() {
         }
 
         notification = builder.build()
-        startForeground(mNotificationId, notification)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            startForeground(mNotificationId, notification!!, FOREGROUND_SERVICE_TYPE_LOCATION)
+        }else{
+            startForeground(mNotificationId, notification!!)
+        }
 
     }
 
