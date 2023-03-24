@@ -5,15 +5,16 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.media.session.PlaybackState.ACTION_STOP
-import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.core.app.NotificationCompat
+import com.busition.driver.Gps.LocationTraker
+import com.busition.driver.main_screen.FragmentItemDetailScreen
+import com.busition.driver.main_screen.MainScreen
 
 class GpsForegroundService : Service() {
-
+    var locationTraker: LocationTraker? = null
+    private var mThread: Thread? = null
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
@@ -25,6 +26,7 @@ class GpsForegroundService : Service() {
         }
         Log.d("service", "i'm service")
         generateForegroundNotification()
+        gpsWorker()
         return START_NOT_STICKY
     }
 
@@ -34,9 +36,9 @@ class GpsForegroundService : Service() {
     private val mNotificationId = 123
 
     private fun generateForegroundNotification() {
-        val intentMainLanding = Intent(this, MainActivity::class.java)
+        val intentMainLanding = Intent(this, MainScreen::class.java)
         val pendingIntent =
-            PendingIntent.getActivity(this, 0, intentMainLanding, 0)
+            PendingIntent.getActivity(this, 0, intentMainLanding, PendingIntent.FLAG_MUTABLE)
         iconNotification = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
         if (mNotificationManager == null) {
             mNotificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -55,13 +57,8 @@ class GpsForegroundService : Service() {
 
         builder.setContentTitle(StringBuilder(resources.getString(R.string.app_name)).append(" service is running").toString())
             .setTicker(StringBuilder(resources.getString(R.string.app_name)).append("service is running").toString())
-            .setContentText("Touch to open") //                    , swipe down for more options.
-
-            .setPriority(NotificationCompat.PRIORITY_LOW)
-            .setWhen(0)
-            .setOnlyAlertOnce(true)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
             .setContentIntent(pendingIntent)
-            .setOngoing(true)
         if (iconNotification != null) {
             builder.setLargeIcon(Bitmap.createScaledBitmap(iconNotification!!, 128, 128, false))
         }
@@ -69,5 +66,37 @@ class GpsForegroundService : Service() {
         notification = builder.build()
         startForeground(mNotificationId, notification)
 
+    }
+
+    private fun gpsWorker() {
+        locationTraker =
+            FragmentItemDetailScreen.gmap?.let {
+                LocationTraker(
+                    applicationContext,
+                    it
+                )
+            }
+//        mThread = Thread {
+//            while (true) {
+//                try {
+//                    Thread.sleep(100)
+//                    Log.d("service", "i'm service")
+//                    Log.d("service", locationTraker?.nowLocation.toString())
+//                } catch (e: InterruptedException) {
+//                    Log.d("error", e.toString())
+//                }
+//            }
+//        }
+
+
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        if (mThread != null) {
+            mThread!!.interrupt()
+            mThread = null
+        }
+        stopSelf()
+        Log.d("service", "onDestroy")
     }
 }
