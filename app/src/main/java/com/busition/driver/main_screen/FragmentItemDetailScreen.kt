@@ -1,10 +1,10 @@
 package com.busition.driver.main_screen
 
-import android.annotation.SuppressLint
-import android.content.pm.ApplicationInfo
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
-import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -12,6 +12,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,7 +41,6 @@ class FragmentItemDetailScreen : Fragment() {
 
     private lateinit var binding: FragmentItemDetailScreenBinding
 
-    private lateinit var gmap: GoogleMap
 
     private lateinit var station_count: TextView
     private lateinit var estimated_time: TextView
@@ -49,6 +51,11 @@ class FragmentItemDetailScreen : Fragment() {
     private lateinit var secret: String
 
     private var route_list = ArrayList<ArrayList<Double>>()
+    private var permissionList = arrayOf(
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+    )
+    private var permissionRequestCode = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,7 +63,22 @@ class FragmentItemDetailScreen : Fragment() {
         route_id = arg.getInt("route_id")
         shuttle_direction = arg.getInt("shuttle_direction")
         //imsi use key
+        val contract = ActivityResultContracts.RequestMultiplePermissions()
+        val activityResultLauncher = registerForActivityResult(contract) { permissions ->
+            permissions.entries.forEach {
+                Log.d("permission", "${it.key} = ${it.value}")
+            }
+            val isAllGranted = permissions.values.all { it == true }
+            if (isAllGranted) {
+                Log.d("permission", "all granted" + isAllGranted.toString())
+                permissionRequestCode =  true
+                Toast.makeText(activity, "permission granted", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(activity, "plz check permissions", Toast.LENGTH_LONG).show()
+            }
 
+        }
+        activityResultLauncher.launch(permissionList)
         Log.d("route_id", route_id.toString())
 
 
@@ -84,6 +106,14 @@ class FragmentItemDetailScreen : Fragment() {
 //            )
             binding.textList.gone()
             binding.itemListLay.show()
+            if (permissionRequestCode){
+                val gpsIntent = Intent(activity, GpsForegroundService::class.java)
+                activity?.startService(gpsIntent)
+                Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
+            }
+
+
+
 //                val loc = LocationTraker(binding.root.context, activity as MainScreen, gmap)
         }
 //        val bundle = bundleOf("item" to item.destinationData)
@@ -103,106 +133,121 @@ class FragmentItemDetailScreen : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_item_detail_screen,container,false)
+        val view = inflater.inflate(R.layout.fragment_item_detail_screen, container, false)
         binding = FragmentItemDetailScreenBinding.bind(view)
         binding.itemList.stationListView.layoutManager = LinearLayoutManager(context)
-        stationItemRecyclerAdapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS,activity as MainScreen)
+        stationItemRecyclerAdapter =
+            StationItemRecyclerAdapter(PlaceholderContent.ITEMS, activity as MainScreen)
         binding.itemList.stationListView.adapter = stationItemRecyclerAdapter
 
 
         return view
     }
 
-    fun requestRouteApiServer(){
+    fun requestRouteApiServer() {
         val retrofit = Retrofit.Builder()
-            .baseUrl(dev_api_url)
+            .baseUrl(base_api_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
 
-        service.getRoute(route_id, shuttle_direction).enqueue(object : retrofit2.Callback<RouteData> {
-            override fun onResponse(
-                call: retrofit2.Call<RouteData>,
-                response: retrofit2.Response<RouteData>
-            ) {
-                if (response.isSuccessful) {
-                    val route = response.body()
-                    Log.d("api", route.toString())
-                    Log.d("api", "onResponse: ${response.body()?.route?.traoptimal?.get(0)?.path}")
+        service.getRoute(route_id, shuttle_direction)
+            .enqueue(object : retrofit2.Callback<RouteData> {
+                override fun onResponse(
+                    call: retrofit2.Call<RouteData>,
+                    response: retrofit2.Response<RouteData>
+                ) {
+                    if (response.isSuccessful) {
+                        val route = response.body()
+                        Log.d("api", route.toString())
+                        Log.d(
+                            "api",
+                            "onResponse: ${response.body()?.route?.traoptimal?.get(0)?.path}"
+                        )
 
-                    route_list = route?.route?.traoptimal?.get(0)?.path as ArrayList<ArrayList<Double>>
-                    makePolyRoute()
-                } else {
-                    Log.d("api", "onResponse: $response")
+                        route_list =
+                            route?.route?.traoptimal?.get(0)?.path as ArrayList<ArrayList<Double>>
+                        makePolyRoute()
+                    } else {
+                        Log.d("api", "onResponse: $response")
+                    }
                 }
-            }
 
-            override fun onFailure(call: retrofit2.Call<RouteData>, t: Throwable) {
-                Log.d("api", "onFailure: ${t.message}")
-            }
-        })
+                override fun onFailure(call: retrofit2.Call<RouteData>, t: Throwable) {
+                    Log.d("api", "onFailure: ${t.message}")
+                }
+            })
     }
+
     fun requestApiServer() {
         binding.textList.gone()
         binding.loadBar.show()
         val retrofit = Retrofit.Builder()
-            .baseUrl(dev_api_url)
+            .baseUrl(base_api_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
 
-        service.getStation(route_id, shuttle_direction).enqueue(object : retrofit2.Callback<StationListData> {
-            override fun onResponse(
-                call: retrofit2.Call<StationListData>,
-                response: retrofit2.Response<StationListData>
-            ) {
-                if (response.isSuccessful) {
-                    val route = response.body()
-                    Log.d("route", route.toString())
-                    var tt: String = station_count.text as String
-                    station_count.text =
-                        appendString(station_count.text.toString(), route?.station_count.toString())
-                    passenger_count.text =
-                        appendString(passenger_count.text.toString(), route?.total_passenger_count.toString(), " 명")
-                    for (i in 0 until (route?.station_count ?: 0)) {
-                        val tmp = StationData(
-                            route?.station_data?.get(i)?.station_id ?: 0,
-                            route?.station_data?.get(i)?.station_name ?: "",
-                            route?.station_data?.get(i)?.stopping_order ?: 0,
-                            route?.station_data?.get(i)?.station_latitude ?: 0.0,
-                            route?.station_data?.get(i)?.station_longitude ?: 0.0,
-                            route?.station_data?.get(i)?.passenger_count ?: 0
-                        )
-                        stationDataList.add(tmp)
+        service.getStation(route_id, shuttle_direction)
+            .enqueue(object : retrofit2.Callback<StationListData> {
+                override fun onResponse(
+                    call: retrofit2.Call<StationListData>,
+                    response: retrofit2.Response<StationListData>
+                ) {
+                    if (response.isSuccessful) {
+                        val route = response.body()
+                        Log.d("route", route.toString())
+                        var tt: String = station_count.text as String
+                        station_count.text =
+                            appendString(
+                                station_count.text.toString(),
+                                route?.station_count.toString()
+                            )
+                        passenger_count.text =
+                            appendString(
+                                passenger_count.text.toString(),
+                                route?.total_passenger_count.toString(),
+                                " 명"
+                            )
+                        for (i in 0 until (route?.station_count ?: 0)) {
+                            val tmp = StationData(
+                                route?.station_data?.get(i)?.station_id ?: 0,
+                                route?.station_data?.get(i)?.station_name ?: "",
+                                route?.station_data?.get(i)?.stopping_order ?: 0,
+                                route?.station_data?.get(i)?.station_latitude ?: 0.0,
+                                route?.station_data?.get(i)?.station_longitude ?: 0.0,
+                                route?.station_data?.get(i)?.passenger_count ?: 0
+                            )
+                            stationDataList.add(tmp)
+                        }
+                        PlaceholderContent.makeItem(stationDataList)
+
+                    } else {
+                        Log.d("response", "onResponse: $response")
                     }
-                    PlaceholderContent.makeItem(stationDataList)
+                    binding.loadBar.gone()
+                    binding.textList.show()
+                    makeRoute()
 
-                } else {
-                    Log.d("response", "onResponse: $response")
                 }
-                binding.loadBar.gone()
-                binding.textList.show()
-                makeRoute()
 
-            }
-
-            override fun onFailure(call: retrofit2.Call<StationListData>, t: Throwable) {
-                Log.d("route", "onFailure: ${t.message}")
-            }
-        })
+                override fun onFailure(call: retrofit2.Call<StationListData>, t: Throwable) {
+                    Log.d("route", "onFailure: ${t.message}")
+                }
+            })
 
     }
 
     fun makeRoute() {
-        gmap.clear()
+        gmap?.clear()
         var list: MutableList<LatLng> = mutableListOf()
-        var tmp:LatLng = LatLng(0.0,0.0)
+        var tmp: LatLng = LatLng(0.0, 0.0)
         var boundsBuilder = LatLngBounds.Builder()
         PlaceholderContent.ITEMS.forEach {
             tmp = LatLng(it.station_latitude, it.station_longitude)
             list.add(tmp)
             Log.d("route", it.station_name)
-            gmap.addMarker(
+            gmap?.addMarker(
                 MarkerOptions()
                     .position(tmp)
                     .title(it.station_name)
@@ -210,28 +255,27 @@ class FragmentItemDetailScreen : Fragment() {
             boundsBuilder.include(tmp)
         }
         var bounds = boundsBuilder.build()
-        gmap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
+        gmap?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
 
     }
 
-    fun makePolyRoute(){
+    fun makePolyRoute() {
         var list: MutableList<LatLng> = mutableListOf()
-        var tmp:LatLng = LatLng(0.0,0.0)
+        var tmp: LatLng = LatLng(0.0, 0.0)
         list.clear()
         for (i in 0 until route_list.size) {
             tmp = LatLng(route_list[i][1], route_list[i][0])
             list.add(tmp)
-            Log.d("route", tmp.toString())
+
 
         }
-        gmap.addPolyline(
+        gmap?.addPolyline(
             PolylineOptions()
                 .addAll(list)
                 .width(10f)
                 .color(Color.RED)
         )
     }
-
 
 
     //in use global service google route api decode code
@@ -245,8 +289,6 @@ class FragmentItemDetailScreen : Fragment() {
 //        Log.d("route", url)
 //        GetDirection(url).execute()
 //    }
-
-
 
 
 //    @SuppressLint("StaticFieldLeak")
@@ -323,5 +365,6 @@ class FragmentItemDetailScreen : Fragment() {
         val stationDataList: MutableList<StationData> = ArrayList()
         var route_id: Int = 0
         var shuttle_direction: Int = 0
+        var gmap: GoogleMap? = null
     }
 }
