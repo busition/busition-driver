@@ -54,7 +54,8 @@ class FragmentItemDetailScreen : Fragment() {
     private lateinit var travel_distance: TextView
     private lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
 
-    private lateinit var secret: String
+
+
 
     private var route_list = ArrayList<ArrayList<Double>>()
     private var permissionList = arrayOf(
@@ -286,6 +287,7 @@ class FragmentItemDetailScreen : Fragment() {
                 .width(10f)
                 .color(Color.RED)
         )
+        polyList = list
     }
 
 
@@ -377,5 +379,6 @@ class FragmentItemDetailScreen : Fragment() {
         var route_id: Int = 0
         var shuttle_direction: Int = 0
         var gmap: GoogleMap? = null
+        lateinit var polyList:MutableList<LatLng>
     }
 }

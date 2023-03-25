@@ -2,35 +2,37 @@ package com.busition.driver.Gps
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Color
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.NonNull
+import com.busition.driver.main_screen.FragmentItemDetailScreen
+import com.busition.driver.placeholder.PlaceholderContent
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.*
+import kotlin.math.*
 
 
-class LocationTraker(context: Context, googleMap: GoogleMap) : LocationListener {
+class LocationTraker(context: Context, googleMap: GoogleMap,
+                     private var locList: MutableList<LatLng>
+) : LocationListener {
     private var mContext: Context = context
-
+    private val r = 6372.8 * 1000
     private var gmap: GoogleMap = googleMap
     private var checkGps: Boolean = false
     private var checkNetwork: Boolean = false
     private var canGetLocation: Boolean = true
+    private var nowLocationIndex:Int = 0
     var nowLocation:LatLng = LatLng(0.0,0.0)
     private  var currentLocationMarker: Marker = gmap.addMarker(
         MarkerOptions()
             .position(nowLocation)
             .title("tmp")
     )!!
-    private var loc: Location? = null
-
     private var errorMsg: String = ""
     private lateinit var locationManager: LocationManager
 
@@ -71,15 +73,9 @@ class LocationTraker(context: Context, googleMap: GoogleMap) : LocationListener 
 
     override fun onLocationChanged(@NonNull location: Location) {
 //        Log.d("gps", location.latitude.toString() + " " + location.longitude.toString())
-        Log.d("gps", nowLocation.toString())
-        nowLocation = LatLng(location.latitude, location.longitude)
 
-        currentLocationMarker.remove()
-        currentLocationMarker = gmap.addMarker(
-            MarkerOptions()
-                .position(nowLocation)
-                .title("tmp")
-        )!!
+        updateLocationIndex()
+        updateGmapPolyline(location)
 //        val boundsBuilder = LatLngBounds.Builder()
 //        boundsBuilder.include(nowLocation)
 //        val bounds = boundsBuilder.build()
@@ -97,5 +93,69 @@ class LocationTraker(context: Context, googleMap: GoogleMap) : LocationListener 
 
     override fun onProviderDisabled(provider: String) {}
 
+    fun eraseRoute(locationList:MutableList<LatLng>){
 
+    }
+
+    fun updateGmapPolyline(location: Location){
+        gmap.clear()
+        Log.d("gps", nowLocation.toString())
+        nowLocation = LatLng(location.latitude, location.longitude)
+
+        currentLocationMarker.remove()
+        currentLocationMarker = gmap.addMarker(
+            MarkerOptions()
+                .position(nowLocation)
+                .title("tmp")
+        )!!
+        var list:MutableList<LatLng> = arrayListOf()
+        var tmp:LatLng = LatLng(0.0,0.0)
+
+        PlaceholderContent.ITEMS.forEach {
+            tmp = LatLng(it.station_latitude, it.station_longitude)
+            FragmentItemDetailScreen.gmap?.addMarker(
+                MarkerOptions()
+                    .position(tmp)
+                    .title(it.station_name)
+            )
+        }
+        for (i in nowLocationIndex until locList.size) {
+            list.add(locList[i])
+        }
+        gmap.addPolyline(
+            PolylineOptions()
+                .addAll(list)
+                .width(10f)
+                .color(Color.RED)
+        )
+    }
+
+    fun updateLocationIndex(){
+
+        var tmp:Int = 0
+        var tt:Int = 0
+        Log.d("now",nowLocationIndex.toString())
+        for (i in nowLocationIndex until locList.size){
+            tt = getDistance(nowLocation.latitude,nowLocation.longitude, locList[i].latitude, locList[i].longitude)
+
+            if (tmp == 0){
+                tmp = tt
+            }else{
+                Log.d("tmp",tmp.toString() +" "+ tt.toString())
+                if(tmp<tt){
+                    nowLocationIndex = i
+                    Log.d("meter", i.toString())
+                    break
+                }
+            }
+        }
+    }
+
+    fun getDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Int {
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+        val a = sin(dLat / 2).pow(2.0) + sin(dLon / 2).pow(2.0) * cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2))
+        val c = 2 * asin(sqrt(a))
+        return (r * c).toInt()
+    }
 }

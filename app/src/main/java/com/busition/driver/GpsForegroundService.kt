@@ -86,7 +86,8 @@ class GpsForegroundService : Service() {
             FragmentItemDetailScreen.gmap?.let {
                 LocationTraker(
                     applicationContext,
-                    it
+                    it,
+                    FragmentItemDetailScreen.polyList
                 )
             }
 //        mThread = Thread {
