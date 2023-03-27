@@ -27,17 +27,15 @@ class MainScreen : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var userName: String
 
-    private val bluetoothAdapter: BluetoothAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        bluetoothManager.adapter
-    }
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         userName = intent.getStringExtra("userName").toString()
         driver_id = intent.getIntExtra("driver_id", 0)
         ScheduleList.getUserData(userName, driver_id)
-
+        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         binding = ActivityMainScreenBinding.inflate(layoutInflater)
         setSupportActionBar(binding.toolbar)
         setContentView(binding.root)
@@ -94,7 +92,7 @@ class MainScreen : AppCompatActivity() {
 
     companion object {
         var driver_id: Int = 0
-        var bluetoothAdapter: BluetoothAdapter? = null
+        var bluetoothManager: BluetoothManager ?=null
     }
 
 }

@@ -1,215 +1,101 @@
 package com.busition.driver.Ble
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.bluetooth.*
-import android.bluetooth.le.ScanCallback
-import android.bluetooth.le.ScanResult
-import android.content.Context
-import android.content.Intent
+import android.bluetooth.BluetoothAdapter.LeScanCallback
+import android.os.Build
+import android.os.Handler
 import android.os.Looper
-import androidx.appcompat.app.AppCompatActivity
+import android.util.Log
+import android.view.*
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.HandlerCompat
+import com.busition.driver.main_screen.MainScreen
+import com.busition.driver.main_screen.MainScreen.Companion.bluetoothManager
 
 
-class BleScanner(bluetoothAdapter: BluetoothAdapter) {
+class BleScanner(bluetoothAdapter: BluetoothAdapter?) {
 
-}
-class BluetoothGuide {
+
     private val adapter = BluetoothAdapter.getDefaultAdapter()
     private val gattList: MutableList<BluetoothGatt> = ArrayList()
     private val hashDeviceMap: HashMap<String, BluetoothDevice?> = HashMap()
     private val mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper())
     private var scanning = false
 
-    /**
-     * System Bluetooth On Check
-     */
-    val isOn: Boolean
-        get() = adapter.isEnabled
+    private var mBluetoothAdapter: BluetoothAdapter? = null
+    private var mScanning = false
+    private var mHandler: Handler? = null
+
+    private val REQUEST_ENABLE_BT = 1
+
+    // Stops scanning after 10 seconds.
+    private val SCAN_PERIOD: Long = 10000
 
     /**
-     * System Bluetooth On
+     * This block is for requesting permissions up to Android 12+
+     *
      */
+    private val PERMISSIONS_REQUEST_CODE = 191
+    private val BLE_PERMISSIONS = arrayOf(
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
+
+    @SuppressLint("InlinedApi")
+    private val ANDROID_12_BLE_PERMISSIONS = arrayOf(
+        Manifest.permission.BLUETOOTH_SCAN,
+        Manifest.permission.BLUETOOTH_CONNECT,
+        Manifest.permission.BLUETOOTH_ADVERTISE,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
+
+    fun requestBlePermissions(activity: Activity?, requestCode: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ActivityCompat.requestPermissions(
+            activity!!,
+            ANDROID_12_BLE_PERMISSIONS,
+            requestCode
+        ) else ActivityCompat.requestPermissions(
+            activity!!, BLE_PERMISSIONS, requestCode
+        )
+    }
+
+    fun init(activity: MainScreen) {
+        mHandler = Handler()
+        requestBlePermissions(activity, PERMISSIONS_REQUEST_CODE)
+
+        // Initializes a Bluetooth adapter.  For API level 18 and above, get a reference to
+        // BluetoothAdapter through BluetoothManager.
+
+        mBluetoothAdapter = bluetoothManager?.adapter
+        Log.d("bleble ", mBluetoothAdapter.toString())
+    }
+
     @SuppressLint("MissingPermission")
-    fun on(activity: AppCompatActivity) {
-        if (!adapter.isEnabled) {
-            val intent = Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE)
-            activity.startActivityForResult(intent, INTENT_REQUEST_BLUETOOTH_ENABLE)
-        }
-    }
+     fun scanLeDevice(enable: Boolean) {
+        if (enable) {
+            // Stops scanning after a pre-defined scan period.
+            mHandler!!.postDelayed({
+                mScanning = false
+                mBluetoothAdapter!!.stopLeScan(mLeScanCallback)
 
-    /**
-     * System Bluetooth On Result
-     */
-    fun onActivityResult(requestCode: Int, resultCode: Int): Boolean {
-        return (requestCode == INTENT_REQUEST_BLUETOOTH_ENABLE
-                && Activity.RESULT_OK == resultCode)
-    }
-
-    /**
-     * System Bluetooth Off
-     */
-    @SuppressLint("MissingPermission")
-    fun off() {
-        if (adapter.isEnabled) adapter.disable()
-    }
-
-    /**
-     * Check model for ScanRecodeData
-     */
-    interface OnCheckModelListener {
-        fun isChecked(bytes: ByteArray?): Boolean
-        fun scannedDevice(result: ScanResult?)
-    }
-
-    private var onCheckModelListener: OnCheckModelListener? = null
-    fun setOnCheckModelListener(onCheckModelListener: OnCheckModelListener?): BluetoothGuide {
-        this.onCheckModelListener = onCheckModelListener
-        return this
-    }
-
-    private val callback: ScanCallback = object : ScanCallback() {
-        override fun onScanResult(callbackType: Int, result: ScanResult) {
-            super.onScanResult(callbackType, result)
-            val serviceDataMap = result.scanRecord!!
-                .serviceData ?: return
-            if (onCheckModelListener == null) return
-            for (parcelUuid in serviceDataMap.keys) {
-                if (onCheckModelListener!!.isChecked(result.scanRecord!!.getServiceData(parcelUuid))) {
-                    if (!hasDevice(result.device.toString())) {
-                        addDevice(result.device.address, result.device)
-                        if (onCheckModelListener != null) {
-                            onCheckModelListener!!.scannedDevice(result)
-                        }
-                    }
-                    break
-                }
-            }
-        }
-    }
-
-    /**
-     * DO NOT CONNECT DEVICE
-     */
-    private fun addDevice(address: String, device: BluetoothDevice) {
-        hashDeviceMap[address] = device
-    }
-
-    /**
-     * DO NOT CONNECT DEVICE
-     */
-    private fun hasDevice(address: String): Boolean {
-        return hashDeviceMap[address] != null
-    }
-
-    /**
-     * DO NOT CONNECT DEVICE
-     */
-    fun onComplete() {
-        hashDeviceMap.clear()
-    }
-
-    /**
-     * Start Scan
-     */
-    @SuppressLint("MissingPermission")
-    fun scanDevices() {
-        if (!adapter.isEnabled) return
-        if (scanning) return
-        val scanner = adapter.bluetoothLeScanner
-        mainThreadHandler.postDelayed({
-            scanning = false
-            scanner.stopScan(callback)
-        }, (2 * 60 * 1000).toLong())
-        scanning = true
-        scanner.startScan(callback)
-    }
-
-
-    private val gattCallback: BluetoothGattCallback = object : BluetoothGattCallback() {
-        @SuppressLint("MissingPermission")
-        override fun onConnectionStateChange(gatt: BluetoothGatt, status: Int, newState: Int) {
-            super.onConnectionStateChange(gatt, status, newState)
-            if (status == BluetoothGatt.GATT_FAILURE) {
-                gatt.disconnect()
-                gatt.close()
-                hashDeviceMap.remove(gatt.device.address)
-                return
-            }
-            if (status == 133) // Unknown Error
-            {
-                gatt.disconnect()
-                gatt.close()
-                hashDeviceMap.remove(gatt.device.address)
-                return
-            }
-            if (newState == BluetoothGatt.STATE_CONNECTED && status == BluetoothGatt.GATT_SUCCESS) {
-                // "Connected to " + gatt.getDevice().getName()
-                gatt.discoverServices()
-            }
-        }
-
-        @SuppressLint("MissingPermission")
-        override fun onServicesDiscovered(gatt: BluetoothGatt, status: Int) {
-            super.onServicesDiscovered(gatt, status)
-            if (status == BluetoothGatt.GATT_SUCCESS) {
-                val services = gatt.services
-                for (service in services) {
-                    // "Found service : " + service.getUuid()
-                    for (characteristic in service.characteristics) {
-                        //"Found characteristic : " + characteristic.getUuid()
-                        if (hasProperty(
-                                characteristic,
-                                BluetoothGattCharacteristic.PROPERTY_READ
-                            )
-                        ) {
-                            // "Read characteristic : " + characteristic.getUuid());
-                            gatt.readCharacteristic(characteristic)
-                        }
-                        if (hasProperty(
-                                characteristic,
-                                BluetoothGattCharacteristic.PROPERTY_NOTIFY
-                            )
-                        ) {
-                            // "Register notification for characteristic : " + characteristic.getUuid());
-                            gatt.setCharacteristicNotification(characteristic, true)
-                        }
-                    }
-                }
-            }
+            }, SCAN_PERIOD)
+            mScanning = true
+            mBluetoothAdapter!!.startLeScan(mLeScanCallback)
+        } else {
+            mScanning = false
+            mBluetoothAdapter!!.stopLeScan(mLeScanCallback)
         }
 
     }
 
-    fun hasProperty(characteristic: BluetoothGattCharacteristic, property: Int): Boolean {
-        val prop = characteristic.properties and property
-        return prop == property
-    }
 
-    interface OnNotifyValueListener<T> {
-        fun onValue(deivce: BluetoothDevice?, value: T)
-        fun formatter(characteristic: BluetoothGattCharacteristic?): T
-    }
-
-    interface OnReadValueListener<T> {
-        fun onValue(deivce: BluetoothDevice?, value: T)
-        fun formatter(characteristic: BluetoothGattCharacteristic?): T
-    }
-
-    private var onNotifyValueListener: OnNotifyValueListener<*>? = null
-    fun setOnNotifyValueListener(onNotifyValueListener: OnNotifyValueListener<*>?): BluetoothGuide {
-        this.onNotifyValueListener = onNotifyValueListener
-        return this
-    }
-
-    private var onReadValueListener: OnReadValueListener<*>? = null
-    fun setOnReadValueListener(onReadValueListener: OnReadValueListener<*>?): BluetoothGuide {
-        this.onReadValueListener = onReadValueListener
-        return this
-    }
-
-    companion object {
-        const val INTENT_REQUEST_BLUETOOTH_ENABLE = 0x0701
-    }
+    // Device scan callback.
+    private val mLeScanCallback =
+        LeScanCallback { device, rssi, scanRecord ->
+            Log.d("ble", "$device, $rssi, $scanRecord")
+        }
 }
