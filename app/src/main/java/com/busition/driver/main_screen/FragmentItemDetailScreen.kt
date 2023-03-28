@@ -120,6 +120,7 @@ class FragmentItemDetailScreen : Fragment() {
             if (permissionRequestCode) {
 //                MainScreen.bluetoothAdapter?.let { it1 -> BleScanner(it1).scanLeDevice(true) }
                 val gpsIntent = Intent(activity, GpsForegroundService::class.java)
+                gpsIntent.setAction("start")
                 activity?.startService(gpsIntent)
                 Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
 

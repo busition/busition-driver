@@ -34,11 +34,12 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
             .title("tmp")
     )!!
     private var errorMsg: String = ""
-    private lateinit var locationManager: LocationManager
+    lateinit var locationManager: LocationManager
 
     init {
         getLocation()
     }
+
 
     @SuppressLint("MissingPermission")
     private fun getLocation() {
@@ -58,22 +59,21 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
             }
 
 
-            if (!checkNetwork) {
-                errorMsg += "\nError for network"
-            } else {
-                locationManager.requestLocationUpdates(
-                    LocationManager.NETWORK_PROVIDER,
-                    1000L,
-                    20f, this
-                )
-            }
+//            if (!checkNetwork) {
+//                errorMsg += "\nError for network"
+//            } else {
+//                locationManager.requestLocationUpdates(
+//                    LocationManager.NETWORK_PROVIDER,
+//                    1000L,
+//                    20f, this
+//                )
+//            }
         }
 
     }
 
-    override fun onLocationChanged(@NonNull location: Location) {
+    override fun onLocationChanged(location: Location) {
 //        Log.d("gps", location.latitude.toString() + " " + location.longitude.toString())
-
         updateLocationIndex()
         updateGmapPolyline(location)
 //        val boundsBuilder = LatLngBounds.Builder()
@@ -93,9 +93,7 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
 
     override fun onProviderDisabled(provider: String) {}
 
-    fun eraseRoute(locationList:MutableList<LatLng>){
 
-    }
 
     fun updateGmapPolyline(location: Location){
         gmap.clear()
@@ -156,5 +154,11 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
         val a = sin(dLat / 2).pow(2.0) + sin(dLon / 2).pow(2.0) * cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2))
         val c = 2 * asin(sqrt(a))
         return (r * c).toInt()
+    }
+
+    fun finish(){
+        locationManager.removeUpdates(LocationTraker(mContext, gmap, locList))
+        locationManager.removeUpdates(this)
+
     }
 }

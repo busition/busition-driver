@@ -1,11 +1,14 @@
 package com.busition.driver
 
 import android.app.*
+import android.app.PendingIntent.FLAG_MUTABLE
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.media.session.PlaybackState.ACTION_PAUSE
+import android.media.session.PlaybackState.ACTION_STOP
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -24,13 +27,25 @@ class GpsForegroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        if (intent?.action != null) {
-            stopForeground(true)
-            stopSelf()
+        when (intent?.action) {
+            "stop" -> {
+                Log.d("service", "stop")
+                stopSelf()
+                stopForeground(true)
+            }
+            null ->{
+                stopSelf()
+                stopForeground(true)
+            }
+            "start" ->{
+                generateForegroundNotification()
+                gpsWorker()
+            }
+
+
         }
-        Log.d("service", "i'm service")
-        generateForegroundNotification()
-        gpsWorker()
+        Log.d("service", "${intent?.action}")
+
 
         return START_NOT_STICKY
     }
@@ -63,15 +78,28 @@ class GpsForegroundService : Service() {
         notificationChannel.enableLights(false)
         notificationChannel.lockscreenVisibility = Notification.VISIBILITY_SECRET
         mNotificationManager?.createNotificationChannel(notificationChannel)
-        val builder = NotificationCompat.Builder(this, "service_channel")
+//        val builder = NotificationCompat.Builder(this, "service_channel")
+//
+//        builder.setContentTitle(StringBuilder(resources.getString(R.string.app_name)).append(" service is running").toString())
+//            .setTicker(StringBuilder(resources.getString(R.string.app_name)).append("service is running").toString())
+//            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+//            .setContentIntent(pendingIntent)
 
-        builder.setContentTitle(StringBuilder(resources.getString(R.string.app_name)).append(" service is running").toString())
-            .setTicker(StringBuilder(resources.getString(R.string.app_name)).append("service is running").toString())
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setContentIntent(pendingIntent)
-        if (iconNotification != null) {
-            builder.setLargeIcon(Bitmap.createScaledBitmap(iconNotification!!, 128, 128, false))
+//        if (iconNotification != null) {
+//            builder.setLargeIcon(Bitmap.createScaledBitmap(iconNotification!!, 128, 128, false))
+//        }
+        val pauseIntent = Intent(this, GpsForegroundService::class.java).apply {
+            action = "stop"
         }
+        val pausePendingIntent = PendingIntent.getService(this, 0, pauseIntent, FLAG_MUTABLE )
+
+        val builder = NotificationCompat.Builder(this, "service_channel")
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setContentTitle("Busition Driver Service")
+            .setContentText("Busition Driver Service is running")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .addAction(androidx.core.R.drawable.notification_bg, "Stop", pausePendingIntent)
+            .setAutoCancel(true)
 
         notification = builder.build()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -112,6 +140,8 @@ class GpsForegroundService : Service() {
             mThread!!.interrupt()
             mThread = null
         }
+        locationTraker?.finish()
+        locationTraker = null
         stopSelf()
         Log.d("service", "onDestroy")
     }
