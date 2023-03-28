@@ -31,6 +31,7 @@ class GpsForegroundService : Service() {
         Log.d("service", "i'm service")
         generateForegroundNotification()
         gpsWorker()
+
         return START_NOT_STICKY
     }
 
@@ -90,6 +91,7 @@ class GpsForegroundService : Service() {
                     FragmentItemDetailScreen.polyList
                 )
             }
+//        FragmentItemDetailScreen.bleScanner?.
 //        mThread = Thread {
 //            while (true) {
 //                try {

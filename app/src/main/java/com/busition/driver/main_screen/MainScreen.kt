@@ -1,16 +1,22 @@
 package com.busition.driver.main_screen
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.ActivityManager
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
+import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -27,10 +33,22 @@ class MainScreen : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var userName: String
 
-    private val bluetoothAdapter: BluetoothAdapter by lazy(LazyThreadSafetyMode.NONE) {
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        bluetoothManager.adapter
-    }
+    private val SCAN_PERIOD: Long = 10000
+    private val PERMISSIONS_REQUEST_CODE = 191
+
+    private val BLE_PERMISSIONS = arrayOf(
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
+
+    @SuppressLint("InlinedApi")
+    private val ANDROID_12_BLE_PERMISSIONS = arrayOf(
+        Manifest.permission.BLUETOOTH_SCAN,
+        Manifest.permission.BLUETOOTH_CONNECT,
+        Manifest.permission.BLUETOOTH_ADVERTISE,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
+
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
@@ -92,9 +110,51 @@ class MainScreen : AppCompatActivity() {
         return false
     }
 
+    @SuppressLint("MissingPermission")
+    fun scanLeDevice(enable: Boolean) {
+        requestBlePermissions(this, PERMISSIONS_REQUEST_CODE)
+        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        Log.d("Mainscreen", bluetoothManager.toString())
+        val mBluetoothAdapter = bluetoothManager.adapter
+        Log.d("error", mBluetoothAdapter.toString())
+        var mScanning=true
+        val mHandler = Handler()
+        Log.d("bleble ", mBluetoothAdapter.toString())
+        if (enable) {
+            // Stops scanning after a pre-defined scan period.
+            mHandler.postDelayed({
+                mScanning = false
+                mBluetoothAdapter!!.stopLeScan(mLeScanCallback)
+
+            }, SCAN_PERIOD)
+            mScanning = true
+            mBluetoothAdapter!!.startLeScan(mLeScanCallback)
+        } else {
+            mScanning = false
+            mBluetoothAdapter!!.stopLeScan(mLeScanCallback)
+        }
+
+    }
+
+    fun requestBlePermissions(activity: Activity?, requestCode: Int) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ActivityCompat.requestPermissions(
+            activity!!,
+            ANDROID_12_BLE_PERMISSIONS,
+            requestCode
+        ) else ActivityCompat.requestPermissions(
+            activity!!, BLE_PERMISSIONS, requestCode
+        )
+    }
+
+    @SuppressLint("MissingPermission")
+    private val mLeScanCallback =
+        BluetoothAdapter.LeScanCallback { device, rssi, scanRecord ->
+
+            Log.d("ble", "${device.name},${device.address}, $rssi, $scanRecord")
+        }
     companion object {
         var driver_id: Int = 0
-        var bluetoothAdapter: BluetoothAdapter? = null
+
     }
 
 }

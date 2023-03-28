@@ -1,16 +1,12 @@
 package com.busition.driver.main_screen
 
 import android.Manifest
-import android.app.Activity
-import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,13 +14,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.busition.driver.*
-import com.busition.driver.Ble.BleScanner
 import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.data.bus_route.RouteData
 import com.busition.driver.data.schedule_route.StationData
@@ -55,13 +49,17 @@ class FragmentItemDetailScreen : Fragment() {
     private lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
 
 
-
-
     private var route_list = ArrayList<ArrayList<Double>>()
     private var permissionList = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.BLUETOOTH,
+    )
+    private val ANDROID_12_BLE_PERMISSIONS = arrayOf(
+        Manifest.permission.BLUETOOTH_SCAN,
+        Manifest.permission.BLUETOOTH_CONNECT,
+        Manifest.permission.BLUETOOTH_ADVERTISE,
+        Manifest.permission.ACCESS_FINE_LOCATION
     )
     private var permissionRequestCode = false
 
@@ -80,7 +78,7 @@ class FragmentItemDetailScreen : Fragment() {
             val isAllGranted = permissions.values.all { it == true }
             if (isAllGranted) {
                 Log.d("permission", "all granted" + isAllGranted.toString())
-                permissionRequestCode =  true
+                permissionRequestCode = true
                 Toast.makeText(activity, "permission granted", Toast.LENGTH_LONG).show()
             } else {
                 Toast.makeText(activity, "plz check permissions", Toast.LENGTH_LONG).show()
@@ -88,10 +86,12 @@ class FragmentItemDetailScreen : Fragment() {
 
         }
         activityResultLauncher.launch(permissionList)
+        activityResultLauncher.launch(ANDROID_12_BLE_PERMISSIONS)
         Log.d("route_id", route_id.toString())
 
 
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -107,23 +107,23 @@ class FragmentItemDetailScreen : Fragment() {
         requestApiServer()
 
         binding.runBtn.setOnClickListener {
+            (activity as MainScreen?)?.scanLeDevice(true)
             val bundle = bundleOf("item" to binding.estimatedTime.text)
             val navController = Navigation.findNavController(view)
 //            navController.navigate(
 //                R.id.action_fragment_item_detial_screen_to_fragment_station_item_screen,
 //                bundle
 //            )
+
             binding.textList.gone()
             binding.itemListLay.show()
-            if (permissionRequestCode){
+            if (permissionRequestCode) {
 //                MainScreen.bluetoothAdapter?.let { it1 -> BleScanner(it1).scanLeDevice(true) }
                 val gpsIntent = Intent(activity, GpsForegroundService::class.java)
                 activity?.startService(gpsIntent)
                 Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
 
             }
-
-
 
 
 //                val loc = LocationTraker(binding.root.context, activity as MainScreen, gmap)
@@ -379,6 +379,7 @@ class FragmentItemDetailScreen : Fragment() {
         var route_id: Int = 0
         var shuttle_direction: Int = 0
         var gmap: GoogleMap? = null
-        lateinit var polyList:MutableList<LatLng>
+        lateinit var polyList: MutableList<LatLng>
+
     }
 }

@@ -119,6 +119,7 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
                     .title(it.station_name)
             )
         }
+        list.add(nowLocation)
         for (i in nowLocationIndex until locList.size) {
             list.add(locList[i])
         }
@@ -134,14 +135,12 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
 
         var tmp:Int = 0
         var tt:Int = 0
-        Log.d("now",nowLocationIndex.toString())
         for (i in nowLocationIndex until locList.size){
             tt = getDistance(nowLocation.latitude,nowLocation.longitude, locList[i].latitude, locList[i].longitude)
 
             if (tmp == 0){
                 tmp = tt
             }else{
-                Log.d("tmp",tmp.toString() +" "+ tt.toString())
                 if(tmp<tt){
                     nowLocationIndex = i
                     Log.d("meter", i.toString())
