@@ -91,7 +91,7 @@ class GpsForegroundService : Service() {
                     FragmentItemDetailScreen.polyList
                 )
             }
-        FragmentItemDetailScreen.bleScanner?.scanLeDevice(true)
+//        FragmentItemDetailScreen.bleScanner?.
 //        mThread = Thread {
 //            while (true) {
 //                try {

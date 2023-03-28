@@ -16,13 +16,11 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.busition.driver.*
-import com.busition.driver.Ble.BleScanner
 import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.data.bus_route.RouteData
 import com.busition.driver.data.schedule_route.StationData
 import com.busition.driver.data.schedule_route.StationListData
 import com.busition.driver.databinding.FragmentItemDetailScreenBinding
-import com.busition.driver.main_screen.MainScreen.Companion.bluetoothManager
 import com.busition.driver.placeholder.PlaceholderContent
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -56,6 +54,12 @@ class FragmentItemDetailScreen : Fragment() {
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.BLUETOOTH,
     )
+    private val ANDROID_12_BLE_PERMISSIONS = arrayOf(
+        Manifest.permission.BLUETOOTH_SCAN,
+        Manifest.permission.BLUETOOTH_CONNECT,
+        Manifest.permission.BLUETOOTH_ADVERTISE,
+        Manifest.permission.ACCESS_FINE_LOCATION
+    )
     private var permissionRequestCode = false
 
 
@@ -81,6 +85,7 @@ class FragmentItemDetailScreen : Fragment() {
 
         }
         activityResultLauncher.launch(permissionList)
+        activityResultLauncher.launch(ANDROID_12_BLE_PERMISSIONS)
         Log.d("route_id", route_id.toString())
 
 
@@ -100,17 +105,14 @@ class FragmentItemDetailScreen : Fragment() {
         requestApiServer()
 
         binding.runBtn.setOnClickListener {
-
+            (activity as MainScreen?)?.scanLeDevice(true)
             val bundle = bundleOf("item" to binding.estimatedTime.text)
             val navController = Navigation.findNavController(view)
 //            navController.navigate(
 //                R.id.action_fragment_item_detial_screen_to_fragment_station_item_screen,
 //                bundle
 //            )
-            var bleAdapter = bluetoothManager?.getAdapter()
-            Log.d("error", bleAdapter.toString())
-            bleScanner = BleScanner(bleAdapter)
-            bleScanner!!.init(activity as MainScreen)
+
             binding.textList.gone()
             binding.itemListLay.show()
             if (permissionRequestCode){
@@ -378,6 +380,6 @@ class FragmentItemDetailScreen : Fragment() {
         var shuttle_direction: Int = 0
         var gmap: GoogleMap? = null
         lateinit var polyList:MutableList<LatLng>
-        var bleScanner: BleScanner? = null
+
     }
 }
