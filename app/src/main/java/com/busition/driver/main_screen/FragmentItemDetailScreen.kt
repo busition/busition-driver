@@ -1,7 +1,9 @@
 package com.busition.driver.main_screen
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
@@ -46,8 +49,6 @@ class FragmentItemDetailScreen : Fragment() {
     private lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
 
 
-
-
     private var route_list = ArrayList<ArrayList<Double>>()
     private var permissionList = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -77,7 +78,7 @@ class FragmentItemDetailScreen : Fragment() {
             val isAllGranted = permissions.values.all { it == true }
             if (isAllGranted) {
                 Log.d("permission", "all granted" + isAllGranted.toString())
-                permissionRequestCode =  true
+                permissionRequestCode = true
                 Toast.makeText(activity, "permission granted", Toast.LENGTH_LONG).show()
             } else {
                 Toast.makeText(activity, "plz check permissions", Toast.LENGTH_LONG).show()
@@ -90,6 +91,7 @@ class FragmentItemDetailScreen : Fragment() {
 
 
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -115,15 +117,13 @@ class FragmentItemDetailScreen : Fragment() {
 
             binding.textList.gone()
             binding.itemListLay.show()
-            if (permissionRequestCode){
+            if (permissionRequestCode) {
 //                MainScreen.bluetoothAdapter?.let { it1 -> BleScanner(it1).scanLeDevice(true) }
                 val gpsIntent = Intent(activity, GpsForegroundService::class.java)
                 activity?.startService(gpsIntent)
                 Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
 
             }
-
-
 
 
 //                val loc = LocationTraker(binding.root.context, activity as MainScreen, gmap)
@@ -379,7 +379,7 @@ class FragmentItemDetailScreen : Fragment() {
         var route_id: Int = 0
         var shuttle_direction: Int = 0
         var gmap: GoogleMap? = null
-        lateinit var polyList:MutableList<LatLng>
+        lateinit var polyList: MutableList<LatLng>
 
     }
 }

@@ -146,9 +146,11 @@ class MainScreen : AppCompatActivity() {
         )
     }
 
+    @SuppressLint("MissingPermission")
     private val mLeScanCallback =
         BluetoothAdapter.LeScanCallback { device, rssi, scanRecord ->
-            Log.d("ble", "$device, $rssi, $scanRecord")
+
+            Log.d("ble", "${device.name},${device.address}, $rssi, $scanRecord")
         }
     companion object {
         var driver_id: Int = 0
