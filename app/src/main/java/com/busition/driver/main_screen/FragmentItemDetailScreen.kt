@@ -50,17 +50,7 @@ class FragmentItemDetailScreen : Fragment() {
 
 
     private var route_list = ArrayList<ArrayList<Double>>()
-    private var permissionList = arrayOf(
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.BLUETOOTH,
-    )
-    private val ANDROID_12_BLE_PERMISSIONS = arrayOf(
-        Manifest.permission.BLUETOOTH_SCAN,
-        Manifest.permission.BLUETOOTH_CONNECT,
-        Manifest.permission.BLUETOOTH_ADVERTISE,
-        Manifest.permission.ACCESS_FINE_LOCATION
-    )
+
     private var permissionRequestCode = false
 
 
@@ -70,24 +60,6 @@ class FragmentItemDetailScreen : Fragment() {
         route_id = arg.getInt("route_id")
         shuttle_direction = arg.getInt("shuttle_direction")
         //imsi use key
-        val contract = ActivityResultContracts.RequestMultiplePermissions()
-        val activityResultLauncher = registerForActivityResult(contract) { permissions ->
-            permissions.entries.forEach {
-                Log.d("permission", "${it.key} = ${it.value}")
-            }
-            val isAllGranted = permissions.values.all { it == true }
-            if (isAllGranted) {
-                Log.d("permission", "all granted" + isAllGranted.toString())
-                permissionRequestCode = true
-                Toast.makeText(activity, "permission granted", Toast.LENGTH_LONG).show()
-            } else {
-                Toast.makeText(activity, "plz check permissions", Toast.LENGTH_LONG).show()
-            }
-
-        }
-        activityResultLauncher.launch(permissionList)
-        activityResultLauncher.launch(ANDROID_12_BLE_PERMISSIONS)
-        Log.d("route_id", route_id.toString())
 
 
     }
@@ -117,14 +89,11 @@ class FragmentItemDetailScreen : Fragment() {
 
             binding.textList.gone()
             binding.itemListLay.show()
-            if (permissionRequestCode) {
-//                MainScreen.bluetoothAdapter?.let { it1 -> BleScanner(it1).scanLeDevice(true) }
-                val gpsIntent = Intent(activity, GpsForegroundService::class.java)
-                gpsIntent.setAction("start")
-                activity?.startService(gpsIntent)
-                Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
 
-            }
+            val gpsIntent = Intent(activity, GpsForegroundService::class.java)
+            gpsIntent.setAction("start")
+            activity?.startService(gpsIntent)
+            Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
 
 
 //                val loc = LocationTraker(binding.root.context, activity as MainScreen, gmap)

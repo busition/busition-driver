@@ -1,16 +1,21 @@
 package com.busition.driver.ui.login
 
+import android.Manifest
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -18,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.busition.driver.R
 import com.busition.driver.databinding.FragmentLoginBinding
+import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.MainScreen
 
 class LoginFragment : Fragment() {
@@ -25,6 +31,23 @@ class LoginFragment : Fragment() {
     private lateinit var loginViewModel: LoginViewModel
     private var _binding: FragmentLoginBinding? = null
 
+    private var permissionList = arrayOf(
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.BLUETOOTH,
+    )
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private val ANDROID_12_BLE_PERMISSIONS = arrayOf(
+        Manifest.permission.BLUETOOTH_SCAN,
+        Manifest.permission.BLUETOOTH_CONNECT,
+        Manifest.permission.BLUETOOTH_ADVERTISE,
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.POST_NOTIFICATIONS
+    )
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private val ANDROID_13_PERMISSIONS = arrayOf(
+        Manifest.permission.POST_NOTIFICATIONS
+    )
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -52,7 +75,24 @@ class LoginFragment : Fragment() {
         val loadingProgressBar = binding.loading
 
         val passbtn = binding.pass
+        val contract = ActivityResultContracts.RequestMultiplePermissions()
+        val activityResultLauncher = registerForActivityResult(contract) { permissions ->
+            permissions.entries.forEach {
+                Log.d("permission", "${it.key} = ${it.value}")
+            }
+            val isAllGranted = permissions.values.all { it == true }
+            if (isAllGranted) {
+                Log.d("permission", "all granted" + isAllGranted.toString())
 
+                Toast.makeText(activity, "permission granted", Toast.LENGTH_LONG).show()
+            } else {
+                Toast.makeText(activity, "plz check permissions", Toast.LENGTH_LONG).show()
+            }
+
+        }
+//        activityResultLauncher.launch(permissionList)
+        activityResultLauncher.launch(ANDROID_12_BLE_PERMISSIONS)
+        Log.d("route_id", FragmentItemDetailScreen.route_id.toString())
 
         loginViewModel.loginFormState.observe(viewLifecycleOwner,
             Observer { loginFormState ->
