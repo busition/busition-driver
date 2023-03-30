@@ -116,23 +116,9 @@ class GpsForegroundService : Service() {
                 LocationTraker(
                     applicationContext,
                     it,
-                    FragmentItemDetailScreen.polyList
+                    FragmentItemDetailScreen.polyList!!
                 )
             }
-//        FragmentItemDetailScreen.bleScanner?.
-//        mThread = Thread {
-//            while (true) {
-//                try {
-//                    Thread.sleep(100)
-//                    Log.d("service", "i'm service")
-//                    Log.d("service", locationTraker?.nowLocation.toString())
-//                } catch (e: InterruptedException) {
-//                    Log.d("error", e.toString())
-//                }
-//            }
-//        }
-
-
     }
     override fun onDestroy() {
         super.onDestroy()

@@ -35,7 +35,7 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
+import kotlinx.coroutines.*
 
 class FragmentItemDetailScreen : Fragment() {
 
@@ -75,8 +75,10 @@ class FragmentItemDetailScreen : Fragment() {
         estimated_time = binding.estimatedTime
         passenger_count = binding.numberOfPasenger
         travel_distance = binding.travelDistance
-        requestRouteApiServer()
+        binding.runBtn.isActivated = false
         requestApiServer()
+        requestRouteApiServer()
+        binding.runBtn.isActivated = true
 
         binding.runBtn.setOnClickListener {
             (activity as MainScreen?)?.scanLeDevice(true)
@@ -90,13 +92,7 @@ class FragmentItemDetailScreen : Fragment() {
             binding.textList.gone()
             binding.itemListLay.show()
 
-            val gpsIntent = Intent(activity, GpsForegroundService::class.java)
-            gpsIntent.setAction("start")
-            activity?.startService(gpsIntent)
-            Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
-
-
-//                val loc = LocationTraker(binding.root.context, activity as MainScreen, gmap)
+            tmp()
         }
 //        val bundle = bundleOf("item" to item.destinationData)
 //        val navController = Navigation.findNavController(holder.itemView)
@@ -109,6 +105,13 @@ class FragmentItemDetailScreen : Fragment() {
         gmap = googleMap
 
 
+    }
+
+    fun tmp() {
+        val gpsIntent = Intent(activity, GpsForegroundService::class.java)
+        gpsIntent.setAction("start")
+        activity?.startService(gpsIntent)
+        Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
     }
 
     override fun onCreateView(
@@ -349,7 +352,7 @@ class FragmentItemDetailScreen : Fragment() {
         var route_id: Int = 0
         var shuttle_direction: Int = 0
         var gmap: GoogleMap? = null
-        lateinit var polyList: MutableList<LatLng>
+        var polyList: MutableList<LatLng>? = null
 
     }
 }
