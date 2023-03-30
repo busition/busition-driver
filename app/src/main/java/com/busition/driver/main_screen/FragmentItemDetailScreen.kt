@@ -75,14 +75,10 @@ class FragmentItemDetailScreen : Fragment() {
         estimated_time = binding.estimatedTime
         passenger_count = binding.numberOfPasenger
         travel_distance = binding.travelDistance
-        runBlocking {
-            val job = launch {
-                requestApiServer()
-                requestRouteApiServer()
-            }
-            job.join()
-        }
-
+        binding.runBtn.isActivated = false
+        requestApiServer()
+        requestRouteApiServer()
+        binding.runBtn.isActivated = true
 
         binding.runBtn.setOnClickListener {
             (activity as MainScreen?)?.scanLeDevice(true)
@@ -96,14 +92,7 @@ class FragmentItemDetailScreen : Fragment() {
             binding.textList.gone()
             binding.itemListLay.show()
 
-            runBlocking {
-                launch {
-                    tmp()
-                }
-            }
-
-
-//                val loc = LocationTraker(binding.root.context, activity as MainScreen, gmap)
+            tmp()
         }
 //        val bundle = bundleOf("item" to item.destinationData)
 //        val navController = Navigation.findNavController(holder.itemView)
@@ -117,12 +106,14 @@ class FragmentItemDetailScreen : Fragment() {
 
 
     }
-    fun tmp(){
+
+    fun tmp() {
         val gpsIntent = Intent(activity, GpsForegroundService::class.java)
         gpsIntent.setAction("start")
         activity?.startService(gpsIntent)
         Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
