@@ -106,14 +106,14 @@ class FragmentItemDetailScreen : Fragment() {
         intentGoogleNav.setPackage("com.google.android.apps.maps")
 
         val title = "Choose nav"
-        val chooserIntent = Intent.createChooser(intentGoogleNav, title)
+        val chooserIntent = Intent.createChooser(intentNaverNav, title)
         val arr = arrayOfNulls<Intent>(3)
         arr[0] = intentTmap
         arr[1] = intentKakaoNav
-        arr[2] = intentNaverNav
 
         chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arr)
         context.startActivity(chooserIntent)
+        
     }
 
 
