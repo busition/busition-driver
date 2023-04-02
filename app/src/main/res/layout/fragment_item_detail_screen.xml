@@ -39,14 +39,78 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
                 <include
                     android:id="@+id/itemList"
                     layout="@layout/fragment_station_item_list"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_gravity="center" />
+                    android:layout_gravity="center"
+                    android:layout_weight="1" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="6"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/textView5"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="TextView"
+                        android:background="@drawable/edge"
+                        android:textAlignment="center"
+                        android:autoSizeTextType="uniform"
+                        android:padding="2dp"/>
+
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="TextView"
+                        android:textAlignment="center"
+                        android:background="@drawable/edge"
+                        android:autoSizeTextType="uniform"
+                        android:padding="2dp"
+                        />
+
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="TextView"
+                        android:background="@drawable/edge"
+                        android:textAlignment="center"
+                        android:autoSizeTextType="uniform"
+                        android:padding="2dp"/>
+
+                    <TextView
+                        android:id="@+id/textView4"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="여기에 한국어를 넣으면 얼마나 길까요?"
+                        android:background="@drawable/edge"
+                        android:textAlignment="center"
+                        android:autoSizeTextType="uniform"
+                        android:padding="2dp"/>
+
+                    <Button
+                        android:id="@+id/button2"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:text="Button"
+                        android:layout_margin="5dp"
+                        android:autoSizeTextType="uniform"/>
+                </LinearLayout>
+
             </LinearLayout>
 
             <ProgressBar
@@ -63,7 +127,7 @@
                 android:layout_gravity="center"
                 android:fitsSystemWindows="true"
                 android:orientation="vertical"
-                tools:visibility="visible">
+                tools:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"

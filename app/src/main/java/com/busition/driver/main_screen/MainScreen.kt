@@ -68,11 +68,7 @@ class MainScreen : AppCompatActivity() {
 
 
 
-        binding.fab.setOnClickListener { view ->
-            Snackbar.make(view, "1:1 문의사항....", Snackbar.LENGTH_LONG)
-                .setAnchorView(R.id.fab)
-                .setAction("Action", null).show()
-        }
+        
         if(isMyServiceRunning()){
             stopService(Intent(this, FloatingService::class.java))
         }
