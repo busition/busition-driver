@@ -58,5 +58,6 @@
     <string name="Login_Fragment_Label">Busition Login</string>
     <string name="Register_Fragment_Label">Busition Register</string>
     <string name="run">RUN</string>
+    <string name="chooser_title">Tmap</string>
 
 </resources>

@@ -1,10 +1,9 @@
 package com.busition.driver.main_screen
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,11 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.busition.driver.*
 import com.busition.driver.data.RetrofitServiceInterface
@@ -33,9 +28,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlinx.coroutines.*
 
 class FragmentItemDetailScreen : Fragment() {
 
@@ -59,8 +54,6 @@ class FragmentItemDetailScreen : Fragment() {
         val arg = requireArguments()
         route_id = arg.getInt("route_id")
         shuttle_direction = arg.getInt("shuttle_direction")
-        //imsi use key
-
 
     }
 
@@ -68,46 +61,67 @@ class FragmentItemDetailScreen : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
         station_count = binding.numberOfStation
         estimated_time = binding.estimatedTime
         passenger_count = binding.numberOfPasenger
         travel_distance = binding.travelDistance
-        binding.runBtn.isActivated = false
+        binding.runBtn.isEnabled = false
         requestApiServer()
         requestRouteApiServer()
-        binding.runBtn.isActivated = true
 
         binding.runBtn.setOnClickListener {
-            (activity as MainScreen?)?.scanLeDevice(true)
-            val bundle = bundleOf("item" to binding.estimatedTime.text)
-            val navController = Navigation.findNavController(view)
-//            navController.navigate(
-//                R.id.action_fragment_item_detial_screen_to_fragment_station_item_screen,
-//                bundle
-//            )
-
+//            (activity as MainScreen?)?.scanLeDevice(true)
             binding.textList.gone()
             binding.itemListLay.show()
-
-            tmp()
+            startGpsService()
         }
-//        val bundle = bundleOf("item" to item.destinationData)
-//        val navController = Navigation.findNavController(holder.itemView)
-//        navController.navigate(R.id.action_scheduleList_to_fragment_item_detial_screen,bundle)
 
+
+        binding.navStart.setOnClickListener {
+            startNavigation(activity as Context, route_list[0][0], route_list[0][1])
+
+        }
+    }
+
+    fun startNavigation(
+        context: Context,
+        latitude: Double,
+        longitude: Double,
+        full_address: String = ""
+    ) {
+        val defaultUri = Uri.parse("geo:${longitude},${latitude}")
+        val intentTmap = Intent(Intent.ACTION_VIEW, defaultUri)
+        intentTmap.setPackage("com.skt.tmap.ku")
+
+        val intentKakaoNav = Intent(Intent.ACTION_VIEW, defaultUri)
+        intentKakaoNav.setPackage("com.locnall.KimGiSa")
+
+        val intentNaverNav = Intent(Intent.ACTION_VIEW, defaultUri)
+        intentNaverNav.setPackage("com.nhn.android.nmap")
+
+        val uriGoogle = "google.navigation:q=$latitude,$longitude"
+        val intentGoogleNav = Intent(Intent.ACTION_VIEW, Uri.parse(uriGoogle))
+        intentGoogleNav.setPackage("com.google.android.apps.maps")
+
+        val title = "Choose nav"
+        val chooserIntent = Intent.createChooser(intentGoogleNav, title)
+        val arr = arrayOfNulls<Intent>(3)
+        arr[0] = intentTmap
+        arr[1] = intentKakaoNav
+        arr[2] = intentNaverNav
+
+        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arr)
+        context.startActivity(chooserIntent)
     }
 
 
     private val callback = OnMapReadyCallback { googleMap ->
         gmap = googleMap
-
-
     }
 
-    fun tmp() {
+    fun startGpsService() {
         val gpsIntent = Intent(activity, GpsForegroundService::class.java)
         gpsIntent.setAction("start")
         activity?.startService(gpsIntent)
@@ -261,6 +275,7 @@ class FragmentItemDetailScreen : Fragment() {
                 .color(Color.RED)
         )
         polyList = list
+        binding.runBtn.isEnabled = true
     }
 
 

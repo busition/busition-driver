@@ -116,7 +116,7 @@ class GpsForegroundService : Service() {
                 LocationTraker(
                     applicationContext,
                     it,
-                    FragmentItemDetailScreen.polyList!!
+                     FragmentItemDetailScreen.polyList!!
                 )
             }
     }
