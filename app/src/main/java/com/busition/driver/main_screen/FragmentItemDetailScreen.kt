@@ -81,8 +81,10 @@ class FragmentItemDetailScreen : Fragment() {
 
         binding.navStart.setOnClickListener {
             startNavigation(activity as Context, route_list[0][0], route_list[0][1])
+            
+            }
 
-        }
+
     }
 
     fun startNavigation(
