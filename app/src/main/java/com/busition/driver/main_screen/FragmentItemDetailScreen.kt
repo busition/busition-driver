@@ -1,15 +1,19 @@
 package com.busition.driver.main_screen
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.content.pm.ResolveInfo
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
@@ -75,10 +79,10 @@ class FragmentItemDetailScreen : Fragment() {
         estimated_time = binding.estimatedTime
         passenger_count = binding.numberOfPasenger
         travel_distance = binding.travelDistance
-        binding.runBtn.isActivated = false
+        binding.runBtn.isEnabled = false
         requestApiServer()
         requestRouteApiServer()
-        binding.runBtn.isActivated = true
+
 
         binding.runBtn.setOnClickListener {
             (activity as MainScreen?)?.scanLeDevice(true)
@@ -93,10 +97,23 @@ class FragmentItemDetailScreen : Fragment() {
             binding.itemListLay.show()
 
             tmp()
+            val uriNaverMap = Uri.parse("navermaps://")
+            val uriKakaoNavi = Uri.parse("kakaonavi://")
+            val uriTmap = Uri.parse("tmap://")
+
+            val intent = Intent(Intent.ACTION_VIEW)
+            intent.data = Uri.parse("geo:0,0?q=37.532629,-122.319131") // 출발지 좌표
+            intent.putExtra(Intent.EXTRA_TITLE, "Select navigation app") // 다이얼로그 타이틀
+            intent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(
+                Intent(Intent.ACTION_VIEW, uriNaverMap),
+                Intent(Intent.ACTION_VIEW, uriKakaoNavi),
+                Intent(Intent.ACTION_VIEW, uriTmap)
+            ))
+
+            startActivity(intent)
+
         }
-//        val bundle = bundleOf("item" to item.destinationData)
-//        val navController = Navigation.findNavController(holder.itemView)
-//        navController.navigate(R.id.action_scheduleList_to_fragment_item_detial_screen,bundle)
+
 
     }
 
@@ -261,6 +278,7 @@ class FragmentItemDetailScreen : Fragment() {
                 .color(Color.RED)
         )
         polyList = list
+        binding.runBtn.isEnabled = true
     }
 
 
