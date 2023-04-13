@@ -9,6 +9,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.NonNull
+import com.busition.driver.SocketIo
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.placeholder.PlaceholderContent
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -79,6 +80,7 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
 //        Log.d("gps", location.latitude.toString() + " " + location.longitude.toString())
         updateLocationIndex()
         updateGmapPolyline(location)
+        SocketIo.sendLocation(location.latitude.toString(),location.longitude.toString())
 //        val boundsBuilder = LatLngBounds.Builder()
 //        boundsBuilder.include(nowLocation)
 //        val bounds = boundsBuilder.build()
