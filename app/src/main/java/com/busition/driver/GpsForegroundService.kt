@@ -17,11 +17,13 @@ import androidx.core.app.NotificationManagerCompat
 import com.busition.driver.Gps.LocationTraker
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.MainScreen
+import com.busition.driver.main_screen.ScheduleList
 
 
 class GpsForegroundService : Service() {
     var locationTraker: LocationTraker? = null
     private var mThread: Thread? = null
+
     override fun onBind(intent: Intent?): IBinder? {
         return null
     }
@@ -40,6 +42,7 @@ class GpsForegroundService : Service() {
             "start" ->{
                 generateForegroundNotification()
                 gpsWorker()
+                SocketIo.startSocket(ScheduleList.driver_id.toString())
             }
 
 
@@ -78,16 +81,6 @@ class GpsForegroundService : Service() {
         notificationChannel.enableLights(false)
         notificationChannel.lockscreenVisibility = Notification.VISIBILITY_SECRET
         mNotificationManager?.createNotificationChannel(notificationChannel)
-//        val builder = NotificationCompat.Builder(this, "service_channel")
-//
-//        builder.setContentTitle(StringBuilder(resources.getString(R.string.app_name)).append(" service is running").toString())
-//            .setTicker(StringBuilder(resources.getString(R.string.app_name)).append("service is running").toString())
-//            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-//            .setContentIntent(pendingIntent)
-
-//        if (iconNotification != null) {
-//            builder.setLargeIcon(Bitmap.createScaledBitmap(iconNotification!!, 128, 128, false))
-//        }
         val pauseIntent = Intent(this, GpsForegroundService::class.java).apply {
             action = "stop"
         }
@@ -120,6 +113,7 @@ class GpsForegroundService : Service() {
                 )
             }
     }
+
     override fun onDestroy() {
         super.onDestroy()
         if (mThread != null) {
@@ -128,6 +122,7 @@ class GpsForegroundService : Service() {
         }
         locationTraker?.finish()
         locationTraker = null
+        SocketIo.closeSocket()
         stopSelf()
         Log.d("service", "onDestroy")
     }
