@@ -46,7 +46,7 @@ object SocketIo {
         tmp.put("latitude", lat)
         tmp.put("longitude", lon)
         Log.d("socket location jsonObject", tmp.toString())
-        socketServer.emit("Location", tmp)
+        socketServer.emit("send_location", tmp)
         Log.d("socket send location", tmp.toString())
     }
 
