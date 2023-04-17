@@ -14,9 +14,9 @@ object SocketIo {
     fun startSocket(id:String){
         socketIo = SocketIo
         try {
-            val socketId = appendString("DriverId : ",id)
-            val pack = JSONObject(socketId)
-            socketServer = IO.socket("http://api.dev.busition.com:3000/console")
+            val pack = JSONObject()
+            pack.put("id", id)
+            socketServer = IO.socket("http://api.dev.busition.com:3000/driver")
             socketServer.connect()
             Log.d("socket pack jsonObject", pack.toString())
             Log.d("socket", socketServer.toString())
@@ -42,7 +42,9 @@ object SocketIo {
     }
 
     fun sendLocation(lat:String, lon:String){
-        val tmp =JSONObject(lat+lon)
+        val tmp =JSONObject()
+        tmp.put("latitude", lat)
+        tmp.put("longitude", lon)
         Log.d("socket location jsonObject", tmp.toString())
         socketServer.emit("Location", tmp)
         Log.d("socket send location", tmp.toString())

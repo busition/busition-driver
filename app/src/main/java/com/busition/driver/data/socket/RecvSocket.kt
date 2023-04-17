@@ -1,3 +1,3 @@
 package com.busition.driver.data.socket
 
-data class RecvSocket()
+//data class RecvSocket()

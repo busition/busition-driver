@@ -38,9 +38,6 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
     lateinit var locationManager: LocationManager
 
     init {
-        while (locList == null) {
-            Log.d("gps", "null")
-        }
         getLocation()
     }
 
