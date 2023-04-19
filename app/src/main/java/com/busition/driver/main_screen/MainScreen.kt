@@ -137,7 +137,7 @@ class MainScreen : AppCompatActivity() {
 
             }, SCAN_PERIOD)
             mScanning = true
-            mBluetoothLeScanner.startScan(listOf(scanFilter),buildScanSettings(), scanCallback)
+            mBluetoothLeScanner.startScan(scanCallback)
         } else {
             mScanning = false
             mBluetoothLeScanner.stopScan(scanCallback)
@@ -173,7 +173,7 @@ class MainScreen : AppCompatActivity() {
     val scanCallback = object : ScanCallback() {
         @SuppressLint("MissingPermission")
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
-            Log.d("ble instance","${result?.device?.name} ${result?.device.}" )
+            Log.d("ble instance","${result?.device?.name} ${result?.device?.uuids} ${result?.scanRecord?.serviceUuids}" )
         }
 
         override fun onBatchScanResults(results: MutableList<ScanResult>?) {
