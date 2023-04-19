@@ -50,7 +50,7 @@ class FragmentItemDetailScreen : Fragment() {
     private lateinit var estimated_time: TextView
     private lateinit var passenger_count: TextView
     private lateinit var travel_distance: TextView
-    private lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
+
 
 
     private var route_list = ArrayList<ArrayList<Double>>()
@@ -110,7 +110,7 @@ class FragmentItemDetailScreen : Fragment() {
                 Intent(Intent.ACTION_VIEW, uriTmap)
             ))
 
-            startActivity(intent)
+//            startActivity(intent)
 
         }
 
@@ -371,6 +371,6 @@ class FragmentItemDetailScreen : Fragment() {
         var shuttle_direction: Int = 0
         var gmap: GoogleMap? = null
         var polyList: MutableList<LatLng>? = null
-
+        lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
     }
 }

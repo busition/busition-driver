@@ -1,6 +1,7 @@
 package com.busition.driver
 
 import android.util.Log
+import com.busition.driver.main_screen.FragmentItemDetailScreen
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -16,11 +17,12 @@ object SocketIo {
         try {
             val pack = JSONObject()
             pack.put("id", id)
-            socketServer = IO.socket("http://api.dev.busition.com:3000/driver")
+            socketServer = IO.socket("http://api.dev.busition.com:3000/console")
             socketServer.connect()
             Log.d("socket pack jsonObject", pack.toString())
             Log.d("socket", socketServer.toString())
             socketServer.emit("send_id", pack)
+            recvLocation()
 
         }catch (e:Exception){
             Log.d("socket",e.toString())
@@ -32,7 +34,12 @@ object SocketIo {
         try {
             val onMessage = Emitter.Listener { args ->
                 val obj = JSONObject(args[0].toString())
+//                if (StationItemRecyclerAdapter.delay != obj.getInt("delayed")){
+//                    StationItemRecyclerAdapter.delay = obj.getInt("delayed")
+//                    FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
+//                }
                 Log.d("socket", obj.toString())
+
             }
             socketServer.on("data", onMessage)
         }catch (e:Exception){

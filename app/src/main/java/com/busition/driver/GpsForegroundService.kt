@@ -7,10 +7,10 @@ import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.session.PlaybackState.ACTION_PAUSE
-import android.media.session.PlaybackState.ACTION_STOP
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -43,6 +43,8 @@ class GpsForegroundService : Service() {
                 generateForegroundNotification()
                 gpsWorker()
                 SocketIo.startSocket(ScheduleList.driver_id.toString())
+
+
             }
 
 

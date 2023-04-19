@@ -32,6 +32,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.busition.driver.FloatingService
 import com.busition.driver.R
+import com.busition.driver.SocketIo
 import com.busition.driver.databinding.ActivityMainScreenBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -41,7 +42,7 @@ class MainScreen : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var userName: String
 
-    private val SCAN_PERIOD: Long = 10000
+    private val SCAN_PERIOD: Long = 100000
     private val PERMISSIONS_REQUEST_CODE = 191
 
     private val BLE_PERMISSIONS = arrayOf(
@@ -56,7 +57,11 @@ class MainScreen : AppCompatActivity() {
         Manifest.permission.BLUETOOTH_ADVERTISE,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
-
+    fun runRecv(){
+        runOnUiThread {
+            SocketIo.recvLocation()
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
@@ -170,7 +175,7 @@ class MainScreen : AppCompatActivity() {
             Log.d("ble", "${device.name},${device.address}, $rssi, $scanRecord, $device, ${device.uuids}")
         }
 
-    val scanCallback = object : ScanCallback() {
+    private val scanCallback = object : ScanCallback() {
         @SuppressLint("MissingPermission")
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
             Log.d("ble instance","${result?.device?.name} ${result?.device?.uuids} ${result?.scanRecord?.serviceUuids}" )

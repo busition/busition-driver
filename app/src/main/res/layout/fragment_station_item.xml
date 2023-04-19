@@ -81,7 +81,7 @@
                         android:textColor="@color/white" />
 
                     <TextView
-                        android:id="@+id/station_time_contents"
+                        android:id="@+id/station_time_delay"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_margin="7dp"
