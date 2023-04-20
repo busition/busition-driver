@@ -2,15 +2,16 @@ package com.busition.driver
 
 import android.app.*
 import android.app.PendingIntent.FLAG_MUTABLE
+import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.session.PlaybackState.ACTION_PAUSE
-import android.media.session.PlaybackState.ACTION_STOP
 import android.os.Build
+import android.os.Handler
 import android.os.IBinder
+import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -43,6 +44,8 @@ class GpsForegroundService : Service() {
                 generateForegroundNotification()
                 gpsWorker()
                 SocketIo.startSocket(ScheduleList.driver_id.toString())
+
+
             }
 
 
@@ -64,9 +67,6 @@ class GpsForegroundService : Service() {
     }
     private fun generateForegroundNotification() {
         isNotificationEnabled(this)
-        val intentMainLanding = Intent(this, MainScreen::class.java)
-        val pendingIntent =
-            PendingIntent.getActivity(this, 0, intentMainLanding, PendingIntent.FLAG_MUTABLE)
         iconNotification = BitmapFactory.decodeResource(resources, R.mipmap.ic_launcher)
         if (mNotificationManager == null) {
             mNotificationManager = this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -113,6 +113,7 @@ class GpsForegroundService : Service() {
                 )
             }
     }
+
 
     override fun onDestroy() {
         super.onDestroy()

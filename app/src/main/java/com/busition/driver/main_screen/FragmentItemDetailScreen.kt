@@ -2,6 +2,7 @@ package com.busition.driver.main_screen
 
 import android.Manifest
 import android.app.AlertDialog
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -50,7 +51,7 @@ class FragmentItemDetailScreen : Fragment() {
     private lateinit var estimated_time: TextView
     private lateinit var passenger_count: TextView
     private lateinit var travel_distance: TextView
-    private lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
+
 
 
     private var route_list = ArrayList<ArrayList<Double>>()
@@ -365,12 +366,20 @@ class FragmentItemDetailScreen : Fragment() {
 //
 //    }
 
+    inner class socketBR: BroadcastReceiver(){
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            if(p1?.action == "update"){
+                StationItemRecyclerAdapter.delay = p1.getIntExtra("delay", 0)
+                stationItemRecyclerAdapter.notifyDataSetChanged()
+            }
+        }
+    }
     companion object {
         val stationDataList: MutableList<StationData> = ArrayList()
         var route_id: Int = 0
         var shuttle_direction: Int = 0
         var gmap: GoogleMap? = null
         var polyList: MutableList<LatLng>? = null
-
+        lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
     }
 }

@@ -5,12 +5,20 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.bluetooth.BluetoothAdapter
+import android.bluetooth.BluetoothGatt
+import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothManager
+import android.bluetooth.BluetoothProfile
+import android.bluetooth.le.ScanCallback
+import android.bluetooth.le.ScanFilter
+import android.bluetooth.le.ScanResult
+import android.bluetooth.le.ScanSettings
 import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.ParcelUuid
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
@@ -24,6 +32,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.busition.driver.FloatingService
 import com.busition.driver.R
+import com.busition.driver.SocketIo
 import com.busition.driver.databinding.ActivityMainScreenBinding
 import com.google.android.material.snackbar.Snackbar
 
@@ -33,7 +42,7 @@ class MainScreen : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var userName: String
 
-    private val SCAN_PERIOD: Long = 10000
+    private val SCAN_PERIOD: Long = 100000
     private val PERMISSIONS_REQUEST_CODE = 191
 
     private val BLE_PERMISSIONS = arrayOf(
@@ -48,7 +57,11 @@ class MainScreen : AppCompatActivity() {
         Manifest.permission.BLUETOOTH_ADVERTISE,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
-
+    fun runRecv(){
+        runOnUiThread {
+            SocketIo.recvLocation()
+        }
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
@@ -116,6 +129,7 @@ class MainScreen : AppCompatActivity() {
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         Log.d("Mainscreen", bluetoothManager.toString())
         val mBluetoothAdapter = bluetoothManager.adapter
+        val mBluetoothLeScanner = mBluetoothAdapter.bluetoothLeScanner
         Log.d("error", mBluetoothAdapter.toString())
         var mScanning=true
         val mHandler = Handler()
@@ -124,18 +138,20 @@ class MainScreen : AppCompatActivity() {
             // Stops scanning after a pre-defined scan period.
             mHandler.postDelayed({
                 mScanning = false
-                mBluetoothAdapter!!.stopLeScan(mLeScanCallback)
+                mBluetoothLeScanner.stopScan(scanCallback)
 
             }, SCAN_PERIOD)
             mScanning = true
-            mBluetoothAdapter!!.startLeScan(mLeScanCallback)
+            mBluetoothLeScanner.startScan(scanCallback)
         } else {
             mScanning = false
-            mBluetoothAdapter!!.stopLeScan(mLeScanCallback)
+            mBluetoothLeScanner.stopScan(scanCallback)
         }
 
     }
 
+    private fun buildScanSettings() = ScanSettings.Builder()
+        .setScanMode(ScanSettings.SCAN_MODE_BALANCED).build()
     fun requestBlePermissions(activity: Activity?, requestCode: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ActivityCompat.requestPermissions(
             activity!!,
@@ -143,15 +159,36 @@ class MainScreen : AppCompatActivity() {
             requestCode
         ) else ActivityCompat.requestPermissions(
             activity!!, BLE_PERMISSIONS, requestCode
+
         )
     }
+
+    val scanFilter = ScanFilter.Builder()
+        .setServiceUuid(ParcelUuid.fromString("0000FFFF-0000-1000-8000-00805F9B34FB"))
+        .build()
+
 
     @SuppressLint("MissingPermission")
     private val mLeScanCallback =
         BluetoothAdapter.LeScanCallback { device, rssi, scanRecord ->
 
-            Log.d("ble", "${device.name},${device.address}, $rssi, $scanRecord")
+            Log.d("ble", "${device.name},${device.address}, $rssi, $scanRecord, $device, ${device.uuids}")
         }
+
+    private val scanCallback = object : ScanCallback() {
+        @SuppressLint("MissingPermission")
+        override fun onScanResult(callbackType: Int, result: ScanResult?) {
+            Log.d("ble instance","${result?.device?.name} ${result?.device?.uuids} ${result?.scanRecord?.serviceUuids}" )
+        }
+
+        override fun onBatchScanResults(results: MutableList<ScanResult>?) {
+            Log.d("ble",results.toString())
+        }
+
+        override fun onScanFailed(errorCode: Int) {
+            Log.d("ble error", errorCode.toString())
+        }
+    }
     companion object {
         var driver_id: Int = 0
 
