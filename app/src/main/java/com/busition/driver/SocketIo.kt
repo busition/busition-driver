@@ -1,5 +1,7 @@
 package com.busition.driver
 
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import io.socket.client.IO
@@ -34,10 +36,15 @@ object SocketIo {
         try {
             val onMessage = Emitter.Listener { args ->
                 val obj = JSONObject(args[0].toString())
-//                if (StationItemRecyclerAdapter.delay != obj.getInt("delayed")){
-//                    StationItemRecyclerAdapter.delay = obj.getInt("delayed")
-//                    FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
-//                }
+                if (StationItemRecyclerAdapter.delay != obj.getInt("delayed")){
+                    val handler = Handler(Looper.getMainLooper())
+                    handler.post(Runnable {
+                        StationItemRecyclerAdapter.delay = obj.getInt("delayed")
+                        FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
+                    })
+
+                }
+
                 Log.d("socket", obj.toString())
 
             }
