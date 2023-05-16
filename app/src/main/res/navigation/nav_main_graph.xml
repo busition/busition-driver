@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/scheduleList"
         android:name="com.busition.driver.main_screen.ScheduleList"
-        android:label="Schedule"
+        android:label="스케줄"
         tools:layout="@layout/fragment_schedule_list" >
         <action
             android:id="@+id/action_scheduleList_to_fragment_item_detial_screen"
@@ -17,7 +17,7 @@
     <fragment
         android:id="@+id/fragment_item_detial_screen"
         android:name="com.busition.driver.main_screen.FragmentItemDetailScreen"
-        android:label="Item Detail"
+        android:label="운행중"
         tools:layout="@layout/fragment_item_detail_screen" >
         <action
             android:id="@+id/action_fragment_item_detial_screen_to_userInfoDataFragment"

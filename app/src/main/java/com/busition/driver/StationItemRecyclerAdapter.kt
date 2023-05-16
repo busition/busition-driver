@@ -39,16 +39,16 @@ class StationItemRecyclerAdapter(
         Log.d("position", position.toString())
         holder.stationName.text = item.station_name
         holder.stationPssengerNumber.text = appendString(item.nowPassengerNumber.toString(), " / ", item.passenger_count.toString())
-        holder.station_time.text = item.station_id.toString()
+//        holder.station_time.text = item.station_id.toString()
         if (item.nowStation) {
             holder.stationCardView.setBackgroundColor(Color.parseColor("#FFEBB4"))
         }
-        if (delay == 0){
-            holder.station_lay.gone()
-        }else{
-            holder.station_lay.show()
-            holder.station_delay.text = delay.toString()
-        }
+//        if (delay == 0){
+//            holder.station_lay.gone()
+//        }else{
+//            holder.station_lay.show()
+//            holder.station_delay.text = delay.toString()
+//        }
 
         holder.btn.setOnClickListener {
             Log.d("btn", "test")
@@ -72,9 +72,9 @@ class StationItemRecyclerAdapter(
         RecyclerView.ViewHolder(binding.root) {
         val stationName: TextView = binding.stationName
         val stationPssengerNumber: TextView = binding.stationPassengerNum
-        val station_delay: TextView = binding.stationTimeDelay
-        val station_time: TextView = binding.stationTime
-        val station_lay: LinearLayout = binding.stationTiemLay
+//        val station_delay: TextView = binding.stationTimeDelay
+//        val station_time: TextView = binding.stationTime
+//        val station_lay: LinearLayout = binding.stationTiemLay
         val btn: Button = binding.button
         val stationCardView: LinearLayout = binding.stationCard
 
