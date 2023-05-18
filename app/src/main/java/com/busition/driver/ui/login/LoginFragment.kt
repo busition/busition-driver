@@ -23,8 +23,11 @@ import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.Navigation
 import androidx.navigation.findNavController
 import com.busition.driver.R
+import com.busition.driver.base_api_url
+import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.databinding.FragmentLoginBinding
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.MainScreen
@@ -39,6 +42,8 @@ import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class LoginFragment : Fragment() {
 
@@ -182,8 +187,9 @@ class LoginFragment : Fragment() {
         }
 
         registerButton.setOnClickListener {
-            val action = LoginFragmentDirections.actionRegisterToLoginFragment()
-            it.findNavController().navigate(action)
+            val navController = Navigation.findNavController(view)
+            navController.navigate(R.id.action_Register_to_Login_Fragment)
+
         }
 
         passbtn.setOnClickListener {
@@ -223,7 +229,6 @@ class LoginFragment : Fragment() {
         signInClient.getSignInIntent(signInRequest)
             .addOnSuccessListener { pendingIntent ->
                 launchSignIn(pendingIntent)
-                loginSuccess()
             }
             .addOnFailureListener { e ->
                 Log.e("fire base google", "Google Sign-in failed", e)
@@ -282,7 +287,7 @@ class LoginFragment : Fragment() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d("fire base google", "signInWithCredential:success")
                     val user = auth.currentUser
-
+                    loginSuccess()
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("fire base google", "signInWithCredential:failure", task.exception)

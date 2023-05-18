@@ -158,33 +158,44 @@ class FragmentItemDetailScreen : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
+        LoginViewModel.auth.currentUser?.getIdToken(true)
+            ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
+                if (t.isSuccessful) {
+                    val idToken = t.result.token
+                    token = "Bearer " + idToken.toString()
+                    Log.d("id token", idToken.toString())
+                    service.getRoute(token, route_id, shuttle_direction)
+                        .enqueue(object : retrofit2.Callback<RouteData> {
+                            override fun onResponse(
+                                call: retrofit2.Call<RouteData>,
+                                response: retrofit2.Response<RouteData>
+                            ) {
+                                if (response.isSuccessful) {
+                                    val route = response.body()
+                                    Log.d("api", route.toString())
+                                    Log.d(
+                                        "api",
+                                        "onResponse: ${response.body()?.route?.traoptimal?.get(0)?.path}"
+                                    )
 
-        service.getRoute(route_id, shuttle_direction)
-            .enqueue(object : retrofit2.Callback<RouteData> {
-                override fun onResponse(
-                    call: retrofit2.Call<RouteData>,
-                    response: retrofit2.Response<RouteData>
-                ) {
-                    if (response.isSuccessful) {
-                        val route = response.body()
-                        Log.d("api", route.toString())
-                        Log.d(
-                            "api",
-                            "onResponse: ${response.body()?.route?.traoptimal?.get(0)?.path}"
-                        )
+                                    route_list =
+                                        route?.route?.traoptimal?.get(0)?.path as ArrayList<ArrayList<Double>>
+                                    makePolyRoute()
+                                } else {
+                                    Log.d("api", "onResponse: $response")
+                                }
+                            }
 
-                        route_list =
-                            route?.route?.traoptimal?.get(0)?.path as ArrayList<ArrayList<Double>>
-                        makePolyRoute()
-                    } else {
-                        Log.d("api", "onResponse: $response")
-                    }
-                }
+                            override fun onFailure(call: retrofit2.Call<RouteData>, t: Throwable) {
+                                Log.d("api", "onFailure: ${t.message}")
+                            }
+                        })
 
-                override fun onFailure(call: retrofit2.Call<RouteData>, t: Throwable) {
-                    Log.d("api", "onFailure: ${t.message}")
+                } else {
+                    // Handle error -> task.getException();
                 }
             })
+
     }
 
     fun requestApiServer() {

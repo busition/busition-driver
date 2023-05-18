@@ -21,8 +21,9 @@
         android:label="@string/Register_Fragment_Label"
         tools:layout="@layout/fragment_regist">
 
+
         <action
-            android:id="@+id/action_Register_Done_to_Login_Fragment"
+            android:id="@+id/action_BusitionRegister_to_BusitionLogin"
             app:destination="@id/BusitionLogin" />
     </fragment>
 </navigation>

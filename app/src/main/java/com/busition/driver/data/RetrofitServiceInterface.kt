@@ -4,9 +4,13 @@ import com.busition.driver.data.bus_route.RouteData
 import com.busition.driver.data.passenger_list.PassengerListData
 import com.busition.driver.data.schedule_all.ScheduleDataList
 import com.busition.driver.data.schedule_route.StationListData
+import com.busition.driver.data.signup.SignUpBody
+import com.busition.driver.data.signup.SignUpResponse
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -36,4 +40,11 @@ interface RetrofitServiceInterface {
         @Path("route_id") route_id: Int,
         @Query("shuttle_direction") shuttle_direction: Int
     ): Call<RouteData>
+
+    @POST("signup")
+    fun signUp(
+        @Header("Authorization") token: String,
+        @Body body: SignUpBody
+    ): Call<SignUpResponse>
+
 }

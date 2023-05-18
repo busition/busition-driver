@@ -34,7 +34,7 @@ class MyuserInfoDataRecyclerViewAdapter(
         val item = values[position]
         holder.itemNumber.text = (position+1).toString()
         holder.passengerName.text = item.passenger_name
-        holder.contentView.text = "탑승 대기"ww
+        holder.contentView.text = "탑승 대기"
         holder.callBtn.setOnClickListener {
             val call = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + item.passenger_phone))
             ContextCompat.startActivity(holder.itemView.context, call, null)
