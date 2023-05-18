@@ -55,6 +55,7 @@ class ScheduleList : Fragment() {
         recyclerViewAdapter = MyItemRecyclerViewAdapter(PlaceholderContent.ITEMS, binding)
         binding!!.recyclerScheduleList.layoutManager = LinearLayoutManager(context)
         binding!!.recyclerScheduleList.adapter = recyclerViewAdapter
+
         attachData()
 
         Log.d("scheduleList", "onCreateView: $userName $driver_id")
@@ -72,7 +73,7 @@ class ScheduleList : Fragment() {
         val service = retrofit.create(RetrofitServiceInterface::class.java)
 
 
-        service.getSchedule(PlaceholderContent.driver_id)
+        service.getSchedule(MainScreen.token)
             .enqueue(object : retrofit2.Callback<ScheduleDataList> {
                 override fun onResponse(
                     call: retrofit2.Call<ScheduleDataList>,
@@ -109,6 +110,7 @@ class ScheduleList : Fragment() {
 
                     } else {
                         Log.d("Error for network", response.toString())
+                        Log.d("Error for network", MainScreen.token)
                     }
                     binding?.recyclerScheduleList?.show()
                     binding?.loadingBar?.gone()

@@ -25,6 +25,11 @@ import com.busition.driver.R
 import com.busition.driver.databinding.FragmentLoginBinding
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.MainScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class LoginFragment : Fragment() {
 
@@ -36,23 +41,25 @@ class LoginFragment : Fragment() {
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.BLUETOOTH,
     )
+
     @RequiresApi(Build.VERSION_CODES.S)
-    private val ANDROID_12_BLE_PERMISSIONS = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        arrayOf(
-            Manifest.permission.BLUETOOTH_SCAN,
-            Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.BLUETOOTH_ADVERTISE,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.POST_NOTIFICATIONS
-        )
-    } else {
-        arrayOf(
-            Manifest.permission.BLUETOOTH_SCAN,
-            Manifest.permission.BLUETOOTH_CONNECT,
-            Manifest.permission.BLUETOOTH_ADVERTISE,
-            Manifest.permission.ACCESS_FINE_LOCATION,
-        )
-    }
+    private val ANDROID_12_BLE_PERMISSIONS =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_ADVERTISE,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        } else {
+            arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_ADVERTISE,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            )
+        }
 
     private val binding get() = _binding!!
 
@@ -147,6 +154,7 @@ class LoginFragment : Fragment() {
         passwordEditText.addTextChangedListener(afterTextChangedListener)
         passwordEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
+
                 loginViewModel.login(
                     usernameEditText.text.toString(),
                     passwordEditText.text.toString()
@@ -157,15 +165,32 @@ class LoginFragment : Fragment() {
 
         loginButton.setOnClickListener {
             loadingProgressBar.visibility = View.VISIBLE
-            loginViewModel.login(
-                usernameEditText.text.toString(),
-                passwordEditText.text.toString()
-            )
+
+            runBlocking {
+                val a = async {
+                    MainScreen.token = loginViewModel.login(
+                        usernameEditText.text.toString(),
+                        passwordEditText.text.toString()
+                    )
+                }
+                val b = async{
+                    Log.d("start token", MainScreen.token)
+                }
+                a.start()
+                b.await()
+
+            }
+
+
+            Log.d("start token", MainScreen.token)
+
             val intent = Intent(getActivity(), MainScreen::class.java)
 
             intent.flags =
                 Intent.FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK or FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
+
+
         }
 
         registerButton.setOnClickListener {
@@ -174,14 +199,14 @@ class LoginFragment : Fragment() {
         }
 
         passbtn.setOnClickListener {
-            loginViewModel.login(
-                usernameEditText.text.toString(),
-                passwordEditText.text.toString()
-            )
+//            loginViewModel.login(
+//                usernameEditText.text.toString(),
+//                passwordEditText.text.toString()
+//            )
             val intent = Intent(getActivity(), MainScreen::class.java)
             loginViewModel.loginResult.value?.success?.let {
                 intent.putExtra("userName", it.displayName)
-                intent.putExtra("driver_id", it.driver_id)
+                intent.putExtra("driver_id", 1)
             }
 
             intent.flags =
@@ -206,4 +231,6 @@ class LoginFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+
 }

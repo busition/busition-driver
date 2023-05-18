@@ -2,18 +2,20 @@ package com.busition.driver.ui.login
 
 import android.content.ContentValues.TAG
 import android.util.Log
+import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import android.util.Patterns
-import android.widget.Toast
+import com.busition.driver.R
 import com.busition.driver.data.login.LoginRepository
 import com.busition.driver.data.login.Result
-
-import com.busition.driver.R
+import com.busition.driver.main_screen.MainScreen
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 
@@ -24,9 +26,10 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
-    fun login(username: String, password: String) {
+    fun login(username: String, password: String):String {
         // can be launched in a separate asynchronous job
         val result = loginRepository.login(username, password)
+        var token:String = ""
         Log.d(TAG, "signIn:$username")
         //ㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴ
         auth.signInWithEmailAndPassword(username, password)
@@ -37,6 +40,19 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
                     val user = auth.currentUser
                     Log.d("login user ", user.toString())
                     if (user != null) {
+                        user.getIdToken(true)
+                            .addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
+                                if (t.isSuccessful) {
+                                    val idToken = t.result.token
+                                    token = "Bearer "+idToken.toString()
+                                    Log.d("id token" , idToken.toString())
+
+
+                                } else {
+                                    // Handle error -> task.getException();
+                                }
+                            })
+
 
 //                        user.updatePhoneNumber()
                     }
@@ -52,15 +68,18 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 //                    binding.status.setText(R.string.auth_failed)
                     _loginResult.value = LoginResult(error = R.string.login_failed)
                 }
+
             }
 
         //ㄴㄴㄴㄴㄴㄴㄴㄴ
         if (result is Result.Success) {
             _loginResult.value =
                 LoginResult(success = LoggedInUserView(displayName = result.data.displayName, driver_id = result.data.driver_id))
+
         } else {
             _loginResult.value = LoginResult(error = R.string.login_failed)
         }
+        return token
     }
 
     fun loginDataChanged(username: String, password: String) {
