@@ -2,48 +2,48 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#E3BF80"
-    android:orientation="horizontal"
     android:layout_gravity="center"
-    android:layout_margin="16dp">
-
-    <TextView
-        android:id="@+id/itemNumber"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="0.1"
-        android:layout_gravity="center"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="16dp"
-        android:text="1"
-        android:textAppearance="@style/TextAppearance.AppCompat.Display1"/>
-
-    <TextView
-        android:id="@+id/passengerName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_gravity="center"
-        android:text="test"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"/>
+    android:layout_margin="3dp"
+    android:background="@color/white"
+    android:orientation="horizontal">
 
     <TextView
         android:id="@+id/content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
         android:layout_gravity="center"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_marginLeft="16dp"
+        android:paddingLeft="10dp"
+        android:layout_weight="1"
+        android:background="#FFE792"
+        android:text="test"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <TextView
+        android:id="@+id/itemNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="16dp"
+        android:layout_weight="0.1"
+        android:text="1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
+
+    <TextView
+        android:id="@+id/passengerName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
         android:layout_weight="1"
         android:text="test"
-        />
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
 
     <Button
         android:id="@+id/callBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
-        android:text="전화"
         android:layout_gravity="center"
-        android:layout_marginRight="8dp"/>
+        android:layout_marginRight="8dp"
+        android:text="전화" />
 </LinearLayout>

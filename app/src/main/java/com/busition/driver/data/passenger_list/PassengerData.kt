@@ -4,9 +4,9 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class PassengerData(
-    @SerializedName("passenger_id")
+    @SerializedName("passenger_uid")
     @Expose
-    val passenger_id:String,
+    val passenger_uid:String,
 
     @SerializedName("passenger_name")
     @Expose

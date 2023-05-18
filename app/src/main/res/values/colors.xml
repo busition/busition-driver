@@ -2,7 +2,9 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="appbar_color">#E3DFFD</color>
+    <color name="appbar_color">#dadaf0</color>
     <color name="main_background">#F5F5F5</color>
     <color name="main_button">#C1AEFC</color>
+    <color name="gray_bar">#BEBEBE</color>
+    <color name="text_red">#FF0000</color>"
 </resources>

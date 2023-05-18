@@ -29,7 +29,9 @@ import com.busition.driver.data.bus_route.RouteData
 import com.busition.driver.data.schedule_route.StationData
 import com.busition.driver.data.schedule_route.StationListData
 import com.busition.driver.databinding.FragmentItemDetailScreenBinding
+import com.busition.driver.main_screen.MainScreen.Companion.token
 import com.busition.driver.placeholder.PlaceholderContent
+import com.busition.driver.ui.login.LoginViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -38,6 +40,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.GetTokenResult
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import kotlinx.coroutines.*
@@ -51,7 +55,6 @@ class FragmentItemDetailScreen : Fragment() {
     private lateinit var estimated_time: TextView
     private lateinit var passenger_count: TextView
     private lateinit var travel_distance: TextView
-
 
 
     private var route_list = ArrayList<ArrayList<Double>>()
@@ -105,11 +108,13 @@ class FragmentItemDetailScreen : Fragment() {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse("geo:0,0?q=37.532629,-122.319131") // 출발지 좌표
             intent.putExtra(Intent.EXTRA_TITLE, "Select navigation app") // 다이얼로그 타이틀
-            intent.putExtra(Intent.EXTRA_INITIAL_INTENTS, arrayOf(
-                Intent(Intent.ACTION_VIEW, uriNaverMap),
-                Intent(Intent.ACTION_VIEW, uriKakaoNavi),
-                Intent(Intent.ACTION_VIEW, uriTmap)
-            ))
+            intent.putExtra(
+                Intent.EXTRA_INITIAL_INTENTS, arrayOf(
+                    Intent(Intent.ACTION_VIEW, uriNaverMap),
+                    Intent(Intent.ACTION_VIEW, uriKakaoNavi),
+                    Intent(Intent.ACTION_VIEW, uriTmap)
+                )
+            )
 
             startActivity(intent)
 
@@ -153,33 +158,44 @@ class FragmentItemDetailScreen : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
+        LoginViewModel.auth.currentUser?.getIdToken(true)
+            ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
+                if (t.isSuccessful) {
+                    val idToken = t.result.token
+                    token = "Bearer " + idToken.toString()
+                    Log.d("id token", idToken.toString())
+                    service.getRoute(token, route_id, shuttle_direction)
+                        .enqueue(object : retrofit2.Callback<RouteData> {
+                            override fun onResponse(
+                                call: retrofit2.Call<RouteData>,
+                                response: retrofit2.Response<RouteData>
+                            ) {
+                                if (response.isSuccessful) {
+                                    val route = response.body()
+                                    Log.d("api", route.toString())
+                                    Log.d(
+                                        "api",
+                                        "onResponse: ${response.body()?.route?.traoptimal?.get(0)?.path}"
+                                    )
 
-        service.getRoute(route_id, shuttle_direction)
-            .enqueue(object : retrofit2.Callback<RouteData> {
-                override fun onResponse(
-                    call: retrofit2.Call<RouteData>,
-                    response: retrofit2.Response<RouteData>
-                ) {
-                    if (response.isSuccessful) {
-                        val route = response.body()
-                        Log.d("api", route.toString())
-                        Log.d(
-                            "api",
-                            "onResponse: ${response.body()?.route?.traoptimal?.get(0)?.path}"
-                        )
+                                    route_list =
+                                        route?.route?.traoptimal?.get(0)?.path as ArrayList<ArrayList<Double>>
+                                    makePolyRoute()
+                                } else {
+                                    Log.d("api", "onResponse: $response")
+                                }
+                            }
 
-                        route_list =
-                            route?.route?.traoptimal?.get(0)?.path as ArrayList<ArrayList<Double>>
-                        makePolyRoute()
-                    } else {
-                        Log.d("api", "onResponse: $response")
-                    }
-                }
+                            override fun onFailure(call: retrofit2.Call<RouteData>, t: Throwable) {
+                                Log.d("api", "onFailure: ${t.message}")
+                            }
+                        })
 
-                override fun onFailure(call: retrofit2.Call<RouteData>, t: Throwable) {
-                    Log.d("api", "onFailure: ${t.message}")
+                } else {
+                    // Handle error -> task.getException();
                 }
             })
+
     }
 
     fun requestApiServer() {
@@ -190,54 +206,68 @@ class FragmentItemDetailScreen : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
+        LoginViewModel.auth.currentUser?.getIdToken(true)
+            ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
+                if (t.isSuccessful) {
+                    val idToken = t.result.token
+                    token = "Bearer " + idToken.toString()
+                    Log.d("id token", idToken.toString())
+                    service.getStation(token, route_id, shuttle_direction)
+                        .enqueue(object : retrofit2.Callback<StationListData> {
+                            override fun onResponse(
+                                call: retrofit2.Call<StationListData>,
+                                response: retrofit2.Response<StationListData>
+                            ) {
+                                if (response.isSuccessful) {
+                                    val route = response.body()
+                                    Log.d("route", route.toString())
+                                    var tt: String = station_count.text as String
+                                    station_count.text =
+                                        appendString(
+                                            station_count.text.toString(),
+                                            route?.station_count.toString()
+                                        )
+                                    passenger_count.text =
+                                        appendString(
+                                            passenger_count.text.toString(),
+                                            route?.total_passenger_count.toString(),
+                                            " 명"
+                                        )
+                                    for (i in 0 until (route?.station_count ?: 0)) {
+                                        val tmp = StationData(
+                                            route?.station_data?.get(i)?.station_id ?: 0,
+                                            route?.station_data?.get(i)?.station_name ?: "",
+                                            route?.station_data?.get(i)?.stopping_order ?: 0,
+                                            route?.station_data?.get(i)?.station_latitude ?: 0.0,
+                                            route?.station_data?.get(i)?.station_longitude ?: 0.0,
+                                            route?.station_data?.get(i)?.passenger_count ?: 0
+                                        )
+                                        stationDataList.add(tmp)
+                                    }
+                                    PlaceholderContent.makeItem(stationDataList)
 
-        service.getStation(route_id, shuttle_direction)
-            .enqueue(object : retrofit2.Callback<StationListData> {
-                override fun onResponse(
-                    call: retrofit2.Call<StationListData>,
-                    response: retrofit2.Response<StationListData>
-                ) {
-                    if (response.isSuccessful) {
-                        val route = response.body()
-                        Log.d("route", route.toString())
-                        var tt: String = station_count.text as String
-                        station_count.text =
-                            appendString(
-                                station_count.text.toString(),
-                                route?.station_count.toString()
-                            )
-                        passenger_count.text =
-                            appendString(
-                                passenger_count.text.toString(),
-                                route?.total_passenger_count.toString(),
-                                " 명"
-                            )
-                        for (i in 0 until (route?.station_count ?: 0)) {
-                            val tmp = StationData(
-                                route?.station_data?.get(i)?.station_id ?: 0,
-                                route?.station_data?.get(i)?.station_name ?: "",
-                                route?.station_data?.get(i)?.stopping_order ?: 0,
-                                route?.station_data?.get(i)?.station_latitude ?: 0.0,
-                                route?.station_data?.get(i)?.station_longitude ?: 0.0,
-                                route?.station_data?.get(i)?.passenger_count ?: 0
-                            )
-                            stationDataList.add(tmp)
-                        }
-                        PlaceholderContent.makeItem(stationDataList)
+                                } else {
+                                    Log.d("response", "onResponse: $response")
+                                }
+                                binding.loadBar.gone()
+                                binding.textList.show()
+                                makeRoute()
 
-                    } else {
-                        Log.d("response", "onResponse: $response")
-                    }
-                    binding.loadBar.gone()
-                    binding.textList.show()
-                    makeRoute()
+                            }
 
-                }
+                            override fun onFailure(
+                                call: retrofit2.Call<StationListData>,
+                                t: Throwable
+                            ) {
+                                Log.d("route", "onFailure: ${t.message}")
+                            }
+                        })
 
-                override fun onFailure(call: retrofit2.Call<StationListData>, t: Throwable) {
-                    Log.d("route", "onFailure: ${t.message}")
+                } else {
+                    // Handle error -> task.getException();
                 }
             })
+
 
     }
 
@@ -366,14 +396,15 @@ class FragmentItemDetailScreen : Fragment() {
 //
 //    }
 
-    inner class socketBR: BroadcastReceiver(){
+    inner class socketBR : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
-            if(p1?.action == "update"){
+            if (p1?.action == "update") {
                 StationItemRecyclerAdapter.delay = p1.getIntExtra("delay", 0)
                 stationItemRecyclerAdapter.notifyDataSetChanged()
             }
         }
     }
+
     companion object {
         val stationDataList: MutableList<StationData> = ArrayList()
         var route_id: Int = 0

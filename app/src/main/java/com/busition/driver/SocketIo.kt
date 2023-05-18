@@ -19,7 +19,7 @@ object SocketIo {
         try {
             val pack = JSONObject()
             pack.put("id", id)
-            socketServer = IO.socket("http://api.dev.busition.com:3000/console")
+            socketServer = IO.socket("http://api.dev.busition.com:3000/driver")
             socketServer.connect()
             Log.d("socket pack jsonObject", pack.toString())
             Log.d("socket", socketServer.toString())

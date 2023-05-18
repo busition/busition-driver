@@ -191,6 +191,7 @@ class MainScreen : AppCompatActivity() {
     }
     companion object {
         var driver_id: Int = 0
+        var token: String = ""
 
     }
 

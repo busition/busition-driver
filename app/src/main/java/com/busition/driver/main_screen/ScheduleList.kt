@@ -16,8 +16,12 @@ import com.busition.driver.data.schedule_all.ScheduleDataList
 
 import com.busition.driver.databinding.FragmentScheduleListBinding
 import com.busition.driver.gone
+import com.busition.driver.main_screen.MainScreen.Companion.token
 import com.busition.driver.main_screen.placeholder.PlaceholderContent
 import com.busition.driver.show
+import com.busition.driver.ui.login.LoginViewModel
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.GetTokenResult
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -55,6 +59,7 @@ class ScheduleList : Fragment() {
         recyclerViewAdapter = MyItemRecyclerViewAdapter(PlaceholderContent.ITEMS, binding)
         binding!!.recyclerScheduleList.layoutManager = LinearLayoutManager(context)
         binding!!.recyclerScheduleList.adapter = recyclerViewAdapter
+
         attachData()
 
         Log.d("scheduleList", "onCreateView: $userName $driver_id")
@@ -70,57 +75,70 @@ class ScheduleList : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
+        Log.d("current user", LoginViewModel.auth.currentUser.toString())
+        LoginViewModel.auth.currentUser?.getIdToken(true)
+            ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
+                if (t.isSuccessful) {
+                    val idToken = t.result.token
+                    token = "Bearer "+idToken.toString()
+                    Log.d("token", token)
+                    service.getSchedule(token)
+                        .enqueue(object : retrofit2.Callback<ScheduleDataList> {
+                            override fun onResponse(
+                                call: retrofit2.Call<ScheduleDataList>,
+                                response: retrofit2.Response<ScheduleDataList>
+                            ) {
+                                if (response.isSuccessful) {
+                                    val scheduleDataList = response.body()
+                                    Log.d("ScheduleDataList", scheduleDataList.toString())
+
+                                    if (scheduleDataList?.schedule_count != PlaceholderContent.ITEMS.size) {
+                                        for (i in 0 until (scheduleDataList?.schedule_count ?: 0)) {
+                                            PlaceholderContent.addItem(
+                                                PlaceholderContent.PlaceholderItem(
+                                                    scheduleDataList?.schedule_data?.get(i)?.route_id
+                                                        ?: 0,
+                                                    scheduleDataList?.schedule_data?.get(i)?.departure_point
+                                                        ?: "",
+                                                    scheduleDataList?.schedule_data?.get(i)?.destination
+                                                        ?: "",
+                                                    scheduleDataList?.schedule_data?.get(i)?.departure_time
+                                                        ?: DepartureTime(
+                                                            DayTime("", "")
+                                                        ),
+                                                    scheduleDataList?.schedule_data?.get(i)?.shuttle_direction
+                                                        ?: 0,
+                                                )
+                                            )
+                                        }
+                                        Log.d("ITEMS", PlaceholderContent.ITEMS.toString())
+                                        recyclerViewAdapter?.notifyDataSetChanged()
 
 
-        service.getSchedule(PlaceholderContent.driver_id)
-            .enqueue(object : retrofit2.Callback<ScheduleDataList> {
-                override fun onResponse(
-                    call: retrofit2.Call<ScheduleDataList>,
-                    response: retrofit2.Response<ScheduleDataList>
-                ) {
-                    if (response.isSuccessful) {
-                        val scheduleDataList = response.body()
-                        Log.d("ScheduleDataList", scheduleDataList.toString())
+                                    }
 
-                        if (scheduleDataList?.schedule_count != PlaceholderContent.ITEMS.size) {
-                            for (i in 0 until (scheduleDataList?.schedule_count ?: 0)) {
-                                PlaceholderContent.addItem(
-                                    PlaceholderContent.PlaceholderItem(
-                                        scheduleDataList?.schedule_data?.get(i)?.route_id
-                                            ?: 0,
-                                        scheduleDataList?.schedule_data?.get(i)?.departure_point
-                                            ?: "",
-                                        scheduleDataList?.schedule_data?.get(i)?.destination
-                                            ?: "",
-                                        scheduleDataList?.schedule_data?.get(i)?.departure_time
-                                            ?: DepartureTime(
-                                                DayTime("", "")
-                                            ),
-                                        scheduleDataList?.schedule_data?.get(i)?.shuttle_direction
-                                            ?: 0,
-                                    )
-                                )
+                                } else {
+                                    Log.d("Error for network", response.toString())
+                                    Log.d("Error for network", MainScreen.token)
+                                }
+                                binding?.recyclerScheduleList?.show()
+                                binding?.loadingBar?.gone()
                             }
-                            Log.d("ITEMS", PlaceholderContent.ITEMS.toString())
-                            recyclerViewAdapter?.notifyDataSetChanged()
+
+                            override fun onFailure(
+                                call: retrofit2.Call<ScheduleDataList>,
+                                t: Throwable
+                            ) {
+                                Log.d("Error", t.toString())
+                            }
+                        })
 
 
-                        }
-
-                    } else {
-                        Log.d("Error for network", response.toString())
-                    }
-                    binding?.recyclerScheduleList?.show()
-                    binding?.loadingBar?.gone()
-                }
-
-                override fun onFailure(
-                    call: retrofit2.Call<ScheduleDataList>,
-                    t: Throwable
-                ) {
-                    Log.d("Error", t.toString())
+                } else {
+                    // Handle error -> task.getException();
                 }
             })
+
     }
 
     companion object {
