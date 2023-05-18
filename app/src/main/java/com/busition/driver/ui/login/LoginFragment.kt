@@ -1,9 +1,11 @@
 package com.busition.driver.ui.login
 
 import android.Manifest
+import android.app.PendingIntent
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP
+import android.content.IntentSender
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
@@ -14,6 +16,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.Toast
+import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
@@ -25,8 +28,14 @@ import com.busition.driver.R
 import com.busition.driver.databinding.FragmentLoginBinding
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.MainScreen
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.busition.driver.ui.login.LoginViewModel.Companion.auth
+import com.google.android.gms.auth.api.identity.BeginSignInRequest
+import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
+import com.google.android.gms.auth.api.identity.Identity
+import com.google.android.gms.auth.api.identity.SignInClient
+import com.google.android.gms.common.api.ApiException
+import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -87,7 +96,7 @@ class LoginFragment : Fragment() {
         val loginButton = binding.login
         val registerButton = binding.register
         val loadingProgressBar = binding.loading
-
+        signInClient = Identity.getSignInClient(requireContext())
         val passbtn = binding.pass
         val contract = ActivityResultContracts.RequestMultiplePermissions()
         val activityResultLauncher = registerForActivityResult(contract) { permissions ->
@@ -107,7 +116,7 @@ class LoginFragment : Fragment() {
 //        activityResultLauncher.launch(permissionList)
         activityResultLauncher.launch(ANDROID_12_BLE_PERMISSIONS)
         Log.d("route_id", FragmentItemDetailScreen.route_id.toString())
-
+        binding.googlesignin.setOnClickListener { signIn() }
         loginViewModel.loginFormState.observe(viewLifecycleOwner,
             Observer { loginFormState ->
                 if (loginFormState == null) {
@@ -165,30 +174,9 @@ class LoginFragment : Fragment() {
 
         loginButton.setOnClickListener {
             loadingProgressBar.visibility = View.VISIBLE
-
-            runBlocking {
-                val a = async {
-                    MainScreen.token = loginViewModel.login(
-                        usernameEditText.text.toString(),
-                        passwordEditText.text.toString()
-                    )
-                }
-                val b = async{
-                    Log.d("start token", MainScreen.token)
-                }
-                a.start()
-                b.await()
-
-            }
-
-
             Log.d("start token", MainScreen.token)
 
-            val intent = Intent(getActivity(), MainScreen::class.java)
-
-            intent.flags =
-                Intent.FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK or FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
+            loginSuccess()
 
 
         }
@@ -203,18 +191,16 @@ class LoginFragment : Fragment() {
 //                usernameEditText.text.toString(),
 //                passwordEditText.text.toString()
 //            )
-            val intent = Intent(getActivity(), MainScreen::class.java)
-            loginViewModel.loginResult.value?.success?.let {
-                intent.putExtra("userName", it.displayName)
-                intent.putExtra("driver_id", 1)
-            }
-
-            intent.flags =
-                Intent.FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK or FLAG_ACTIVITY_CLEAR_TOP
-            startActivity(intent)
+            loginSuccess()
         }
     }
 
+    private fun loginSuccess(){
+        val intent = Intent(getActivity(), MainScreen::class.java)
+        intent.flags =
+            Intent.FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK or FLAG_ACTIVITY_CLEAR_TOP
+        startActivity(intent)
+    }
     private fun updateUiWithUser(model: LoggedInUserView) {
         val welcome = getString(R.string.welcome) + model.displayName
         // TODO : initiate successful logged in experience
@@ -227,6 +213,93 @@ class LoginFragment : Fragment() {
         Toast.makeText(appContext, errorString, Toast.LENGTH_LONG).show()
     }
 
+
+    // [START auth_with_google]
+    private fun signIn() {
+        val signInRequest = GetSignInIntentRequest.builder()
+            .setServerClientId(getString(R.string.default_web_client_id))
+            .build()
+
+        signInClient.getSignInIntent(signInRequest)
+            .addOnSuccessListener { pendingIntent ->
+                launchSignIn(pendingIntent)
+                loginSuccess()
+            }
+            .addOnFailureListener { e ->
+                Log.e("fire base google", "Google Sign-in failed", e)
+            }
+    }
+    private fun oneTapSignIn() {
+        // Configure One Tap UI
+        val oneTapRequest = BeginSignInRequest.builder()
+            .setGoogleIdTokenRequestOptions(
+                BeginSignInRequest.GoogleIdTokenRequestOptions.builder()
+                    .setSupported(true)
+                    .setServerClientId(getString(R.string.default_web_client_id))
+                    .setFilterByAuthorizedAccounts(true)
+                    .build(),
+            )
+            .build()
+
+        // Display the One Tap UI
+        signInClient.beginSignIn(oneTapRequest)
+            .addOnSuccessListener { result ->
+                launchSignIn(result.pendingIntent)
+            }
+            .addOnFailureListener { e ->
+                // No saved credentials found. Launch the One Tap sign-up flow, or
+                // do nothing and continue presenting the signed-out UI.
+            }
+    }
+    private val signInLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+        handleSignInResult(result.data)
+    }
+    private lateinit var signInClient: SignInClient
+    private fun handleSignInResult(data: Intent?) {
+        // Result returned from launching the Sign In PendingIntent
+        try {
+            // Google Sign In was successful, authenticate with Firebase
+            val credential = signInClient.getSignInCredentialFromIntent(data)
+            val idToken = credential.googleIdToken
+            if (idToken != null) {
+                Log.d("fire base google", "firebaseAuthWithGoogle: ${credential.id}")
+                firebaseAuthWithGoogle(idToken)
+            } else {
+                // Shouldn't happen.
+                Log.d("fire base google", "No ID token!")
+            }
+        } catch (e: ApiException) {
+            // Google Sign In failed, update UI appropriately
+            Log.w("fire base google", "Google sign in failed", e)
+
+        }
+    }
+    private fun firebaseAuthWithGoogle(idToken: String) {
+        val credential = GoogleAuthProvider.getCredential(idToken, null)
+        auth.signInWithCredential(credential)
+            .addOnCompleteListener(requireActivity()) { task ->
+                if (task.isSuccessful) {
+                    // Sign in success, update UI with the signed-in user's information
+                    Log.d("fire base google", "signInWithCredential:success")
+                    val user = auth.currentUser
+
+                } else {
+                    // If sign in fails, display a message to the user.
+                    Log.w("fire base google", "signInWithCredential:failure", task.exception)
+
+                }
+
+            }
+    }
+    private fun launchSignIn(pendingIntent: PendingIntent) {
+        try {
+            val intentSenderRequest = IntentSenderRequest.Builder(pendingIntent)
+                .build()
+            signInLauncher.launch(intentSenderRequest)
+        } catch (e: IntentSender.SendIntentException) {
+            Log.e("signin error", "Couldn't start Sign In: ${e.localizedMessage}")
+        }
+    }
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

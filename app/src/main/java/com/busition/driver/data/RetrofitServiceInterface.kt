@@ -13,22 +13,27 @@ import retrofit2.http.Query
 interface RetrofitServiceInterface {
 
     @GET("schedule/driver")
-    fun getSchedule(@Header("Authorization")token:String): Call<ScheduleDataList>
+    fun getSchedule(@Header("Authorization") token: String): Call<ScheduleDataList>
 
     @GET("station")
     fun getStation(
-        @Query("route_id") route_id: Int,
+        @Header("Authorization") token: String,
+        @Query("route_uuid") route_id: Int,
         @Query("shuttle_direction") shuttle_direction: Int
     ): Call<StationListData>
 
     @GET("passenger/list")
     fun getPassengerList(
+        @Header("Authorization") token: String,
         @Query("route_id") route_id: Int,
         @Query("station_id") station_id: Int,
         @Query("shuttle_direction") shuttle_direction: Int
     ): Call<PassengerListData>
 
     @GET("route/{route_id}")
-    fun getRoute(@Path("route_id") route_id: Int,
-                 @Query("shuttle_direction") shuttle_direction: Int ): Call<RouteData>
+    fun getRoute(
+        @Header("Authorization") token: String,
+        @Path("route_id") route_id: Int,
+        @Query("shuttle_direction") shuttle_direction: Int
+    ): Call<RouteData>
 }

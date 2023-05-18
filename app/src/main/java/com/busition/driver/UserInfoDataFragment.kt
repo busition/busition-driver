@@ -13,7 +13,11 @@ import com.busition.driver.data.passenger_list.PassengerListData
 import com.busition.driver.databinding.FragmentUserInfoItemListBinding
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.FragmentItemDetailScreen.Companion.shuttle_direction
+import com.busition.driver.main_screen.MainScreen.Companion.token
 import com.busition.driver.placeholder.UserInfoDataContent
+import com.busition.driver.ui.login.LoginViewModel
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.auth.GetTokenResult
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -23,7 +27,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class UserInfoDataFragment : Fragment() {
 
     private var columnCount = 1
-    private var station_id:Int = 0
+    private var station_id: Int = 0
     private lateinit var binding: FragmentUserInfoItemListBinding
     private lateinit var userInfoRecyclerAdapter: MyuserInfoDataRecyclerViewAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +49,7 @@ class UserInfoDataFragment : Fragment() {
         return view
     }
 
-    fun requestApi(){
+    fun requestApi() {
         binding.userInfoList.gone()
         binding.loadBarUserInfo.show()
         val retrofit = Retrofit.Builder()
@@ -53,7 +57,24 @@ class UserInfoDataFragment : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
-        service.getPassengerList(FragmentItemDetailScreen.route_id,station_id, shuttle_direction ).enqueue(object : retrofit2.Callback<PassengerListData> {
+        LoginViewModel.auth.currentUser?.getIdToken(true)
+            ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
+                if (t.isSuccessful) {
+                    val idToken = t.result.token
+                    token = "Bearer " + idToken.toString()
+                    Log.d("id token", idToken.toString())
+
+
+                } else {
+                    // Handle error -> task.getException();
+                }
+            })
+        service.getPassengerList(
+            token,
+            FragmentItemDetailScreen.route_id,
+            station_id,
+            shuttle_direction
+        ).enqueue(object : retrofit2.Callback<PassengerListData> {
             override fun onResponse(
                 call: retrofit2.Call<PassengerListData>,
                 response: retrofit2.Response<PassengerListData>
@@ -63,19 +84,19 @@ class UserInfoDataFragment : Fragment() {
                     Log.d("route", route.toString())
                     // 리사이클러 업데이트 ㅍ추가가가가가가가
                     val tmpList = ArrayList<PassengerData>()
-                    for(i in 0 until route?.passengerList?.size!!){
+                    for (i in 0 until route?.passengerList?.size!!) {
                         val tmp = PassengerData(
-                            route.passengerList[i].passenger_id ?:"",
-                            route.passengerList[i].passenger_name ?:"",
-                            route.passengerList[i].passenger_phone ?:"",
-                            route.passengerList[i].passenger_email ?:"",
+                            route.passengerList[i].passenger_uid ?: "",
+                            route.passengerList[i].passenger_name ?: "",
+                            route.passengerList[i].passenger_phone ?: "",
+                            route.passengerList[i].passenger_email ?: "",
                         )
                         tmpList.add(tmp)
                     }
 
                     UserInfoDataContent.makeItem(tmpList)
                     userInfoRecyclerAdapter.notifyDataSetChanged()
-                }else{
+                } else {
                     Log.d("route", "onResponse: ${response}")
                 }
                 binding.userInfoList.show()

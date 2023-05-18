@@ -19,7 +19,7 @@ import com.google.firebase.ktx.Firebase
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
 
-    private var auth: FirebaseAuth = Firebase.auth
+
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm
 
@@ -39,23 +39,23 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
                     Log.d(TAG, "signInWithEmail:success")
                     val user = auth.currentUser
                     Log.d("login user ", user.toString())
-                    if (user != null) {
-                        user.getIdToken(true)
-                            .addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
-                                if (t.isSuccessful) {
-                                    val idToken = t.result.token
-                                    token = "Bearer "+idToken.toString()
-                                    Log.d("id token" , idToken.toString())
-
-
-                                } else {
-                                    // Handle error -> task.getException();
-                                }
-                            })
-
-
-//                        user.updatePhoneNumber()
-                    }
+//                    if (user != null) {
+//                        user.getIdToken(true)
+//                            .addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
+//                                if (t.isSuccessful) {
+//                                    val idToken = t.result.token
+//                                    token = "Bearer "+idToken.toString()
+//                                    Log.d("id token" , idToken.toString())
+//
+//
+//                                } else {
+//                                    // Handle error -> task.getException();
+//                                }
+//                            })
+//
+//
+////                        user.updatePhoneNumber()
+//                    }
 //                    updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
@@ -104,5 +104,9 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     // A placeholder password validation check
     private fun isPasswordValid(password: String): Boolean {
         return password.length > 5
+    }
+
+    companion object {
+        var auth: FirebaseAuth = Firebase.auth
     }
 }
