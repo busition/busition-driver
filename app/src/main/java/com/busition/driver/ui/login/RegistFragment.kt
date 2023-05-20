@@ -22,6 +22,8 @@ import com.busition.driver.base_api_url
 import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.data.signup.SignUpBody
 import com.busition.driver.data.signup.SignUpResponse
+import com.busition.driver.gone
+import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.MainScreen
 import com.busition.driver.main_screen.MainScreen.Companion.token
 import com.busition.driver.ui.login.LoginViewModel.Companion.auth
@@ -41,6 +43,9 @@ class RegistFragment : Fragment() {
     // onDestroyView.
     private val binding get() = _binding!!
     private lateinit var loginButton : Button
+    var type = 0
+    var googleId = ""
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,11 +56,19 @@ class RegistFragment : Fragment() {
         return binding.root
 
     }
+    override fun onCreate(savedInstanceState: Bundle?){
+        super.onCreate(savedInstanceState)
+        val arg = requireArguments()
+        type = arg.getInt("type",0)
+        googleId = arg.getString("googleId").toString()
+
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         loginViewModel = ViewModelProvider(this, LoginViewModelFactory())
             .get(LoginViewModel::class.java)
+
 
         val usernameEditText = binding.username
         val passwordEditText = binding.password
@@ -90,7 +103,11 @@ class RegistFragment : Fragment() {
 //                    updateUiWithUser(it)
 //                }
 //            })
+        if (type == 1){
+            binding.username.gone()
+            binding.password.gone()
 
+        }
         val afterTextChangedListener = object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
                 // ignore
@@ -119,7 +136,47 @@ class RegistFragment : Fragment() {
         loginButton.setOnClickListener {
 //            loadingProgressBar.visibility = View.VISIBLE
             //regist
-            createAccount(nameEditText.text.toString(),usernameEditText.text.toString(), passwordEditText.text.toString(), phoneEditText.text.toString())
+            if (type == 1){
+                val data = SignUpBody(
+                    1,
+                    googleId,
+                    nameEditText.text.toString(),
+                    phoneEditText.text.toString(),
+                )
+                val retrofit = Retrofit.Builder()
+                    .baseUrl(base_api_url)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build()
+                val service = retrofit.create(RetrofitServiceInterface::class.java)
+                auth.currentUser?.getIdToken(true)
+                    ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
+                        if (t.isSuccessful) {
+                            val idToken = t.result.token
+                            MainScreen.token = "Bearer " + idToken.toString()
+                            Log.d("id token", idToken.toString())
+
+
+                        } else {
+                            // Handle error -> task.getException();
+                        }
+                    })
+                service.signUp(token,data).enqueue(object : retrofit2.Callback<SignUpResponse> {
+                    override fun onResponse(
+                        call: Call<SignUpResponse>,
+                        response: Response<SignUpResponse>
+                    ) {
+                        val navController = Navigation.findNavController(view!!)
+                        navController.navigate(R.id.action_BusitionRegister_to_BusitionLogin)
+                    }
+
+                    override fun onFailure(call: Call<SignUpResponse>, t: Throwable) {
+                        TODO("Not yet implemented")
+                    }
+                })
+            }else{
+                createAccount(nameEditText.text.toString(),usernameEditText.text.toString(), passwordEditText.text.toString(), phoneEditText.text.toString())
+            }
+
 
 
         }

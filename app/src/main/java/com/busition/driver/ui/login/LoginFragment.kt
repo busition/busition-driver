@@ -20,6 +20,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -28,6 +29,10 @@ import androidx.navigation.findNavController
 import com.busition.driver.R
 import com.busition.driver.base_api_url
 import com.busition.driver.data.RetrofitServiceInterface
+import com.busition.driver.data.signin.SignIn
+import com.busition.driver.data.signin.SigninResponse
+import com.busition.driver.data.signup.SignUpBody
+import com.busition.driver.data.signup.SignUpResponse
 import com.busition.driver.databinding.FragmentLoginBinding
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.MainScreen
@@ -37,11 +42,15 @@ import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -276,6 +285,7 @@ class LoginFragment : Fragment() {
             if (idToken != null) {
                 Log.d("fire base google", "firebaseAuthWithGoogle: ${credential.id}")
                 firebaseAuthWithGoogle(idToken)
+
             } else {
                 // Shouldn't happen.
                 Log.d("fire base google", "No ID token!")
@@ -295,7 +305,33 @@ class LoginFragment : Fragment() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d("fire base google", "signInWithCredential:success")
                     val user = auth.currentUser
-                    loginSuccess()
+
+
+                    val retrofit = Retrofit.Builder()
+                        .baseUrl(base_api_url)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+                    val service = retrofit.create(RetrofitServiceInterface::class.java)
+                    var data: SignIn = SignIn()
+                    service.sighIn(MainScreen.token,data).enqueue(object : retrofit2.Callback<SigninResponse> {
+                        override fun onResponse(
+                            call: Call<SigninResponse>,
+                            response: Response<SigninResponse>
+                        ) {
+                            if (response.body()?.status == 0){
+                                val navController = Navigation.findNavController(requireView())
+                                val bundle = bundleOf("type" to 1, "googleId" to idToken)
+                                navController.navigate(R.id.action_Register_to_Login_Fragment,bundle)
+                            }else{
+                                loginSuccess()
+                            }
+                        }
+
+                        override fun onFailure(call: Call<SigninResponse>, t: Throwable) {
+                            TODO("Not yet implemented")
+                        }
+                    })
+
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("fire base google", "signInWithCredential:failure", task.exception)
