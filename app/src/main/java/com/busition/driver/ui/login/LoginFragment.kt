@@ -169,18 +169,20 @@ class LoginFragment : Fragment() {
         passwordEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
-                loginViewModel.login(
-                    usernameEditText.text.toString(),
-                    passwordEditText.text.toString()
-                )
+//                loginViewModel.login(
+//                    usernameEditText.text.toString(),
+//                    passwordEditText.text.toString()
+//                )
             }
             false
         }
 
         loginButton.setOnClickListener {
             loadingProgressBar.visibility = View.VISIBLE
-            Log.d("start token", MainScreen.token)
-
+            loginViewModel.login(
+                usernameEditText.text.toString(),
+                passwordEditText.text.toString()
+            )
             loginSuccess()
 
 

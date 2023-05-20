@@ -38,6 +38,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithEmail:success")
                     val user = auth.currentUser
+                    auth = auth
                     Log.d("login user ", user.toString())
 //                    if (user != null) {
 //                        user.getIdToken(true)
@@ -59,7 +60,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 //                    updateUI(user)
                 } else {
                     // If sign in fails, display a message to the user.
-                    Log.w(TAG, "signInWithEmail:failure", task.exception)
+                    Log.w("fierbase login fail", "signInWithEmail:failure", task.exception)
                     //updateUI(null) 로그인 완료시
                     //checkForMultiFactorFailure(task.exception!!)
                 }

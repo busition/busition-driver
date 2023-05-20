@@ -12,6 +12,7 @@ import com.busition.driver.base_api_url
 import com.busition.driver.data.schedule_all.DayTime
 import com.busition.driver.data.schedule_all.DepartureTime
 import com.busition.driver.data.RetrofitServiceInterface
+import com.busition.driver.data.schedule_all.S
 import com.busition.driver.data.schedule_all.ScheduleDataList
 
 import com.busition.driver.databinding.FragmentScheduleListBinding
@@ -104,7 +105,8 @@ class ScheduleList : Fragment() {
                                                         ?: "",
                                                     scheduleDataList?.schedule_data?.get(i)?.departure_time
                                                         ?: DepartureTime(
-                                                            DayTime("", "")
+                                                            DayTime(S(""), S(""))
+
                                                         ),
                                                     scheduleDataList?.schedule_data?.get(i)?.shuttle_direction
                                                         ?: 0,
@@ -119,7 +121,7 @@ class ScheduleList : Fragment() {
 
                                 } else {
                                     Log.d("Error for network", response.toString())
-                                    Log.d("Error for network", MainScreen.token)
+//                                    Log.d("Error for network", MainScreen.token)
                                 }
                                 binding?.recyclerScheduleList?.show()
                                 binding?.loadingBar?.gone()
@@ -133,9 +135,9 @@ class ScheduleList : Fragment() {
                             }
                         })
 
-
                 } else {
                     // Handle error -> task.getException();
+                    Log.d("fire base error", t.exception.toString())
                 }
             })
 

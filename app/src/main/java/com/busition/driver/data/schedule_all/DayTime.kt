@@ -8,11 +8,11 @@ import java.util.*
 data class DayTime(
     @SerializedName("day_of_week")
     @Expose
-    var day_of_week: String,
+    var day_of_week: S,
 
     @SerializedName("time")
     @Expose
-    var time: String,
+    var time: S,
 
 ){
     fun converIso(tmp:String): String {

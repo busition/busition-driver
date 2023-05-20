@@ -39,7 +39,7 @@ class MyItemRecyclerViewAdapter(
         val destinationText:String =  item.departure_point + " -> " + item.destination
         holder.typeView.text = type
         holder.destinationView.text = destinationText
-        holder.timeView.text = item.departure_time.day_time.time
+        holder.timeView.text = item.departure_time.day_time.time.S
 
         viewItemDetails(holder, item)
 

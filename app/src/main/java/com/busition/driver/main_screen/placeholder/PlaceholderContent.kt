@@ -18,8 +18,8 @@ object PlaceholderContent {
     }
 
     fun addItem(item: PlaceholderItem) {
-        val timeData = item.departure_time.day_time.converIso(item.departure_time.day_time.time)
-        item.departure_time.day_time.time = timeData
+        val timeData = item.departure_time.day_time.converIso(item.departure_time.day_time.time.S)
+        item.departure_time.day_time.time.S = timeData
         ITEMS.add(item)
 
     }
