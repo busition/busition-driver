@@ -34,7 +34,7 @@ class ScheduleList : Fragment() {
 
     private var columnCount = 1
     private var binding: FragmentScheduleListBinding? = null
-    private lateinit var recyclerViewAdapter: MyItemRecyclerViewAdapter
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,7 +43,7 @@ class ScheduleList : Fragment() {
 //            userName = it.getString("userName").toString()
 //            driver_id = it.getInt("driver_id")
 //        }
-        Log.d("scheduleList", "onCreate: $userName $driver_id")
+        Log.d("scheduleList", "onCreate: $userName $driver_uuid")
 
 
     }
@@ -63,7 +63,7 @@ class ScheduleList : Fragment() {
 
         attachData()
 
-        Log.d("scheduleList", "onCreateView: $userName $driver_id")
+        Log.d("scheduleList", "onCreateView: $userName $driver_uuid")
 
         return view
     }
@@ -81,7 +81,7 @@ class ScheduleList : Fragment() {
             ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
                 if (t.isSuccessful) {
                     val idToken = t.result.token
-                    token = "Bearer "+idToken.toString()
+                    token = "Bearer " + idToken.toString()
                     Log.d("token", token)
                     service.getSchedule(token)
                         .enqueue(object : retrofit2.Callback<ScheduleDataList> {
@@ -94,11 +94,13 @@ class ScheduleList : Fragment() {
                                     Log.d("ScheduleDataList", scheduleDataList.toString())
 
                                     if (scheduleDataList?.schedule_count != PlaceholderContent.ITEMS.size) {
+                                        PlaceholderContent.ITEMS.clear()
                                         for (i in 0 until (scheduleDataList?.schedule_count ?: 0)) {
                                             PlaceholderContent.addItem(
                                                 PlaceholderContent.PlaceholderItem(
-                                                    scheduleDataList?.schedule_data?.get(i)?.route_id
-                                                        ?: 0,
+
+                                                    scheduleDataList?.schedule_data?.get(i)?.route_uuid
+                                                        ?: "",
                                                     scheduleDataList?.schedule_data?.get(i)?.departure_point
                                                         ?: "",
                                                     scheduleDataList?.schedule_data?.get(i)?.destination
@@ -144,13 +146,14 @@ class ScheduleList : Fragment() {
     }
 
     companion object {
-
+        lateinit var recyclerViewAdapter: MyItemRecyclerViewAdapter
         var userName: String = "test"
-        var driver_id: Int = 0
-        fun getUserData(userName: String, driver_id: Int) {
+        var driver_uuid: String = ""
+        fun getUserData(userName: String, driver_uuid: String) {
             this.userName = userName
-            this.driver_id = driver_id
+            this.driver_uuid = driver_uuid
         }
+
     }
 }
 

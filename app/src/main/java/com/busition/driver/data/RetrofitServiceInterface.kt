@@ -22,22 +22,22 @@ interface RetrofitServiceInterface {
     @GET("station")
     fun getStation(
         @Header("Authorization") token: String,
-        @Query("route_uuid") route_id: Int,
+        @Query("route_uuid") route_uuid: String,
         @Query("shuttle_direction") shuttle_direction: Int
     ): Call<StationListData>
 
     @GET("passenger/list")
     fun getPassengerList(
         @Header("Authorization") token: String,
-        @Query("route_id") route_id: Int,
-        @Query("station_id") station_id: Int,
+        @Query("route_uuid") route_uuid: String,
+        @Query("station_uuid") station_uuid: String,
         @Query("shuttle_direction") shuttle_direction: Int
     ): Call<PassengerListData>
 
-    @GET("route/{route_id}")
+    @GET("route/{route_uuid}")
     fun getRoute(
         @Header("Authorization") token: String,
-        @Path("route_id") route_id: Int,
+        @Path("route_uuid") route_uuid: String,
         @Query("shuttle_direction") shuttle_direction: Int
     ): Call<RouteData>
 

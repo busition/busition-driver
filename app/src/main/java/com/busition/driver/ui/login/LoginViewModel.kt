@@ -26,11 +26,12 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
-    fun login(username: String, password: String):String {
+    fun login(username: String, password: String){
         // can be launched in a separate asynchronous job
-        val result = loginRepository.login(username, password)
+//        val result = loginRepository.login(username, password)
+
         var token:String = ""
-        Log.d(TAG, "signIn:$username")
+        Log.d("firebase user name", "signIn:$username")
         //ㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴ
         auth.signInWithEmailAndPassword(username, password)
             .addOnCompleteListener() { task ->
@@ -40,6 +41,9 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
                     val user = auth.currentUser
                     auth = auth
                     Log.d("login user ", user.toString())
+
+                    _loginResult.value =
+                        LoginResult(success = LoggedInUserView(driver_uuid = auth.currentUser!!.uid))
 //                    if (user != null) {
 //                        user.getIdToken(true)
 //                            .addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
@@ -58,9 +62,11 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 ////                        user.updatePhoneNumber()
 //                    }
 //                    updateUI(user)
+
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("fierbase login fail", "signInWithEmail:failure", task.exception)
+                    _loginResult.value = LoginResult(error = R.string.login_failed)
                     //updateUI(null) 로그인 완료시
                     //checkForMultiFactorFailure(task.exception!!)
                 }
@@ -73,14 +79,8 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
             }
 
         //ㄴㄴㄴㄴㄴㄴㄴㄴ
-        if (result is Result.Success) {
-            _loginResult.value =
-                LoginResult(success = LoggedInUserView(displayName = result.data.displayName, driver_id = result.data.driver_id))
 
-        } else {
-            _loginResult.value = LoginResult(error = R.string.login_failed)
-        }
-        return token
+
     }
 
     fun loginDataChanged(username: String, password: String) {

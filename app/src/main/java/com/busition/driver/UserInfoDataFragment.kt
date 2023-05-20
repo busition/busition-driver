@@ -27,12 +27,12 @@ import retrofit2.converter.gson.GsonConverterFactory
 class UserInfoDataFragment : Fragment() {
 
     private var columnCount = 1
-    private var station_id: Int = 0
+    private var station_uuid: String = ""
     private lateinit var binding: FragmentUserInfoItemListBinding
     private lateinit var userInfoRecyclerAdapter: MyuserInfoDataRecyclerViewAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        station_id = arguments?.getInt("station_id") ?: 0
+        station_uuid = arguments?.getString("station_uuid") ?:""
 
     }
 
@@ -71,8 +71,8 @@ class UserInfoDataFragment : Fragment() {
             })
         service.getPassengerList(
             token,
-            FragmentItemDetailScreen.route_id,
-            station_id,
+            FragmentItemDetailScreen.route_uuid,
+            station_uuid,
             shuttle_direction
         ).enqueue(object : retrofit2.Callback<PassengerListData> {
             override fun onResponse(

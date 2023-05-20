@@ -120,7 +120,7 @@ class LoginFragment : Fragment() {
         }
 //        activityResultLauncher.launch(permissionList)
         activityResultLauncher.launch(ANDROID_12_BLE_PERMISSIONS)
-        Log.d("route_id", FragmentItemDetailScreen.route_id.toString())
+        Log.d("route_uuid", FragmentItemDetailScreen.route_uuid.toString())
         binding.googlesignin.setOnClickListener { signIn() }
         loginViewModel.loginFormState.observe(viewLifecycleOwner,
             Observer { loginFormState ->
@@ -183,7 +183,7 @@ class LoginFragment : Fragment() {
                 usernameEditText.text.toString(),
                 passwordEditText.text.toString()
             )
-            loginSuccess()
+
 
 
         }
@@ -199,21 +199,23 @@ class LoginFragment : Fragment() {
 //                usernameEditText.text.toString(),
 //                passwordEditText.text.toString()
 //            )
-            loginSuccess()
+//            loginSuccess()
         }
     }
 
-    private fun loginSuccess(){
+    private fun loginSuccess() {
         val intent = Intent(getActivity(), MainScreen::class.java)
         intent.flags =
             Intent.FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK or FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
     }
+
     private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome) + model.displayName
+        val welcome = getString(R.string.welcome) + model.driver_uuid
         // TODO : initiate successful logged in experience
         val appContext = context?.applicationContext ?: return
         Toast.makeText(appContext, welcome, Toast.LENGTH_LONG).show()
+        loginSuccess()
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
@@ -236,6 +238,7 @@ class LoginFragment : Fragment() {
                 Log.e("fire base google", "Google Sign-in failed", e)
             }
     }
+
     private fun oneTapSignIn() {
         // Configure One Tap UI
         val oneTapRequest = BeginSignInRequest.builder()
@@ -258,9 +261,11 @@ class LoginFragment : Fragment() {
                 // do nothing and continue presenting the signed-out UI.
             }
     }
-    private val signInLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-        handleSignInResult(result.data)
-    }
+
+    private val signInLauncher =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            handleSignInResult(result.data)
+        }
     private lateinit var signInClient: SignInClient
     private fun handleSignInResult(data: Intent?) {
         // Result returned from launching the Sign In PendingIntent
@@ -281,6 +286,7 @@ class LoginFragment : Fragment() {
 
         }
     }
+
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
@@ -298,6 +304,7 @@ class LoginFragment : Fragment() {
 
             }
     }
+
     private fun launchSignIn(pendingIntent: PendingIntent) {
         try {
             val intentSenderRequest = IntentSenderRequest.Builder(pendingIntent)
@@ -307,9 +314,16 @@ class LoginFragment : Fragment() {
             Log.e("signin error", "Couldn't start Sign In: ${e.localizedMessage}")
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        fun loginSuccess() {
+
+        }
     }
 
 

@@ -43,7 +43,7 @@ class GpsForegroundService : Service() {
             "start" ->{
                 generateForegroundNotification()
                 gpsWorker()
-                SocketIo.startSocket(ScheduleList.driver_id.toString())
+                SocketIo.startSocket(FragmentItemDetailScreen.route_uuid)
 
 
             }

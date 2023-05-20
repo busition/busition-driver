@@ -40,6 +40,7 @@ class MyuserInfoDataRecyclerViewAdapter(
             ContextCompat.startActivity(holder.itemView.context, call, null)
 
         }
+
     }
 
     override fun getItemCount(): Int {

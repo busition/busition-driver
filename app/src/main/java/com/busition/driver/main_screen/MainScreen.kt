@@ -34,6 +34,7 @@ import com.busition.driver.FloatingService
 import com.busition.driver.R
 import com.busition.driver.SocketIo
 import com.busition.driver.databinding.ActivityMainScreenBinding
+import com.busition.driver.main_screen.ScheduleList.Companion.driver_uuid
 import com.google.android.material.snackbar.Snackbar
 
 class MainScreen : AppCompatActivity() {
@@ -66,8 +67,8 @@ class MainScreen : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         userName = intent.getStringExtra("userName").toString()
-        driver_id = intent.getIntExtra("driver_id", 0)
-        ScheduleList.getUserData(userName, driver_id)
+        driver_uuid = intent.getStringExtra("driver_uuid" ).toString()
+        ScheduleList.getUserData(userName, driver_uuid )
 
         binding = ActivityMainScreenBinding.inflate(layoutInflater)
         setSupportActionBar(binding.toolbar)
@@ -190,7 +191,7 @@ class MainScreen : AppCompatActivity() {
         }
     }
     companion object {
-        var driver_id: Int = 0
+        var driver_uuid: String = ""
         var token: String = ""
 
     }

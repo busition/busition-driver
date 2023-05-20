@@ -17,14 +17,14 @@ object SocketIo {
     fun startSocket(id:String){
         socketIo = SocketIo
         try {
-            val pack = JSONObject()
-            pack.put("id", id)
-            socketServer = IO.socket("http://api.dev.busition.com:3000/driver")
+//            val pack = JSONObject()
+//            pack.put("id", id)
+            socketServer = IO.socket("http://api.dev.busition.com:3000/user")
             socketServer.connect()
-            Log.d("socket pack jsonObject", pack.toString())
+            Log.d("socket pack jsonObject", id)
             Log.d("socket", socketServer.toString())
-            socketServer.emit("send_id", pack)
-            recvLocation()
+            socketServer.emit("open_room", id)
+//            recvLocation()
 
         }catch (e:Exception){
             Log.d("socket",e.toString())
