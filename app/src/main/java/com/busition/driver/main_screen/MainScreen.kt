@@ -43,6 +43,8 @@ class MainScreen : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var userName: String
 
+    private var tmpBleList: MutableList<String> = ArrayList()
+
     private val SCAN_PERIOD: Long = 100000
     private val PERMISSIONS_REQUEST_CODE = 191
 
@@ -179,6 +181,11 @@ class MainScreen : AppCompatActivity() {
     private val scanCallback = object : ScanCallback() {
         @SuppressLint("MissingPermission")
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
+            if (!tmpBleList.contains(result?.device?.uuids.toString())){
+                tmpBleList.add(result?.device?.uuids.toString())
+
+            }
+
             Log.d("ble instance","${result?.device?.name} ${result?.device?.uuids} ${result?.scanRecord?.serviceUuids}" )
         }
 

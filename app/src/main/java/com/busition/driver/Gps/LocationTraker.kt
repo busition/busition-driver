@@ -9,6 +9,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import androidx.annotation.NonNull
+import com.busition.driver.R
 import com.busition.driver.SocketIo
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.placeholder.PlaceholderContent
@@ -31,8 +32,9 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
     var nowLocation:LatLng = LatLng(0.0,0.0)
     private  var currentLocationMarker: Marker = gmap.addMarker(
         MarkerOptions()
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
             .position(nowLocation)
-            .title("tmp")
+            .title("현재 위치")
     )!!
     private var errorMsg: String = ""
     lateinit var locationManager: LocationManager
@@ -77,13 +79,14 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
 //        Log.d("gps", location.latitude.toString() + " " + location.longitude.toString())
         updateLocationIndex()
         updateGmapPolyline(location)
-        SocketIo.sendLocation(location.latitude.toString(),location.longitude.toString())
+        SocketIo.sendLocation(location.latitude.toString(),location.longitude.toString(), location.speed.toString())
 //        val boundsBuilder = LatLngBounds.Builder()
 //        boundsBuilder.include(nowLocation)
 //        val bounds = boundsBuilder.build()
 //        gmap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
 
     }
+
 
 
 
@@ -105,8 +108,9 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
         currentLocationMarker.remove()
         currentLocationMarker = gmap.addMarker(
             MarkerOptions()
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                 .position(nowLocation)
-                .title("tmp")
+                .title("현재 위치")
         )!!
         var list:MutableList<LatLng> = arrayListOf()
         var tmp:LatLng = LatLng(0.0,0.0)

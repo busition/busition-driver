@@ -113,6 +113,7 @@ class FragmentItemDetailScreen : Fragment() {
 
         }
         binding.stopBtn.setOnClickListener{
+
             val gpsIntent = Intent(activity, GpsForegroundService::class.java)
             gpsIntent.setAction("stop")
             activity?.startService(gpsIntent)
@@ -468,5 +469,7 @@ class FragmentItemDetailScreen : Fragment() {
             )
         }
         lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
+        var check_passenger_list: MutableList<String> = ArrayList()
+        var passenger_list: MutableList<String> = ArrayList()
     }
 }

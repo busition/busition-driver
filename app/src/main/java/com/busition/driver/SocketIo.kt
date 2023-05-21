@@ -55,10 +55,20 @@ object SocketIo {
 
     }
 
-    fun sendLocation(lat:String, lon:String){
+
+    fun sendUserUuid(uuid:String, id:String){
+        val tmp =JSONObject()
+        tmp.put("uuid", uuid)
+        tmp.put("id", id)
+        socketServer.emit("check_passenger", tmp)
+        Log.d("socket check_passenger", tmp.toString())
+        FragmentItemDetailScreen.check_passenger_list.add(uuid)
+    }
+    fun sendLocation(lat:String, lon:String, speed:String){
         val tmp =JSONObject()
         tmp.put("latitude", lat)
         tmp.put("longitude", lon)
+        tmp.put("speed", speed)
         Log.d("socket location jsonObject", tmp.toString())
         socketServer.emit("send_location", tmp)
         Log.d("socket send location", tmp.toString())
