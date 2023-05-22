@@ -97,14 +97,16 @@ class UserInfoDataFragment : Fragment() {
                     UserInfoDataContent.makeItem(tmpList)
                     userInfoRecyclerAdapter.notifyDataSetChanged()
                 } else {
-                    Log.d("route", "onResponse: ${response}")
+                    Log.d("fail ", "onResponse: ${response}")
+
                 }
                 binding.userInfoList.show()
                 binding.loadBarUserInfo.gone()
             }
 
             override fun onFailure(call: retrofit2.Call<PassengerListData>, t: Throwable) {
-                Log.d("route", "onFailure: ${t.message}")
+                Log.d("fail", "onFailure: ${t.message}")
+                Log.d("fail ", "onResponse: ${call}")
             }
         })
 

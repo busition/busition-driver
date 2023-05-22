@@ -6,11 +6,11 @@ import com.google.gson.annotations.SerializedName
 data class PassengerListData(
     @SerializedName("route_uuid")
     @Expose
-    val route_uuid:Int,
+    val route_uuid:String,
 
     @SerializedName("station_uuid")
     @Expose
-    val station_uuid:Int,
+    val station_uuid:String,
 
     @SerializedName("passenger_count")
     @Expose

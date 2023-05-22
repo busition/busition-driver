@@ -199,7 +199,8 @@ class LoginFragment : Fragment() {
 
         registerButton.setOnClickListener {
             val navController = Navigation.findNavController(view)
-            navController.navigate(R.id.action_Register_to_Login_Fragment)
+            val bundle = bundleOf("type" to 0, "googleId" to "")
+            navController.navigate(R.id.action_Register_to_Login_Fragment,bundle)
 
         }
 
