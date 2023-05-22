@@ -14,16 +14,19 @@ object SocketIo {
     private var socketIo :SocketIo? = null
     private lateinit var socketServer:Socket
 
-    fun startSocket(id:String){
+    fun startSocket(id:String, type:String){
         socketIo = SocketIo
         try {
 //            val pack = JSONObject()
 //            pack.put("id", id)
+            val tmp =JSONObject()
+            tmp.put("route_id", id)
+            tmp.put("type", type)
             socketServer = IO.socket("http://api.dev.busition.com:3000/user")
             socketServer.connect()
-            Log.d("socket pack jsonObject", id)
-            Log.d("socket", socketServer.toString())
-            socketServer.emit("open_room", id)
+            Log.d("socket pack jsonObject", tmp.toString())
+
+            socketServer.emit("open_room", tmp.toString())
 //            recvLocation()
 
         }catch (e:Exception){
@@ -64,7 +67,7 @@ object SocketIo {
         Log.d("socket check_passenger", tmp.toString())
         FragmentItemDetailScreen.check_passenger_list.add(uuid)
     }
-    fun sendLocation(lat:String, lon:String, speed:String){
+    fun sendLocation(lat:Double, lon:Double, speed: Float){
         val tmp =JSONObject()
         tmp.put("latitude", lat)
         tmp.put("longitude", lon)

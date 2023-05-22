@@ -69,11 +69,8 @@ class FragmentItemDetailScreen : Fragment() {
         Log.d("route_uuid", route_uuid)
         shuttle_direction = arg.getInt("shuttle_direction")
         passListView = arg.getBoolean("passListView")
-        if (passListView) {
-            binding.passlist.show()
-            binding.textList.gone()
-            binding.itemListLay.gone()
-        }
+        Log.d("passs", passListView.toString())
+
         //imsi use key
 
 
@@ -93,10 +90,17 @@ class FragmentItemDetailScreen : Fragment() {
         binding.runBtn.isEnabled = false
         requestApiServer()
         requestRouteApiServer()
+        if (!test) {
+            binding.textList.show()
+            binding.itemListLay.gone()
+        }else{
+            binding.passlist.gone()
+            binding.itemListLay.show()
 
+        }
 
         binding.runBtn.setOnClickListener {
-
+            MainScreen.test_code = false
             val bundle = bundleOf("item" to binding.estimatedTime.text)
             val navController = Navigation.findNavController(view)
 //            navController.navigate(
@@ -106,8 +110,9 @@ class FragmentItemDetailScreen : Fragment() {
             binding.passlist.gone()
             binding.textList.gone()
             binding.itemListLay.show()
-
+            test = true
             //service start func
+            scan()
             tmp()
 
 
@@ -127,6 +132,7 @@ class FragmentItemDetailScreen : Fragment() {
             binding.passlist.gone()
             binding.textList.gone()
             binding.itemListLay.show()
+            test=false
         }
 
 
@@ -240,8 +246,8 @@ class FragmentItemDetailScreen : Fragment() {
     fun requestApiServer() {
         PlaceholderContent.ITEMS.clear()
         stationDataList.clear()
-        binding.textList.gone()
-        binding.loadBar.show()
+//        binding.textList.gone()
+//        binding.loadBar.show()
         val retrofit = Retrofit.Builder()
             .baseUrl(base_api_url)
             .addConverterFactory(GsonConverterFactory.create())
@@ -293,7 +299,7 @@ class FragmentItemDetailScreen : Fragment() {
                                     Log.d("response", "onResponse: $response")
                                 }
                                 binding.loadBar.gone()
-                                binding.textList.show()
+//                                binding.textList.show()
                                 makeRoute()
 
                             }
@@ -471,5 +477,7 @@ class FragmentItemDetailScreen : Fragment() {
         lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
         var check_passenger_list: MutableList<String> = ArrayList()
         var passenger_list: MutableList<String> = ArrayList()
+        var test:Boolean = false
+        var t:Boolean = false
     }
 }

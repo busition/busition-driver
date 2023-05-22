@@ -83,7 +83,7 @@
                 android:layout_weight="1"
                 android:background="#E2E2E2"
                 android:orientation="vertical"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/textView6"
@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:layout_marginTop="9dp"
-                    android:text="노선 1"
+                    android:text="노선 이름"
                     android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
                 <include
@@ -141,7 +141,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="16dp"
                         android:autoSizeTextType="uniform"
-                        android:text="노선 1" />
+                        android:text="노선 이름" />
 
 
                 </LinearLayout>
@@ -195,7 +195,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="16dp"
                         android:autoSizeTextType="uniform"
-                        android:text="예상 소요 시간 : " />
+                        android:text="예상 소요 시간 : 40분" />
 
 
                 </LinearLayout>
@@ -213,7 +213,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="16dp"
                         android:autoSizeTextType="uniform"
-                        android:text="이동 거리 : " />
+                        android:text="이동 거리 : 25km" />
 
 
                 </LinearLayout>

@@ -2,11 +2,11 @@ package com.busition.driver
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.data.passenger_list.PassengerData
 import com.busition.driver.data.passenger_list.PassengerListData
@@ -21,6 +21,7 @@ import com.google.firebase.auth.GetTokenResult
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
+
 /**
  * A fragment representing a list of Items.
  */
@@ -29,20 +30,22 @@ class UserInfoDataFragment : Fragment() {
     private var columnCount = 1
     private var station_uuid: String = ""
     private lateinit var binding: FragmentUserInfoItemListBinding
-    private lateinit var userInfoRecyclerAdapter: MyuserInfoDataRecyclerViewAdapter
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         station_uuid = arguments?.getString("station_uuid") ?:""
 
+
     }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         val view = inflater.inflate(R.layout.fragment_user_info_item_list, container, false)
         binding = FragmentUserInfoItemListBinding.bind(view)
-        userInfoRecyclerAdapter = MyuserInfoDataRecyclerViewAdapter(UserInfoDataContent.ITEMS)
+
         binding.userInfoList.layoutManager = LinearLayoutManager(context)
         binding.userInfoList.adapter = userInfoRecyclerAdapter
         requestApi()
@@ -110,5 +113,8 @@ class UserInfoDataFragment : Fragment() {
             }
         })
 
+    }
+    companion object{
+        var userInfoRecyclerAdapter: MyuserInfoDataRecyclerViewAdapter = MyuserInfoDataRecyclerViewAdapter(UserInfoDataContent.ITEMS)
     }
 }
