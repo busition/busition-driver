@@ -121,9 +121,9 @@ class LoginFragment : Fragment() {
             if (isAllGranted) {
                 Log.d("permission", "all granted" + isAllGranted.toString())
 
-                Toast.makeText(activity, "permission granted", Toast.LENGTH_LONG).show()
+//                Toast.makeText(activity, "permission granted", Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(activity, "plz check permissions", Toast.LENGTH_LONG).show()
+//                Toast.makeText(activity, "plz check permissions", Toast.LENGTH_LONG).show()
             }
 
         }
@@ -224,7 +224,7 @@ class LoginFragment : Fragment() {
         val welcome = getString(R.string.welcome) + model.driver_uuid
         // TODO : initiate successful logged in experience
         val appContext = context?.applicationContext ?: return
-        Toast.makeText(appContext, welcome, Toast.LENGTH_LONG).show()
+//        Toast.makeText(appContext, welcome, Toast.LENGTH_LONG).show()
         loginSuccess()
     }
 

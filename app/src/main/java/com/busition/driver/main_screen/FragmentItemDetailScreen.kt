@@ -168,7 +168,7 @@ class FragmentItemDetailScreen : Fragment() {
         val gpsIntent = Intent(activity, GpsForegroundService::class.java)
         gpsIntent.setAction("start")
         activity?.startService(gpsIntent)
-        Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
+//        Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
     }
 
     override fun onCreateView(
