@@ -55,7 +55,7 @@ class FragmentItemDetailScreen : Fragment() {
     private lateinit var estimated_time: TextView
     private lateinit var passenger_count: TextView
     private lateinit var travel_distance: TextView
-
+    private  var passListView:Boolean = false
 
     private var route_list = ArrayList<ArrayList<Double>>()
 
@@ -65,8 +65,12 @@ class FragmentItemDetailScreen : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val arg = requireArguments()
-        route_id = arg.getInt("route_id")
+        route_uuid = arg.getString("route_uuid").toString()
+        Log.d("route_uuid", route_uuid)
         shuttle_direction = arg.getInt("shuttle_direction")
+        passListView = arg.getBoolean("passListView")
+        Log.d("passs", passListView.toString())
+
         //imsi use key
 
 
@@ -86,55 +90,85 @@ class FragmentItemDetailScreen : Fragment() {
         binding.runBtn.isEnabled = false
         requestApiServer()
         requestRouteApiServer()
+        if (!test) {
+            binding.textList.show()
+            binding.itemListLay.gone()
+        }else{
+            binding.passlist.gone()
+            binding.itemListLay.show()
 
+        }
 
         binding.runBtn.setOnClickListener {
-            (activity as MainScreen?)?.scanLeDevice(true)
+            MainScreen.test_code = false
             val bundle = bundleOf("item" to binding.estimatedTime.text)
             val navController = Navigation.findNavController(view)
 //            navController.navigate(
 //                R.id.action_fragment_item_detial_screen_to_fragment_station_item_screen,
 //                bundle
 //            )
-
+            binding.passlist.gone()
             binding.textList.gone()
             binding.itemListLay.show()
-
+            test = true
+            //service start func
+            scan()
             tmp()
-            val uriNaverMap = Uri.parse("navermaps://")
-            val uriKakaoNavi = Uri.parse("kakaonavi://")
-            val uriTmap = Uri.parse("tmap://")
 
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse("geo:0,0?q=37.532629,-122.319131") // 출발지 좌표
-            intent.putExtra(Intent.EXTRA_TITLE, "Select navigation app") // 다이얼로그 타이틀
-            intent.putExtra(
-                Intent.EXTRA_INITIAL_INTENTS, arrayOf(
-                    Intent(Intent.ACTION_VIEW, uriNaverMap),
-                    Intent(Intent.ACTION_VIEW, uriKakaoNavi),
-                    Intent(Intent.ACTION_VIEW, uriTmap)
-                )
-            )
 
+        }
+        binding.stopBtn.setOnClickListener{
+
+            val gpsIntent = Intent(activity, GpsForegroundService::class.java)
+            gpsIntent.setAction("stop")
+            activity?.startService(gpsIntent)
+//            Toast.makeText(activity, "service stop", Toast.LENGTH_LONG).show()
+            val intent = Intent(getActivity(), MainScreen::class.java)
+            intent.flags =
+                Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
-
+        }
+        binding.backBtn.setOnClickListener {
+            binding.passlist.gone()
+            binding.textList.gone()
+            binding.itemListLay.show()
+            test=false
         }
 
 
     }
 
+    fun navigate(){
+        val uriNaverMap = Uri.parse("navermaps://")
+        val uriKakaoNavi = Uri.parse("kakaonavi://")
+        val uriTmap = Uri.parse("tmap://")
 
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.data = Uri.parse("geo:0,0?q=37.532629,-122.319131") // 출발지 좌표
+        intent.putExtra(Intent.EXTRA_TITLE, "Select navigation app") // 다이얼로그 타이틀
+        intent.putExtra(
+            Intent.EXTRA_INITIAL_INTENTS, arrayOf(
+                Intent(Intent.ACTION_VIEW, uriNaverMap),
+                Intent(Intent.ACTION_VIEW, uriKakaoNavi),
+                Intent(Intent.ACTION_VIEW, uriTmap)
+            )
+        )
+
+        startActivity(intent)
+    }
+
+    fun scan(){
+        (activity as MainScreen?)?.scanLeDevice(true)
+    }
     private val callback = OnMapReadyCallback { googleMap ->
         gmap = googleMap
-
-
     }
 
     fun tmp() {
         val gpsIntent = Intent(activity, GpsForegroundService::class.java)
         gpsIntent.setAction("start")
         activity?.startService(gpsIntent)
-        Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
+//        Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
     }
 
     override fun onCreateView(
@@ -153,6 +187,8 @@ class FragmentItemDetailScreen : Fragment() {
     }
 
     fun requestRouteApiServer() {
+        PlaceholderContent.ITEMS.clear()
+        route_list.clear()
         val retrofit = Retrofit.Builder()
             .baseUrl(base_api_url)
             .addConverterFactory(GsonConverterFactory.create())
@@ -164,7 +200,8 @@ class FragmentItemDetailScreen : Fragment() {
                     val idToken = t.result.token
                     token = "Bearer " + idToken.toString()
                     Log.d("id token", idToken.toString())
-                    service.getRoute(token, route_id, shuttle_direction)
+                    Log.d("requestRouteApiServer", "token : $route_uuid")
+                    service.getRoute(token, route_uuid, shuttle_direction)
                         .enqueue(object : retrofit2.Callback<RouteData> {
                             override fun onResponse(
                                 call: retrofit2.Call<RouteData>,
@@ -175,14 +212,22 @@ class FragmentItemDetailScreen : Fragment() {
                                     Log.d("api", route.toString())
                                     Log.d(
                                         "api",
-                                        "onResponse: ${response.body()?.route?.traoptimal?.get(0)?.path}"
+                                        "onResponse: ${response.body()}"
                                     )
+                                    if (response.body()?.path?.get(0) != null){
+                                        route_list =
+                                            route?.path as ArrayList<ArrayList<Double>>
+                                        Log.d("polypoly", route_list.toString())
+                                        makePolyRoute()
+                                    }else{
+                                        Log.d("polypoly", "null")
+                                        binding.runBtn.isEnabled = true
+                                    }
 
-                                    route_list =
-                                        route?.route?.traoptimal?.get(0)?.path as ArrayList<ArrayList<Double>>
-                                    makePolyRoute()
                                 } else {
+
                                     Log.d("api", "onResponse: $response")
+                                    binding.runBtn.isEnabled = true
                                 }
                             }
 
@@ -199,8 +244,10 @@ class FragmentItemDetailScreen : Fragment() {
     }
 
     fun requestApiServer() {
-        binding.textList.gone()
-        binding.loadBar.show()
+        PlaceholderContent.ITEMS.clear()
+        stationDataList.clear()
+//        binding.textList.gone()
+//        binding.loadBar.show()
         val retrofit = Retrofit.Builder()
             .baseUrl(base_api_url)
             .addConverterFactory(GsonConverterFactory.create())
@@ -212,7 +259,7 @@ class FragmentItemDetailScreen : Fragment() {
                     val idToken = t.result.token
                     token = "Bearer " + idToken.toString()
                     Log.d("id token", idToken.toString())
-                    service.getStation(token, route_id, shuttle_direction)
+                    service.getStation(token, route_uuid, shuttle_direction)
                         .enqueue(object : retrofit2.Callback<StationListData> {
                             override fun onResponse(
                                 call: retrofit2.Call<StationListData>,
@@ -235,7 +282,7 @@ class FragmentItemDetailScreen : Fragment() {
                                         )
                                     for (i in 0 until (route?.station_count ?: 0)) {
                                         val tmp = StationData(
-                                            route?.station_data?.get(i)?.station_id ?: 0,
+                                            route?.station_data?.get(i)?.station_uuid ?: "",
                                             route?.station_data?.get(i)?.station_name ?: "",
                                             route?.station_data?.get(i)?.stopping_order ?: 0,
                                             route?.station_data?.get(i)?.station_latitude ?: 0.0,
@@ -245,12 +292,14 @@ class FragmentItemDetailScreen : Fragment() {
                                         stationDataList.add(tmp)
                                     }
                                     PlaceholderContent.makeItem(stationDataList)
+                                    ScheduleList.recyclerViewAdapter.notifyDataSetChanged()
 
                                 } else {
+                                    gmap?.clear()
                                     Log.d("response", "onResponse: $response")
                                 }
                                 binding.loadBar.gone()
-                                binding.textList.show()
+//                                binding.textList.show()
                                 makeRoute()
 
                             }
@@ -276,21 +325,26 @@ class FragmentItemDetailScreen : Fragment() {
         var list: MutableList<LatLng> = mutableListOf()
         var tmp: LatLng = LatLng(0.0, 0.0)
         var boundsBuilder = LatLngBounds.Builder()
-        PlaceholderContent.ITEMS.forEach {
-            tmp = LatLng(it.station_latitude, it.station_longitude)
-            list.add(tmp)
-            Log.d("route", it.station_name)
-            gmap?.addMarker(
-                MarkerOptions()
-                    .position(tmp)
-                    .title(it.station_name)
-            )
-            boundsBuilder.include(tmp)
+        if (PlaceholderContent.ITEMS.size != 0) {
+            PlaceholderContent.ITEMS.forEach {
+                tmp = LatLng(it.station_latitude, it.station_longitude)
+                list.add(tmp)
+                Log.d("makeRoute func", it.station_name)
+                gmap?.addMarker(
+                    MarkerOptions()
+                        .position(tmp)
+                        .title(it.station_name)
+                )
+                boundsBuilder.include(tmp)
+            }
+
+            var bounds = boundsBuilder.build()
+            gmap?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
         }
-        var bounds = boundsBuilder.build()
-        gmap?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
+
 
     }
+
 
     fun makePolyRoute() {
         var list: MutableList<LatLng> = mutableListOf()
@@ -395,7 +449,11 @@ class FragmentItemDetailScreen : Fragment() {
 //        return poly
 //
 //    }
-
+    fun tm(){
+    binding.passlist.show()
+    binding.textList.gone()
+    binding.itemListLay.gone()
+    }
     inner class socketBR : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
             if (p1?.action == "update") {
@@ -406,11 +464,20 @@ class FragmentItemDetailScreen : Fragment() {
     }
 
     companion object {
+
         val stationDataList: MutableList<StationData> = ArrayList()
-        var route_id: Int = 0
+        var route_uuid: String = ""
         var shuttle_direction: Int = 0
         var gmap: GoogleMap? = null
-        var polyList: MutableList<LatLng>? = null
+        var polyList: MutableList<LatLng> = LatLng(37.611983, 126.9976509).let {
+            mutableListOf(
+                it
+            )
+        }
         lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
+        var check_passenger_list: MutableList<String> = ArrayList()
+        var passenger_list: MutableList<String> = ArrayList()
+        var test:Boolean = false
+        var t:Boolean = false
     }
 }

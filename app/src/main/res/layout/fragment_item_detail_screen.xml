@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/itemDetail"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".main_screen.FragmentItemDetailScreen"
 
-    >
+    tools:context=".main_screen.FragmentItemDetailScreen">
 
     <!-- TODO: Update blank fragment layout -->
     <LinearLayout
@@ -35,7 +35,7 @@
 
 
             <LinearLayout
-                android:id="@+id/passenger_list_check"
+                android:id="@+id/passlist"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
@@ -58,7 +58,7 @@
                         android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
                     <Button
-                        android:id="@+id/button3"
+                        android:id="@+id/backBtn"
                         style="@style/Widget.Material3.Button.OutlinedButton.Icon"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -91,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
                     android:layout_marginTop="9dp"
-                    android:text="노선 1"
+                    android:text="노선 이름"
                     android:textAppearance="@style/TextAppearance.AppCompat.Display1" />
 
                 <include
@@ -103,7 +103,7 @@
                     android:layout_weight="1" />
 
                 <Button
-                    android:id="@+id/button2"
+                    android:id="@+id/stopBtn"
                     style="@style/Widget.Material3.Button.OutlinedButton.Icon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -126,6 +126,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:orientation="vertical"
+                android:visibility="gone"
                 tools:visibility="gone">
 
                 <LinearLayout
@@ -140,7 +141,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="16dp"
                         android:autoSizeTextType="uniform"
-                        android:text="노선 1" />
+                        android:text="노선 이름" />
 
 
                 </LinearLayout>
@@ -194,7 +195,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="16dp"
                         android:autoSizeTextType="uniform"
-                        android:text="예상 소요 시간 : " />
+                        android:text="예상 소요 시간 : 40분" />
 
 
                 </LinearLayout>
@@ -212,7 +213,7 @@
                         android:layout_height="match_parent"
                         android:layout_marginLeft="16dp"
                         android:autoSizeTextType="uniform"
-                        android:text="이동 거리 : " />
+                        android:text="이동 거리 : 25km" />
 
 
                 </LinearLayout>
@@ -225,7 +226,7 @@
                     android:layout_gravity="center"
                     android:layout_margin="7dp"
                     android:layout_weight="1"
-                    android:autoSizeTextType="uniform"
+
                     android:text="운행 시작하기"
                     android:textColor="@color/black" />
             </LinearLayout>

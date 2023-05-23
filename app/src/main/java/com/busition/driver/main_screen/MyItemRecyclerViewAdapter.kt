@@ -36,10 +36,11 @@ class MyItemRecyclerViewAdapter(
         }else{
             type = "하교"
         }
-        val destinationText:String =  item.departure_point + " -> " + item.destination
+        holder.departureView.text = "출발 : " + item.departure_point
         holder.typeView.text = type
-        holder.destinationView.text = destinationText
-        holder.timeView.text = item.departure_time.day_time.time
+        holder.destinationView.text = "종착 : " + item.destination
+        holder.timeView.text = "다음 일정 : " + item.departure_time.day_time.time.S
+//        holder.routeNameView.text = item.departure_time.route_name
 
         viewItemDetails(holder, item)
 
@@ -49,7 +50,8 @@ class MyItemRecyclerViewAdapter(
     private fun viewItemDetails(holder:ViewHolder,item: PlaceholderContent.PlaceholderItem) {
         holder.itemView.setOnClickListener {
             Log.d("onBindViewHolder ", item.toString())
-            val bundle = bundleOf("route_id" to item.route_id, "shuttle_direction" to item.shuttle_direction)
+
+            val bundle = bundleOf("route_uuid" to item.route_uuid, "shuttle_direction" to item.shuttle_direction, "passListView" to true)
             val navController = Navigation.findNavController(holder.itemView)
             navController.navigate(R.id.action_scheduleList_to_fragment_item_detial_screen,bundle)
 
@@ -65,7 +67,9 @@ class MyItemRecyclerViewAdapter(
         RecyclerView.ViewHolder(binding.root) {
         val typeView: TextView = binding.itemType
         val destinationView: TextView = binding.itemDestination
+        val departureView: TextView = binding.itemDeparture
         val timeView: TextView = binding.itemTime
+        val routeNameView:TextView = binding.routeName
 
         override fun toString(): String {
             return super.toString() + " '" + destinationView.text + "'"

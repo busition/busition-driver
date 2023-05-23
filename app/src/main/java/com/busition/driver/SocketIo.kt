@@ -14,17 +14,20 @@ object SocketIo {
     private var socketIo :SocketIo? = null
     private lateinit var socketServer:Socket
 
-    fun startSocket(id:String){
+    fun startSocket(id:String, type:String){
         socketIo = SocketIo
         try {
-            val pack = JSONObject()
-            pack.put("id", id)
-            socketServer = IO.socket("http://api.dev.busition.com:3000/driver")
+//            val pack = JSONObject()
+//            pack.put("id", id)
+            val tmp =JSONObject()
+            tmp.put("route_id", id)
+            tmp.put("type", type)
+            socketServer = IO.socket("http://api.dev.busition.com:3000/user")
             socketServer.connect()
-            Log.d("socket pack jsonObject", pack.toString())
-            Log.d("socket", socketServer.toString())
-            socketServer.emit("send_id", pack)
-            recvLocation()
+            Log.d("socket pack jsonObject", tmp.toString())
+
+            socketServer.emit("open_room", tmp.toString())
+//            recvLocation()
 
         }catch (e:Exception){
             Log.d("socket",e.toString())
@@ -55,10 +58,20 @@ object SocketIo {
 
     }
 
-    fun sendLocation(lat:String, lon:String){
+
+    fun sendUserUuid(uuid:String, id:String){
+        val tmp =JSONObject()
+        tmp.put("uuid", uuid)
+        tmp.put("id", id)
+        socketServer.emit("check_passenger", tmp)
+        Log.d("socket check_passenger", tmp.toString())
+        FragmentItemDetailScreen.check_passenger_list.add(uuid)
+    }
+    fun sendLocation(lat:Double, lon:Double, speed: Float){
         val tmp =JSONObject()
         tmp.put("latitude", lat)
         tmp.put("longitude", lon)
+        tmp.put("speed", speed)
         Log.d("socket location jsonObject", tmp.toString())
         socketServer.emit("send_location", tmp)
         Log.d("socket send location", tmp.toString())

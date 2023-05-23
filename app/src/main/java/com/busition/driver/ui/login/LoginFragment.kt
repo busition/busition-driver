@@ -20,6 +20,7 @@ import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.annotation.StringRes
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -28,6 +29,10 @@ import androidx.navigation.findNavController
 import com.busition.driver.R
 import com.busition.driver.base_api_url
 import com.busition.driver.data.RetrofitServiceInterface
+import com.busition.driver.data.signin.SignIn
+import com.busition.driver.data.signin.SigninResponse
+import com.busition.driver.data.signup.SignUpBody
+import com.busition.driver.data.signup.SignUpResponse
 import com.busition.driver.databinding.FragmentLoginBinding
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.MainScreen
@@ -37,11 +42,15 @@ import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.auth.GoogleAuthProvider
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -112,15 +121,15 @@ class LoginFragment : Fragment() {
             if (isAllGranted) {
                 Log.d("permission", "all granted" + isAllGranted.toString())
 
-                Toast.makeText(activity, "permission granted", Toast.LENGTH_LONG).show()
+//                Toast.makeText(activity, "permission granted", Toast.LENGTH_LONG).show()
             } else {
-                Toast.makeText(activity, "plz check permissions", Toast.LENGTH_LONG).show()
+//                Toast.makeText(activity, "plz check permissions", Toast.LENGTH_LONG).show()
             }
 
         }
 //        activityResultLauncher.launch(permissionList)
         activityResultLauncher.launch(ANDROID_12_BLE_PERMISSIONS)
-        Log.d("route_id", FragmentItemDetailScreen.route_id.toString())
+        Log.d("route_uuid", FragmentItemDetailScreen.route_uuid.toString())
         binding.googlesignin.setOnClickListener { signIn() }
         loginViewModel.loginFormState.observe(viewLifecycleOwner,
             Observer { loginFormState ->
@@ -169,26 +178,29 @@ class LoginFragment : Fragment() {
         passwordEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
 
-                loginViewModel.login(
-                    usernameEditText.text.toString(),
-                    passwordEditText.text.toString()
-                )
+//                loginViewModel.login(
+//                    usernameEditText.text.toString(),
+//                    passwordEditText.text.toString()
+//                )
             }
             false
         }
 
         loginButton.setOnClickListener {
             loadingProgressBar.visibility = View.VISIBLE
-            Log.d("start token", MainScreen.token)
+            loginViewModel.login(
+                usernameEditText.text.toString(),
+                passwordEditText.text.toString()
+            )
 
-            loginSuccess()
 
 
         }
 
         registerButton.setOnClickListener {
             val navController = Navigation.findNavController(view)
-            navController.navigate(R.id.action_Register_to_Login_Fragment)
+            val bundle = bundleOf("type" to 0, "googleId" to "")
+            navController.navigate(R.id.action_Register_to_Login_Fragment,bundle)
 
         }
 
@@ -197,21 +209,23 @@ class LoginFragment : Fragment() {
 //                usernameEditText.text.toString(),
 //                passwordEditText.text.toString()
 //            )
-            loginSuccess()
+//            loginSuccess()
         }
     }
 
-    private fun loginSuccess(){
+    private fun loginSuccess() {
         val intent = Intent(getActivity(), MainScreen::class.java)
         intent.flags =
             Intent.FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK or FLAG_ACTIVITY_CLEAR_TOP
         startActivity(intent)
     }
+
     private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome) + model.displayName
+        val welcome = getString(R.string.welcome) + model.driver_uuid
         // TODO : initiate successful logged in experience
         val appContext = context?.applicationContext ?: return
-        Toast.makeText(appContext, welcome, Toast.LENGTH_LONG).show()
+//        Toast.makeText(appContext, welcome, Toast.LENGTH_LONG).show()
+        loginSuccess()
     }
 
     private fun showLoginFailed(@StringRes errorString: Int) {
@@ -234,6 +248,7 @@ class LoginFragment : Fragment() {
                 Log.e("fire base google", "Google Sign-in failed", e)
             }
     }
+
     private fun oneTapSignIn() {
         // Configure One Tap UI
         val oneTapRequest = BeginSignInRequest.builder()
@@ -256,9 +271,11 @@ class LoginFragment : Fragment() {
                 // do nothing and continue presenting the signed-out UI.
             }
     }
-    private val signInLauncher = registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-        handleSignInResult(result.data)
-    }
+
+    private val signInLauncher =
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
+            handleSignInResult(result.data)
+        }
     private lateinit var signInClient: SignInClient
     private fun handleSignInResult(data: Intent?) {
         // Result returned from launching the Sign In PendingIntent
@@ -269,6 +286,7 @@ class LoginFragment : Fragment() {
             if (idToken != null) {
                 Log.d("fire base google", "firebaseAuthWithGoogle: ${credential.id}")
                 firebaseAuthWithGoogle(idToken)
+
             } else {
                 // Shouldn't happen.
                 Log.d("fire base google", "No ID token!")
@@ -279,6 +297,7 @@ class LoginFragment : Fragment() {
 
         }
     }
+
     private fun firebaseAuthWithGoogle(idToken: String) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         auth.signInWithCredential(credential)
@@ -287,7 +306,33 @@ class LoginFragment : Fragment() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d("fire base google", "signInWithCredential:success")
                     val user = auth.currentUser
-                    loginSuccess()
+
+
+                    val retrofit = Retrofit.Builder()
+                        .baseUrl(base_api_url)
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build()
+                    val service = retrofit.create(RetrofitServiceInterface::class.java)
+                    var data: SignIn = SignIn()
+                    service.sighIn(MainScreen.token,data).enqueue(object : retrofit2.Callback<SigninResponse> {
+                        override fun onResponse(
+                            call: Call<SigninResponse>,
+                            response: Response<SigninResponse>
+                        ) {
+                            if (response.body()?.status == 0){
+                                val navController = Navigation.findNavController(requireView())
+                                val bundle = bundleOf("type" to 1, "googleId" to idToken)
+                                navController.navigate(R.id.action_Register_to_Login_Fragment,bundle)
+                            }else{
+                                loginSuccess()
+                            }
+                        }
+
+                        override fun onFailure(call: Call<SigninResponse>, t: Throwable) {
+                            TODO("Not yet implemented")
+                        }
+                    })
+
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("fire base google", "signInWithCredential:failure", task.exception)
@@ -296,6 +341,7 @@ class LoginFragment : Fragment() {
 
             }
     }
+
     private fun launchSignIn(pendingIntent: PendingIntent) {
         try {
             val intentSenderRequest = IntentSenderRequest.Builder(pendingIntent)
@@ -305,9 +351,16 @@ class LoginFragment : Fragment() {
             Log.e("signin error", "Couldn't start Sign In: ${e.localizedMessage}")
         }
     }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+    companion object {
+        fun loginSuccess() {
+
+        }
     }
 
 

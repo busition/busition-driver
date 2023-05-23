@@ -26,6 +26,10 @@
     <fragment
         android:id="@+id/userInfoDataFragment"
         android:name="com.busition.driver.UserInfoDataFragment"
-        android:label="fragment_user_info_item_list"
-        tools:layout="@layout/fragment_user_info_item_list" />
+        android:label="탑승자 목록"
+        tools:layout="@layout/fragment_user_info_item_list" >
+        <action
+            android:id="@+id/action_userInfoDataFragment_to_fragment_item_detial_screen"
+            app:destination="@id/fragment_item_detial_screen" />
+    </fragment>
 </navigation>

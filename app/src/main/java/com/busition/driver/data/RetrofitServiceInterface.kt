@@ -4,6 +4,8 @@ import com.busition.driver.data.bus_route.RouteData
 import com.busition.driver.data.passenger_list.PassengerListData
 import com.busition.driver.data.schedule_all.ScheduleDataList
 import com.busition.driver.data.schedule_route.StationListData
+import com.busition.driver.data.signin.SignIn
+import com.busition.driver.data.signin.SigninResponse
 import com.busition.driver.data.signup.SignUpBody
 import com.busition.driver.data.signup.SignUpResponse
 import retrofit2.Call
@@ -22,22 +24,22 @@ interface RetrofitServiceInterface {
     @GET("station")
     fun getStation(
         @Header("Authorization") token: String,
-        @Query("route_uuid") route_id: Int,
+        @Query("route_uuid") route_uuid: String,
         @Query("shuttle_direction") shuttle_direction: Int
     ): Call<StationListData>
 
     @GET("passenger/list")
     fun getPassengerList(
         @Header("Authorization") token: String,
-        @Query("route_id") route_id: Int,
-        @Query("station_id") station_id: Int,
+        @Query("route_uuid") route_uuid: String,
+        @Query("station_uuid") station_uuid: String,
         @Query("shuttle_direction") shuttle_direction: Int
     ): Call<PassengerListData>
 
-    @GET("route/{route_id}")
+    @GET("route/{route_uuid}")
     fun getRoute(
         @Header("Authorization") token: String,
-        @Path("route_id") route_id: Int,
+        @Path("route_uuid") route_uuid: String,
         @Query("shuttle_direction") shuttle_direction: Int
     ): Call<RouteData>
 
@@ -46,5 +48,11 @@ interface RetrofitServiceInterface {
         @Header("Authorization") token: String,
         @Body body: SignUpBody
     ): Call<SignUpResponse>
+
+    @GET("signin")
+    fun sighIn(
+        @Header("Authorization") token: String,
+        @Body body: SignIn
+    ): Call<SigninResponse>
 
 }

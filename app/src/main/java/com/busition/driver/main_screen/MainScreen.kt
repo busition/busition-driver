@@ -33,7 +33,9 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import com.busition.driver.FloatingService
 import com.busition.driver.R
 import com.busition.driver.SocketIo
+import com.busition.driver.UserInfoDataFragment.Companion.userInfoRecyclerAdapter
 import com.busition.driver.databinding.ActivityMainScreenBinding
+import com.busition.driver.main_screen.ScheduleList.Companion.driver_uuid
 import com.google.android.material.snackbar.Snackbar
 
 class MainScreen : AppCompatActivity() {
@@ -42,7 +44,9 @@ class MainScreen : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var userName: String
 
-    private val SCAN_PERIOD: Long = 100000
+    private var tmpBleList: MutableList<String> = ArrayList()
+
+    private val SCAN_PERIOD: Long = 1000000
     private val PERMISSIONS_REQUEST_CODE = 191
 
     private val BLE_PERMISSIONS = arrayOf(
@@ -66,8 +70,8 @@ class MainScreen : AppCompatActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         userName = intent.getStringExtra("userName").toString()
-        driver_id = intent.getIntExtra("driver_id", 0)
-        ScheduleList.getUserData(userName, driver_id)
+        driver_uuid = intent.getStringExtra("driver_uuid" ).toString()
+        ScheduleList.getUserData(userName, driver_uuid )
 
         binding = ActivityMainScreenBinding.inflate(layoutInflater)
         setSupportActionBar(binding.toolbar)
@@ -178,6 +182,20 @@ class MainScreen : AppCompatActivity() {
     private val scanCallback = object : ScanCallback() {
         @SuppressLint("MissingPermission")
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
+//            if (!tmpBleList.contains(result?.device?.uuids.toString())){
+//                tmpBleList.add(result?.device?.uuids.toString())
+//
+//            }
+            if (result?.scanRecord?.serviceUuids.toString() == "[11111111-1111-1111-1111-111111111111]"){
+                test_code = true
+                userInfoRecyclerAdapter.notifyDataSetChanged()
+
+            }
+            if (check_uuid.contains(result?.scanRecord?.serviceUuids.toString())){
+                user_uuid.add(result?.scanRecord?.serviceUuids.toString())
+                check_uuid.remove(result?.scanRecord?.serviceUuids.toString())
+                userInfoRecyclerAdapter.notifyDataSetChanged()
+            }
             Log.d("ble instance","${result?.device?.name} ${result?.device?.uuids} ${result?.scanRecord?.serviceUuids}" )
         }
 
@@ -190,9 +208,11 @@ class MainScreen : AppCompatActivity() {
         }
     }
     companion object {
-        var driver_id: Int = 0
+        var driver_uuid: String = ""
         var token: String = ""
-
+        var test_code: Boolean = false
+        var user_uuid: ArrayList<String> = ArrayList()
+        var check_uuid: ArrayList<String> = ArrayList()
     }
 
 }

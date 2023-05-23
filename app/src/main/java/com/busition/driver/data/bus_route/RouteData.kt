@@ -7,7 +7,7 @@ import java.util.*
 
 data class RouteData(
 
-    @SerializedName("code")
+    @SerializedName("path_count")
     @Expose
     val code: Int,
 
@@ -19,9 +19,9 @@ data class RouteData(
     @Expose
     val currentDateTime: String,
 
-    @SerializedName("route")
+    @SerializedName("path")
     @Expose
-    val route: Route,
+    val path: ArrayList<ArrayList<Double>>,
 )
 
 fun converIso(tmp:String): String {
