@@ -2,10 +2,12 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_user_info_item_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".UserInfoDataFragment"
-    android:orientation="horizontal" >
+    android:orientation="horizontal"
+    tools:context=".UserInfoDataFragment">
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/userInfoList"
         android:name="com.example.busition_driver.userInfoDataFragment"
@@ -14,6 +16,7 @@
         app:layoutManager="LinearLayoutManager"
         tools:context=".UserInfoDataFragment"
         tools:listitem="@layout/fragment_user_info_data" />
+
     <ProgressBar
         android:id="@+id/loadBarUserInfo"
         style="?android:attr/progressBarStyle"

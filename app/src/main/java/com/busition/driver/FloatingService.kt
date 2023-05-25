@@ -41,7 +41,7 @@ class FloatingService: Service() {
 
         layoutType = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
 
-        val recyclerView = floatView.findViewById(R.id.station_item_list) as RecyclerView
+        val recyclerView = floatView.findViewById(R.id.itemList) as RecyclerView
         recyclerView.layoutManager = layoutManger
         recyclerView.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS)
         floatWindowLayoutParam = WindowManager.LayoutParams(

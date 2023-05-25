@@ -4,9 +4,9 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class StationData(
-    @SerializedName("station_id")
+    @SerializedName("station_uuid")
     @Expose
-    var station_id: Int,
+    var station_uuid: String,
 
     @SerializedName("station_name")
     @Expose
@@ -27,5 +27,8 @@ data class StationData(
     @SerializedName("passenger_count")
     @Expose
     var passenger_count: Int,
+
+    var nowPassengerNumber: Int = 0,
+    var nowStation: Boolean = false
 
 )

@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/stationCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
-    android:orientation="vertical"
-    android:layout_margin="10dp"
-    >
+
+    android:background="#E2E2E2"
+    android:orientation="vertical">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
+        android:layout_margin="15dp"
+        android:background="@color/white"
         android:orientation="horizontal">
 
         <LinearLayout
+            android:padding="5dp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
@@ -22,82 +26,46 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="#4E31AA"
+                android:layout_weight="4"
+                android:background="@color/white"
                 android:gravity="center"
                 android:orientation="vertical"
-                android:weightSum="2"
-                android:layout_weight="1"
-                >
+                android:weightSum="3">
 
-                <LinearLayout
+                <TextView
+                    android:id="@+id/station_name"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="7dp"
                     android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:gravity="center">
+                    android:autoSizeTextType="uniform"
+                    android:gravity="center"
+                    android:text="한국어는 여기에 길게 넣으면 씹히나요?"
+                    android:textColor="@color/black" />
 
-                    <TextView
-                        android:id="@+id/station_id"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="TextView"
-                        android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textColor="@color/white"/>
-
-                    <TextView
-                        android:id="@+id/station_id_contents"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        android:layout_weight="1"
-                        android:text="TextView"
-                        android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textColor="@color/white"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/station_tiem_lay"
+                <TextView
+                    android:id="@+id/station_passenger_num"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:layout_margin="7dp"
                     android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:visibility="visible"
-                    android:gravity="center">
-
-                    <TextView
-                        android:id="@+id/station_time"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="TextView"
-                        android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textColor="@color/white"/>
-
-                    <TextView
-                        android:id="@+id/station_time_contents"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="TextView"
-                        android:gravity="center"
-                        android:layout_margin="5dp"
-                        android:textColor="@color/white"/>
-                </LinearLayout>
+                    android:autoSizeTextType="uniform"
+                    android:gravity="center"
+                    android:text="한국어는 여기에 길게 넣으면 씹히나요?"
+                    android:textColor="@color/black" />
 
             </LinearLayout>
 
             <Button
                 android:id="@+id/button"
-                android:layout_width="wrap_content"
+                style="@style/Widget.Material3.Button.TonalButton.Icon"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="Button"
-                android:layout_marginStart="10dp"
-                android:background="#537FE7"
-
-                />
+                android:layout_margin="16dp"
+                android:layout_weight="5"
+                android:autoSizeTextType="uniform"
+                android:backgroundTint="@color/gray_bar"
+                android:text="탑승자 목록" />
 
         </LinearLayout>
 
