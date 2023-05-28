@@ -11,15 +11,15 @@ import org.json.JSONObject
 
 
 object SocketIo {
-    private var socketIo :SocketIo? = null
-    private lateinit var socketServer:Socket
+    private var socketIo: SocketIo? = null
+    private lateinit var socketServer: Socket
 
-    fun startSocket(id:String, type:String){
+    fun startSocket(id: String, type: String) {
         socketIo = SocketIo
         try {
 //            val pack = JSONObject()
 //            pack.put("id", id)
-            val tmp =JSONObject()
+            val tmp = JSONObject()
             tmp.put("route_id", id)
             tmp.put("type", type)
             socketServer = IO.socket("http://api.dev.busition.com:3000/user")
@@ -28,18 +28,19 @@ object SocketIo {
 
             socketServer.emit("open_room", tmp.toString())
 //            recvLocation()
+//            recvClose()
 
-        }catch (e:Exception){
-            Log.d("socket",e.toString())
+        } catch (e: Exception) {
+            Log.d("socket", e.toString())
         }
 
     }
 
-    fun recvLocation(){
+    fun recvLocation() {
         try {
             val onMessage = Emitter.Listener { args ->
                 val obj = JSONObject(args[0].toString())
-                if (StationItemRecyclerAdapter.delay != obj.getInt("delayed")){
+                if (StationItemRecyclerAdapter.delay != obj.getInt("delayed")) {
                     val handler = Handler(Looper.getMainLooper())
                     handler.post(Runnable {
                         StationItemRecyclerAdapter.delay = obj.getInt("delayed")
@@ -52,23 +53,24 @@ object SocketIo {
 
             }
             socketServer.on("data", onMessage)
-        }catch (e:Exception){
+        } catch (e: Exception) {
             Log.d("socket recv error", e.toString())
         }
 
     }
 
 
-    fun sendUserUuid(uuid:String, id:String){
-        val tmp =JSONObject()
+    fun sendUserUuid(uuid: String, id: String) {
+        val tmp = JSONObject()
         tmp.put("uuid", uuid)
         tmp.put("id", id)
         socketServer.emit("check_passenger", tmp)
         Log.d("socket check_passenger", tmp.toString())
         FragmentItemDetailScreen.check_passenger_list.add(uuid)
     }
-    fun sendLocation(lat:Double, lon:Double, speed: Float){
-        val tmp =JSONObject()
+
+    fun sendLocation(lat: Double, lon: Double, speed: Float) {
+        val tmp = JSONObject()
         tmp.put("latitude", lat)
         tmp.put("longitude", lon)
         tmp.put("speed", speed)
@@ -77,8 +79,30 @@ object SocketIo {
         Log.d("socket send location", tmp.toString())
     }
 
-    fun closeSocket(){
-        socketServer.close()
+    fun recvClose() {
+        try {
+            val onMessage = Emitter.Listener { args ->
+                val obj = args.toString()
+                if (obj == "404") {
+                    socketServer.close()
+                }
+
+                Log.d("socket", obj.toString())
+
+            }
+            socketServer.on("code", onMessage)
+        } catch (e: Exception) {
+            Log.d("socket recv error", e.toString())
+        }
     }
 
+    fun closeSocket(id: String, type: String) {
+        val tmp = JSONObject()
+        tmp.put("route_id", id)
+        tmp.put("type", type)
+        Log.d("close socket", tmp.toString())
+        socketServer.emit("exit", tmp)
+        socketServer.disconnect()
+        socketServer.close()
+    }
 }
