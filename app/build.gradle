@@ -15,7 +15,7 @@ android {
         applicationId "com.busition.driver"
         minSdk 26
         targetSdk 33
-        versionCode 4
+        versionCode 5
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -25,6 +25,9 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            jniDebuggable false
+            debuggable false
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {
@@ -35,6 +38,7 @@ android {
         jvmTarget = '1.8'
     }
     buildFeatures {
+        dataBinding true
         viewBinding true
     }
 
@@ -78,7 +82,8 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
     //socket io
     implementation ('io.socket:socket.io-client:2.1.0')
-
+    //viewbinding
+    implementation 'com.android.databinding:viewbinding:8.0.2'
     //firebase
     implementation platform('com.google.firebase:firebase-bom:32.0.0')
     implementation 'com.google.firebase:firebase-analytics-ktx'

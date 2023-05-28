@@ -10,9 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.busition.driver.placeholder.PlaceholderContent
 
-/**
- * A fragment representing a list of Items.
- */
+
 class StationItemFragment : Fragment() {
     private var columnCount = 1
 
@@ -31,11 +29,13 @@ class StationItemFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS)
+                adapter = StationAdapter
             }
         }
         return view
     }
 
-
+    companion object{
+        var  StationAdapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS)
+    }
 }
