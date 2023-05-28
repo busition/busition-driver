@@ -46,7 +46,7 @@ class FloatingService: Service() {
         recyclerView.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS)
         floatWindowLayoutParam = WindowManager.LayoutParams(
             (width * 0.55f).toInt(),
-            (height * 0.58f).toInt(),
+            (height * 0.2f).toInt(),
             layoutType,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
             PixelFormat.TRANSLUCENT

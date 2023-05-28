@@ -1,10 +1,14 @@
 package com.busition.driver.main_screen
 
+import android.Manifest
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.busition.driver.R
@@ -34,7 +38,23 @@ class ScheduleList : Fragment() {
 
     private var columnCount = 1
     private var binding: FragmentScheduleListBinding? = null
-
+    private val ANDROID_12_BLE_PERMISSIONS =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_ADVERTISE,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.POST_NOTIFICATIONS
+            )
+        } else {
+            arrayOf(
+                Manifest.permission.BLUETOOTH_SCAN,
+                Manifest.permission.BLUETOOTH_CONNECT,
+                Manifest.permission.BLUETOOTH_ADVERTISE,
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            )
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +80,24 @@ class ScheduleList : Fragment() {
         recyclerViewAdapter = MyItemRecyclerViewAdapter(PlaceholderContent.ITEMS, binding)
         binding!!.recyclerScheduleList.layoutManager = LinearLayoutManager(context)
         binding!!.recyclerScheduleList.adapter = recyclerViewAdapter
+        val contract = ActivityResultContracts.RequestMultiplePermissions()
+        val activityResultLauncher = registerForActivityResult(contract) { permissions ->
+            permissions.entries.forEach {
+                Log.d("permission", "${it.key} = ${it.value}")
+            }
+            val isAllGranted = permissions.values.all { it == true }
+            if (isAllGranted) {
+                Log.d("permission", "all granted" + isAllGranted.toString())
 
+//                Toast.makeText(activity, "permission granted", Toast.LENGTH_LONG).show()
+            } else {
+//                Toast.makeText(activity, "plz check permissions", Toast.LENGTH_LONG).show()
+            }
+
+        }
+//        activityResultLauncher.launch(permissionList)
+
+        activityResultLauncher.launch(ANDROID_12_BLE_PERMISSIONS)
         attachData()
 
         Log.d("scheduleList", "onCreateView: $userName $driver_uuid")
