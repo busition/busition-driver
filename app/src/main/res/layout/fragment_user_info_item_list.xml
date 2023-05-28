@@ -6,7 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    tools:context=".UserInfoDataFragment">
+    tools:context=".UserInfoDataFragment"
+    android:background="#E2E2E2">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/userInfoList"

@@ -30,6 +30,6 @@
         android:layout_marginEnd="@dimen/fab_margin"
         android:layout_marginBottom="16dp"
         android:visibility="gone"
-        app:srcCompat="@android:drawable/ic_dialog_email" />
+        app:srcCompat="@drawable/common_full_open_on_phone" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

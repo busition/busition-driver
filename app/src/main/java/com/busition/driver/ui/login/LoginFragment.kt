@@ -25,14 +25,11 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import com.busition.driver.R
 import com.busition.driver.base_api_url
 import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.data.signin.SignIn
 import com.busition.driver.data.signin.SigninResponse
-import com.busition.driver.data.signup.SignUpBody
-import com.busition.driver.data.signup.SignUpResponse
 import com.busition.driver.databinding.FragmentLoginBinding
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.MainScreen
@@ -42,47 +39,25 @@ import com.google.android.gms.auth.api.identity.GetSignInIntentRequest
 import com.google.android.gms.auth.api.identity.Identity
 import com.google.android.gms.auth.api.identity.SignInClient
 import com.google.android.gms.common.api.ApiException
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.auth.GoogleAuthProvider
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import kotlin.properties.Delegates
 
 class LoginFragment : Fragment() {
 
     private lateinit var loginViewModel: LoginViewModel
     private var _binding: FragmentLoginBinding? = null
-
+    private var type by Delegates.notNull<Int>()
     private var permissionList = arrayOf(
         Manifest.permission.ACCESS_COARSE_LOCATION,
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.BLUETOOTH,
     )
 
-    @RequiresApi(Build.VERSION_CODES.S)
-    private val ANDROID_12_BLE_PERMISSIONS =
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            arrayOf(
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_CONNECT,
-                Manifest.permission.BLUETOOTH_ADVERTISE,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.POST_NOTIFICATIONS
-            )
-        } else {
-            arrayOf(
-                Manifest.permission.BLUETOOTH_SCAN,
-                Manifest.permission.BLUETOOTH_CONNECT,
-                Manifest.permission.BLUETOOTH_ADVERTISE,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-            )
-        }
+
 
     private val binding get() = _binding!!
 
@@ -98,6 +73,10 @@ class LoginFragment : Fragment() {
 
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+    }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -112,23 +91,7 @@ class LoginFragment : Fragment() {
         val loadingProgressBar = binding.loading
         signInClient = Identity.getSignInClient(requireContext())
         val passbtn = binding.pass
-        val contract = ActivityResultContracts.RequestMultiplePermissions()
-        val activityResultLauncher = registerForActivityResult(contract) { permissions ->
-            permissions.entries.forEach {
-                Log.d("permission", "${it.key} = ${it.value}")
-            }
-            val isAllGranted = permissions.values.all { it == true }
-            if (isAllGranted) {
-                Log.d("permission", "all granted" + isAllGranted.toString())
 
-//                Toast.makeText(activity, "permission granted", Toast.LENGTH_LONG).show()
-            } else {
-//                Toast.makeText(activity, "plz check permissions", Toast.LENGTH_LONG).show()
-            }
-
-        }
-//        activityResultLauncher.launch(permissionList)
-        activityResultLauncher.launch(ANDROID_12_BLE_PERMISSIONS)
         Log.d("route_uuid", FragmentItemDetailScreen.route_uuid.toString())
         binding.googlesignin.setOnClickListener { signIn() }
         loginViewModel.loginFormState.observe(viewLifecycleOwner,
@@ -212,6 +175,8 @@ class LoginFragment : Fragment() {
 //            loginSuccess()
         }
     }
+
+
 
     private fun loginSuccess() {
         val intent = Intent(getActivity(), MainScreen::class.java)

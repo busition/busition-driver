@@ -77,7 +77,11 @@ object SocketIo {
         Log.d("socket send location", tmp.toString())
     }
 
-    fun closeSocket(){
+    fun closeSocket(id:String, type:String){
+        val tmp =JSONObject()
+        tmp.put("route_id", id)
+        tmp.put("type", type)
+        socketServer.emit("exit", tmp)
         socketServer.close()
     }
 
