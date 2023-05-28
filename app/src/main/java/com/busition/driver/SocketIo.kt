@@ -79,22 +79,7 @@ object SocketIo {
         Log.d("socket send location", tmp.toString())
     }
 
-    fun recvClose() {
-        try {
-            val onMessage = Emitter.Listener { args ->
-                val obj = args.toString()
-                if (obj == "404") {
-                    socketServer.close()
-                }
 
-                Log.d("socket", obj.toString())
-
-            }
-            socketServer.on("code", onMessage)
-        } catch (e: Exception) {
-            Log.d("socket recv error", e.toString())
-        }
-    }
 
     fun closeSocket(id: String, type: String) {
         val tmp = JSONObject()

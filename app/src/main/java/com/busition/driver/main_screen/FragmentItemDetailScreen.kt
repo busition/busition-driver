@@ -1,12 +1,8 @@
 package com.busition.driver.main_screen
 
-import android.Manifest
-import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.content.pm.ResolveInfo
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
@@ -14,11 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.TextView
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.app.ActivityCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
@@ -42,9 +34,9 @@ import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.GetTokenResult
+import kotlinx.coroutines.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import kotlinx.coroutines.*
 
 class FragmentItemDetailScreen : Fragment() {
 
@@ -94,9 +86,9 @@ class FragmentItemDetailScreen : Fragment() {
             binding.textList.show()
             binding.itemListLay.gone()
         }else{
-            binding.passlist.gone()
             binding.itemListLay.show()
-
+            binding.textList.gone()
+            Log.d("schedule list", stationDataList.toString())
         }
 
         binding.runBtn.setOnClickListener {
@@ -107,12 +99,11 @@ class FragmentItemDetailScreen : Fragment() {
 //                R.id.action_fragment_item_detial_screen_to_fragment_station_item_screen,
 //                bundle
 //            )
-            binding.passlist.gone()
             binding.textList.gone()
             binding.itemListLay.show()
             test = true
             //service start func
-            scan()
+//            scan()
             tmp()
 
 
@@ -127,32 +118,41 @@ class FragmentItemDetailScreen : Fragment() {
             intent.flags =
                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
-        }
-        binding.backBtn.setOnClickListener {
-            binding.passlist.gone()
-            binding.textList.gone()
-            binding.itemListLay.show()
-            test=false
+            test = false
         }
 
+        binding.floatingActionButton.setOnClickListener {
+            val intent = Intent(activity, FloatingService::class.java)
+
+            activity?.startService(intent)
+            navigate()
+        }
 
     }
 
     fun navigate(){
-        val uriNaverMap = Uri.parse("navermaps://")
-        val uriKakaoNavi = Uri.parse("kakaonavi://")
+//        val uriNaverMap = Uri.parse("navermaps://")
+//        val uriKakaoNavi = Uri.parse("kakaonavi://")
         val uriTmap = Uri.parse("tmap://")
 
-        val intent = Intent(Intent.ACTION_VIEW)
-        intent.data = Uri.parse("geo:0,0?q=37.532629,-122.319131") // 출발지 좌표
-        intent.putExtra(Intent.EXTRA_TITLE, "Select navigation app") // 다이얼로그 타이틀
-        intent.putExtra(
-            Intent.EXTRA_INITIAL_INTENTS, arrayOf(
-                Intent(Intent.ACTION_VIEW, uriNaverMap),
-                Intent(Intent.ACTION_VIEW, uriKakaoNavi),
-                Intent(Intent.ACTION_VIEW, uriTmap)
-            )
-        )
+//        val intent = Intent(Intent.ACTION_VIEW)
+//        intent.data = Uri.parse("geo:0,0?q="+PlaceholderContent.ITEMS.get(0).station_latitude+","+PlaceholderContent.ITEMS.get(0).station_longitude) // 출발지 좌표
+//        intent.putExtra(Intent.EXTRA_TITLE, "Select navigation app") // 다이얼로그 타이틀
+//        intent.putExtra(
+//            Intent.EXTRA_INITIAL_INTENTS, arrayOf(
+////                Intent(Intent.ACTION_VIEW, uriNaverMap),
+////                Intent(Intent.ACTION_VIEW, uriKakaoNavi),
+//                Intent(Intent.ACTION_VIEW, uriTmap)
+//            )
+//        )
+
+        var longitude = PlaceholderContent.ITEMS.get(0).station_longitude
+        var latitude = PlaceholderContent.ITEMS.get(0).station_latitude
+        val title = "첫 번째 정류장"
+        var intent = Intent(Intent.ACTION_VIEW, Uri.parse("tmap://route?goalx=$longitude&goaly=$latitude&goalname=$title")).apply {
+            `package` = "com.skt.tmap.ku"
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        }
 
         startActivity(intent)
     }
@@ -244,6 +244,8 @@ class FragmentItemDetailScreen : Fragment() {
     }
 
     fun requestApiServer() {
+        binding.loadBar.show()
+        Log.d("requestApiServer", "requestApiServer")
         PlaceholderContent.ITEMS.clear()
         stationDataList.clear()
 //        binding.textList.gone()
@@ -291,14 +293,18 @@ class FragmentItemDetailScreen : Fragment() {
                                         )
                                         stationDataList.add(tmp)
                                     }
+                                    Log.d("check list", stationDataList.toString())
+                                    Log.d("check size", ScheduleList.recyclerViewAdapter.itemCount.toString())
                                     PlaceholderContent.makeItem(stationDataList)
                                     ScheduleList.recyclerViewAdapter.notifyDataSetChanged()
+
 
                                 } else {
                                     gmap?.clear()
                                     Log.d("response", "onResponse: $response")
                                 }
                                 binding.loadBar.gone()
+                                binding.itemListLay.show()
 //                                binding.textList.show()
                                 makeRoute()
 
@@ -450,7 +456,6 @@ class FragmentItemDetailScreen : Fragment() {
 //
 //    }
     fun tm(){
-    binding.passlist.show()
     binding.textList.gone()
     binding.itemListLay.gone()
     }
