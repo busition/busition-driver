@@ -32,6 +32,10 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
         var token:String = ""
         Log.d("firebase user name", "signIn:$username")
+        if (username == "" || password == "") {
+            _loginResult.value = LoginResult(error = R.string.login_failed)
+            return
+        }
         //ㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴ
         auth.signInWithEmailAndPassword(username, password)
             .addOnCompleteListener() { task ->

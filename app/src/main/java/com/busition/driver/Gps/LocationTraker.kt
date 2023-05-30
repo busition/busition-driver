@@ -2,15 +2,21 @@ package com.busition.driver.Gps
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import androidx.core.content.ContextCompat
+import com.busition.driver.R
 import com.busition.driver.SocketIo
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.placeholder.PlaceholderContent
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
 import kotlin.math.*
@@ -29,7 +35,7 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
     var nowLocation:LatLng = LatLng(0.0,0.0)
     private  var currentLocationMarker: Marker = gmap.addMarker(
         MarkerOptions()
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+            .icon(BitmapFromVector(context, R.drawable.bus_icon))
             .position(nowLocation)
             .title("현재 위치")
     )!!
@@ -40,6 +46,23 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
         getLocation()
     }
 
+    private fun BitmapFromVector(context:Context,vectorResId:Int): BitmapDescriptor? {
+        //drawable generator
+        var vectorDrawable: Drawable
+        vectorDrawable= ContextCompat.getDrawable(context,vectorResId)!!
+        vectorDrawable.setBounds(0,0,vectorDrawable.intrinsicWidth,vectorDrawable.intrinsicHeight)
+        //bitmap genarator
+        var bitmap:Bitmap
+        bitmap= Bitmap.createBitmap(vectorDrawable.intrinsicWidth,vectorDrawable.intrinsicHeight,Bitmap.Config.ARGB_8888)
+        //canvas genaret
+        var canvas:Canvas
+        //pass bitmap in canvas constructor
+        canvas= Canvas(bitmap)
+        //pass canvas in drawable
+        vectorDrawable.draw(canvas)
+        //return BitmapDescriptorFactory
+        return BitmapDescriptorFactory.fromBitmap(bitmap)
+    }
 
     @SuppressLint("MissingPermission")
     private fun getLocation() {
@@ -98,20 +121,21 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
 
 
     fun updateGmapPolyline(location: Location){
-        gmap.clear()
+//        gmap.clear()
         Log.d("gps", nowLocation.toString())
         nowLocation = LatLng(location.latitude, location.longitude)
 
         currentLocationMarker.remove()
         currentLocationMarker = gmap.addMarker(
             MarkerOptions()
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+//                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
+                .icon(BitmapFromVector(mContext, R.drawable.bus_icon))
                 .position(nowLocation)
                 .title("현재 위치")
         )!!
         var list:MutableList<LatLng> = arrayListOf()
         var tmp:LatLng = LatLng(0.0,0.0)
-
+        FragmentItemDetailScreen.gmap?.animateCamera(CameraUpdateFactory.newLatLng(nowLocation))
         PlaceholderContent.ITEMS.forEach {
             tmp = LatLng(it.station_latitude, it.station_longitude)
             FragmentItemDetailScreen.gmap?.addMarker(
@@ -120,16 +144,16 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
                     .title(it.station_name)
             )
         }
-        list.add(nowLocation)
-        for (i in nowLocationIndex until locList.size) {
-            list.add(locList[i])
-        }
-        gmap.addPolyline(
-            PolylineOptions()
-                .addAll(list)
-                .width(10f)
-                .color(Color.RED)
-        )
+//        list.add(nowLocation)
+//        for (i in nowLocationIndex until locList.size) {
+//            list.add(locList[i])
+//        }
+//        gmap.addPolyline(
+//            PolylineOptions()
+//                .addAll(list)
+//                .width(10f)
+//                .color(Color.RED)
+//        )
     }
 
     fun updateLocationIndex(){
