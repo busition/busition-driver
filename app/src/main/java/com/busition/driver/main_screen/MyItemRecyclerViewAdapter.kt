@@ -39,7 +39,8 @@ class MyItemRecyclerViewAdapter(
         holder.departureView.text = "출발 : " + item.departure_point
         holder.typeView.text = type
         holder.destinationView.text = "종착 : " + item.destination
-        holder.timeView.text = "다음 일정 : " + item.departure_time.day_time.time.S
+        holder.timeView.text = "다음 일정 : "
+//        + item.departure_time.day_time.time.S
 //        holder.routeNameView.text = item.departure_time.route_name
 
         viewItemDetails(holder, item)

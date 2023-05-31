@@ -142,11 +142,11 @@ class ScheduleList : Fragment() {
                                                         ?: "",
                                                     scheduleDataList?.schedule_data?.get(i)?.destination
                                                         ?: "",
-                                                    scheduleDataList?.schedule_data?.get(i)?.departure_time
-                                                        ?: DepartureTime(
-                                                            DayTime(S(""), S(""))
-
-                                                        ),
+//                                                    scheduleDataList?.schedule_data?.get(i)?.departure_time
+//                                                        ?: DepartureTime(
+//                                                            DayTime(S(""), S(""))
+//
+//                                                        ),
                                                     scheduleDataList?.schedule_data?.get(i)?.shuttle_direction
                                                         ?: 0,
                                                 )
