@@ -47,6 +47,14 @@ class UserInfoDataFragment : Fragment() {
         binding.button3.setOnClickListener {
             scan()
         }
+        binding.button4.setOnClickListener {
+            for (i in 0 until MainScreen.user_uuid.size) {
+                Log.d("user uuid", MainScreen.user_uuid[i])
+            }
+            for (i in 0 until MainScreen.check_uuid.size){
+                Log.d("check uuid", MainScreen.check_uuid[i])
+            }
+        }
     }
     fun scan(){
         (activity as MainScreen?)?.scanLeDevice(true)

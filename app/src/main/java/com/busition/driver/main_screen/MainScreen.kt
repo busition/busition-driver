@@ -203,7 +203,7 @@ class MainScreen : AppCompatActivity() {
             if (result?.rssi!! > -50) {
                 Log.d(
                     "ble instance",
-                    "${result?.device?.name} ${result?.device?.uuids} ${result?.rssi}"
+                    "${result?.device?.name} ${result?.scanRecord?.serviceUuids?.get(0)} ${result?.rssi}"
                 )
                 if (check_uuid.contains(result?.scanRecord?.serviceUuids?.get(0).toString())) {
                     user_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
