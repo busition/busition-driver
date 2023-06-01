@@ -37,6 +37,7 @@ import com.busition.driver.UserInfoDataFragment.Companion.userInfoRecyclerAdapte
 import com.busition.driver.databinding.ActivityMainScreenBinding
 import com.busition.driver.main_screen.ScheduleList.Companion.driver_uuid
 import com.google.android.material.snackbar.Snackbar
+import java.util.UUID
 
 class MainScreen : AppCompatActivity() {
 
@@ -178,7 +179,20 @@ class MainScreen : AppCompatActivity() {
 
             Log.d("ble", "${device.name},${device.address}, $rssi, $scanRecord, $device, ${device.uuids}")
         }
-
+    fun generateUUID(string: String): String {
+        return UUID.fromString(string).toString()
+    }
+    fun compressString(string: String): String {
+        var tmp :String =""
+        if (string.length > 16) {
+            tmp = string.substring(0, 8) + string.substring(string.length - 8)
+            tmp = tmp.encodeToByteArray().joinToString("") { it.toString(16) }
+        } else {
+            tmp = string.encodeToByteArray().joinToString("") { it.toString(16) }
+        }
+        tmp = generateUUID(tmp)
+        return tmp
+    }
     private val scanCallback = object : ScanCallback() {
         @SuppressLint("MissingPermission")
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
@@ -186,7 +200,7 @@ class MainScreen : AppCompatActivity() {
 //                tmpBleList.add(result?.device?.uuids.toString())
 //
 //            }
-            if (result?.scanRecord?.serviceUuids.toString() == "[11111111-1111-1111-1111-111111111111]"){
+            if (result?.scanRecord?.serviceUuids?.get(0).toString() == "11111111-1111-1111-1111-111111111111"){
                 test_code = true
                 userInfoRecyclerAdapter.notifyDataSetChanged()
 
