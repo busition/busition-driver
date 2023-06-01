@@ -24,6 +24,7 @@ object SocketIo {
             tmp.put("type", type)
             socketServer = IO.socket("http://api.dev.busition.com:3000/user")
             socketServer.connect()
+            Log.d("socket type", socketServer.toString())
             Log.d("socket pack jsonObject", tmp.toString())
 
             socketServer.emit("open_room", tmp.toString())
@@ -75,6 +76,7 @@ object SocketIo {
         tmp.put("longitude", lon)
         tmp.put("speed", speed)
         Log.d("socket location jsonObject", tmp.toString())
+        Log.d("socket type", socketServer.toString())
         socketServer.emit("send_location", tmp)
         Log.d("socket send location", tmp.toString())
     }

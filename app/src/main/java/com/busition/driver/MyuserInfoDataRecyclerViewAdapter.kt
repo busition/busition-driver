@@ -32,20 +32,20 @@ class MyuserInfoDataRecyclerViewAdapter(
         )
 
     }
-    fun generateUUID(string: String): String {
-        return UUID.fromString(string).toString()
-    }
-    fun compressString(string: String): String {
-        var tmp :String =""
-        if (string.length > 16) {
-            tmp = string.substring(0, 8) + string.substring(string.length - 8)
-            tmp = tmp.encodeToByteArray().joinToString("") { it.toString(16) }
-        } else {
-            tmp = string.encodeToByteArray().joinToString("") { it.toString(16) }
-        }
-        tmp = generateUUID(tmp)
-        return tmp
-    }
+//    fun generateUUID(string: String): String {
+//        return UUID.fromString(string).toString()
+//    }
+//    fun compressString(string: String): String {
+//        var tmp :String =""
+//        if (string.length > 16) {
+//            tmp = string.substring(0, 8) + string.substring(string.length - 8)
+//            tmp = tmp.encodeToByteArray().joinToString("") { it.toString(16) }
+//        } else {
+//            tmp = string.encodeToByteArray().joinToString("") { it.toString(16) }
+//        }
+//        tmp = generateUUID(tmp)
+//        return tmp
+//    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
@@ -57,12 +57,12 @@ class MyuserInfoDataRecyclerViewAdapter(
             holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
         }
 
-        if (MainScreen.user_uuid.contains(compressString(item.passenger_uid))){
-            holder.contentView.text = "탑승중"
-            holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
-        }else if (!MainScreen.check_uuid.contains(item.passenger_uid)){
-            MainScreen.check_uuid.add(compressString(item.passenger_uid))
-        }
+//        if (MainScreen.user_uuid.contains(compressString(item.passenger_uid))){
+//            holder.contentView.text = "탑승중"
+//            holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
+//        }else if (!MainScreen.check_uuid.contains(item.passenger_uid)){
+//            MainScreen.check_uuid.add(compressString(item.passenger_uid))
+//        }
         holder.callBtn.setOnClickListener {
             val call = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + item.passenger_phone))
             ContextCompat.startActivity(holder.itemView.context, call, null)

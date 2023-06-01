@@ -192,9 +192,9 @@ class MainScreen : AppCompatActivity() {
                 userInfoRecyclerAdapter.notifyDataSetChanged()
 
             }
-            if (check_uuid.contains(result?.scanRecord?.serviceUuids.toString())){
-                user_uuid.add(result?.scanRecord?.serviceUuids.toString())
-                check_uuid.remove(result?.scanRecord?.serviceUuids.toString())
+            if (check_uuid.contains(result?.scanRecord?.serviceUuids?.get(0).toString())){
+                user_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
+                check_uuid.remove(result?.scanRecord?.serviceUuids?.get(0).toString())
                 userInfoRecyclerAdapter.notifyDataSetChanged()
             }
             Log.d("ble instance","${result?.device?.name} ${result?.device?.uuids} ${result?.scanRecord?.serviceUuids}" )

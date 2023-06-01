@@ -13,6 +13,7 @@ import com.busition.driver.data.passenger_list.PassengerListData
 import com.busition.driver.databinding.FragmentUserInfoItemListBinding
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.FragmentItemDetailScreen.Companion.shuttle_direction
+import com.busition.driver.main_screen.MainScreen
 import com.busition.driver.main_screen.MainScreen.Companion.token
 import com.busition.driver.placeholder.UserInfoDataContent
 import com.busition.driver.ui.login.LoginViewModel
@@ -38,7 +39,18 @@ class UserInfoDataFragment : Fragment() {
 
     }
 
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.button2.setOnClickListener {
+            requestApi()
+        }
+        binding.button3.setOnClickListener {
+            scan()
+        }
+    }
+    fun scan(){
+        (activity as MainScreen?)?.scanLeDevice(true)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
