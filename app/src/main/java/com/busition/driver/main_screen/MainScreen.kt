@@ -62,17 +62,19 @@ class MainScreen : AppCompatActivity() {
         Manifest.permission.BLUETOOTH_ADVERTISE,
         Manifest.permission.ACCESS_FINE_LOCATION
     )
-    fun runRecv(){
+
+    fun runRecv() {
         runOnUiThread {
             SocketIo.recvLocation()
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         WindowCompat.setDecorFitsSystemWindows(window, false)
         super.onCreate(savedInstanceState)
         userName = intent.getStringExtra("userName").toString()
-        driver_uuid = intent.getStringExtra("driver_uuid" ).toString()
-        ScheduleList.getUserData(userName, driver_uuid )
+        driver_uuid = intent.getStringExtra("driver_uuid").toString()
+        ScheduleList.getUserData(userName, driver_uuid)
 
         binding = ActivityMainScreenBinding.inflate(layoutInflater)
         setSupportActionBar(binding.toolbar)
@@ -91,7 +93,7 @@ class MainScreen : AppCompatActivity() {
                 .setAnchorView(R.id.fab)
                 .setAction("Action", null).show()
         }
-        if(isMyServiceRunning()){
+        if (isMyServiceRunning()) {
             stopService(Intent(this, FloatingService::class.java))
         }
     }
@@ -136,7 +138,7 @@ class MainScreen : AppCompatActivity() {
         val mBluetoothAdapter = bluetoothManager.adapter
         val mBluetoothLeScanner = mBluetoothAdapter.bluetoothLeScanner
         Log.d("error", mBluetoothAdapter.toString())
-        var mScanning=true
+        var mScanning = true
         val mHandler = Handler()
         Log.d("bleble ", mBluetoothAdapter.toString())
         if (enable) {
@@ -157,6 +159,7 @@ class MainScreen : AppCompatActivity() {
 
     private fun buildScanSettings() = ScanSettings.Builder()
         .setScanMode(ScanSettings.SCAN_MODE_BALANCED).build()
+
     fun requestBlePermissions(activity: Activity?, requestCode: Int) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) ActivityCompat.requestPermissions(
             activity!!,
@@ -177,7 +180,10 @@ class MainScreen : AppCompatActivity() {
     private val mLeScanCallback =
         BluetoothAdapter.LeScanCallback { device, rssi, scanRecord ->
 
-            Log.d("ble", "${device.name},${device.address}, $rssi, $scanRecord, $device, ${device.uuids}")
+            Log.d(
+                "ble",
+                "${device.name},${device.address}, $rssi, $scanRecord, $device, ${device.uuids}"
+            )
         }
 
     private val scanCallback = object : ScanCallback() {
@@ -187,27 +193,38 @@ class MainScreen : AppCompatActivity() {
 //                tmpBleList.add(result?.device?.uuids.toString())
 //
 //            }
-            if (result?.scanRecord?.serviceUuids?.get(0).toString() == "11111111-1111-1111-1111-111111111111"){
+            if (result?.scanRecord?.serviceUuids?.get(0)
+                    .toString() == "11111111-1111-1111-1111-111111111111"
+            ) {
                 test_code = true
                 userInfoRecyclerAdapter.notifyDataSetChanged()
 
             }
-            if (check_uuid.contains(result?.scanRecord?.serviceUuids?.get(0).toString())){
-                user_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
-                check_uuid.remove(result?.scanRecord?.serviceUuids?.get(0).toString())
-                userInfoRecyclerAdapter.notifyDataSetChanged()
+            if (result?.rssi!! > -50) {
+                Log.d(
+                    "ble instance",
+                    "${result?.device?.name} ${result?.device?.uuids} ${result?.rssi}"
+                )
+                if (check_uuid.contains(result?.scanRecord?.serviceUuids?.get(0).toString())) {
+                    user_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
+                    check_uuid.remove(result?.scanRecord?.serviceUuids?.get(0).toString())
+                    userInfoRecyclerAdapter.notifyDataSetChanged()
+
+                }
+
             }
-            Log.d("ble instance","${result?.device?.name} ${result?.device?.uuids} ${result?.scanRecord?.serviceUuids}" )
+
         }
 
         override fun onBatchScanResults(results: MutableList<ScanResult>?) {
-            Log.d("ble",results.toString())
+            Log.d("ble", results.toString())
         }
 
         override fun onScanFailed(errorCode: Int) {
             Log.d("ble error", errorCode.toString())
         }
     }
+
     companion object {
         var driver_uuid: String = ""
         var token: String = ""
