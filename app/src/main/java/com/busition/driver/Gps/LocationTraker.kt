@@ -131,8 +131,9 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
 //                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                 .icon(BitmapFromVector(mContext, R.drawable.bus_icon))
                 .position(nowLocation)
-                .title("현재 위치")
+                .title((location.speed * 3.5).toString() + "km/h")
         )!!
+        currentLocationMarker.showInfoWindow()
         var list:MutableList<LatLng> = arrayListOf()
         var tmp:LatLng = LatLng(0.0,0.0)
         FragmentItemDetailScreen.gmap?.animateCamera(CameraUpdateFactory.newLatLng(nowLocation))

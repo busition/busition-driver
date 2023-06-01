@@ -179,20 +179,7 @@ class MainScreen : AppCompatActivity() {
 
             Log.d("ble", "${device.name},${device.address}, $rssi, $scanRecord, $device, ${device.uuids}")
         }
-    fun generateUUID(string: String): String {
-        return UUID.fromString(string).toString()
-    }
-    fun compressString(string: String): String {
-        var tmp :String =""
-        if (string.length > 16) {
-            tmp = string.substring(0, 8) + string.substring(string.length - 8)
-            tmp = tmp.encodeToByteArray().joinToString("") { it.toString(16) }
-        } else {
-            tmp = string.encodeToByteArray().joinToString("") { it.toString(16) }
-        }
-        tmp = generateUUID(tmp)
-        return tmp
-    }
+
     private val scanCallback = object : ScanCallback() {
         @SuppressLint("MissingPermission")
         override fun onScanResult(callbackType: Int, result: ScanResult?) {
