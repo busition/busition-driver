@@ -2,6 +2,7 @@ package com.busition.driver.main_screen
 
 import android.content.BroadcastReceiver
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -12,6 +13,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.addCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
@@ -63,7 +66,41 @@ class FragmentItemDetailScreen : Fragment() {
         shuttle_direction = arg.getInt("shuttle_direction")
         passListView = arg.getBoolean("passListView")
         Log.d("passs", passListView.toString())
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
+            if(test){
+                context?.let {
+                    AlertDialog.Builder(it)
+                        .setTitle("운행 종료")
+                        .setMessage("운행을 종료하시겠습니까?")
+                        .setPositiveButton("네", object : DialogInterface.OnClickListener {
+                            override fun onClick(dialog: DialogInterface, which: Int) {
+                                val intent = Intent(getActivity(), MainScreen::class.java)
+                                intent.flags =
+                                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                startActivity(intent)
+                                val gpsIntent = Intent(activity, GpsForegroundService::class.java)
+                                gpsIntent.setAction("stop")
+                                activity?.startService(gpsIntent)
+                                test = false
+                            }
+                        })
+                        .setNegativeButton("아니오", object : DialogInterface.OnClickListener {
+                            override fun onClick(dialog: DialogInterface, which: Int) {
 
+                            }
+                        })
+                        .create()
+                        .show()
+                }
+            }else{
+                val intent = Intent(getActivity(), MainScreen::class.java)
+                intent.flags =
+                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(intent)
+            }
+
+
+        }
         //imsi use key
 
 
@@ -130,6 +167,7 @@ class FragmentItemDetailScreen : Fragment() {
         }
 
     }
+
 
     fun navigate(){
 //        val uriNaverMap = Uri.parse("navermaps://")
@@ -458,14 +496,7 @@ class FragmentItemDetailScreen : Fragment() {
 //    }
 
     fun onBackPressed() {
-        val tempTime = System.currentTimeMillis()
-        val intervalTime: Long = tempTime - backPressedTime
-        if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
-            finish()
-        } else {
-            backPressedTime = tempTime
-            Toast.makeText(getApplicationContext(), "한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
-        }
+            Toast.makeText(context, "한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
     }
     fun tm(){
     binding.textList.gone()
