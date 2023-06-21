@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
@@ -36,6 +37,7 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.GetTokenResult
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+
 
 class FragmentItemDetailScreen : Fragment() {
 
@@ -454,6 +456,17 @@ class FragmentItemDetailScreen : Fragment() {
 //        return poly
 //
 //    }
+
+    fun onBackPressed() {
+        val tempTime = System.currentTimeMillis()
+        val intervalTime: Long = tempTime - backPressedTime
+        if (0 <= intervalTime && FINISH_INTERVAL_TIME >= intervalTime) {
+            finish()
+        } else {
+            backPressedTime = tempTime
+            Toast.makeText(getApplicationContext(), "한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+        }
+    }
     fun tm(){
     binding.textList.gone()
     binding.itemListLay.gone()
