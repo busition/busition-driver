@@ -35,7 +35,7 @@ class UserInfoDataFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         station_uuid = arguments?.getString("station_uuid") ?:""
-
+        Log.d("station uuid ", station_uuid)
 
     }
 
@@ -51,9 +51,13 @@ class UserInfoDataFragment : Fragment() {
             for (i in 0 until MainScreen.user_uuid.size) {
                 Log.d("user uuid", MainScreen.user_uuid[i])
             }
+            MainScreen.user_uuid.clear()
             for (i in 0 until MainScreen.check_uuid.size){
                 Log.d("check uuid", MainScreen.check_uuid[i])
             }
+        }
+        binding.button5.setOnClickListener{
+            (activity as MainScreen?)?.scanLeDevice(false)
         }
     }
     fun scan(){

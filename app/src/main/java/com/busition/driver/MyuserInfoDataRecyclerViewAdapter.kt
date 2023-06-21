@@ -3,6 +3,7 @@ package com.busition.driver
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.Button
@@ -43,7 +44,10 @@ class MyuserInfoDataRecyclerViewAdapter(
         } else {
             tmp = string.encodeToByteArray().joinToString("") { it.toString(16) }
         }
-        tmp = generateUUID(tmp)
+
+        Log.d("compressString",string)
+        tmp = tmp.substring(0, 8) + "-" + tmp.substring(8, 12) + "-" + tmp.substring(12, 16) + "-" + tmp.substring(16, 20) + "-" + tmp.substring(20, 32)
+        Log.d("compressString",tmp)
         return tmp
     }
 
@@ -56,12 +60,13 @@ class MyuserInfoDataRecyclerViewAdapter(
             holder.contentView.text = "탑승중"
             holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
         }
-
+        Log.d("user_uuid",item.passenger_uid.toString())
         if (MainScreen.user_uuid.contains(compressString(item.passenger_uid))){
             holder.contentView.text = "탑승중"
             holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
         }else if (!MainScreen.check_uuid.contains(item.passenger_uid)){
             MainScreen.check_uuid.add(compressString(item.passenger_uid))
+            holder.contentView.setBackgroundColor("#FFE792".toColorInt())
         }
         holder.callBtn.setOnClickListener {
             val call = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + item.passenger_phone))
