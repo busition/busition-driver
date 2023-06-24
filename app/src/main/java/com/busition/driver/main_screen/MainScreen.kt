@@ -234,6 +234,7 @@ class MainScreen : AppCompatActivity() {
         var test_code: Boolean = false
         var user_uuid: ArrayList<String> = ArrayList()
         var check_uuid: ArrayList<String> = ArrayList()
+        var user_type: String = "normal"
     }
 
 }

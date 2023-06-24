@@ -48,6 +48,8 @@
     <!-- Strings related to login -->
     <string name="prompt_email">이메일을 입력하세요</string>
     <string name="prompt_password">비밀번호를 입력하세요</string>
+    <string name="company_id">기업 아이디를 입력하세요</string>
+    <string name="company_password">기업 비밀번호를 입력하세요</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome!"</string>
