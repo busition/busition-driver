@@ -1,6 +1,7 @@
 package com.busition.driver.ui.login
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,12 +12,18 @@ import com.busition.driver.main_screen.MainScreen
 
 
 class CompanyLogin : Fragment() {
-    val binding: FragmentCompanyLoginBinding = FragmentCompanyLoginBinding.inflate(layoutInflater)
+    lateinit var binding: FragmentCompanyLoginBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         binding.companyButton.setOnClickListener {
             MainScreen.user_type = "company"
+            Log.d("user type", MainScreen.user_type)
         }
     }
 
@@ -24,7 +31,9 @@ class CompanyLogin : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_company_login, container, false)
+        val view = inflater.inflate(R.layout.fragment_company_login, container, false)
+        binding = FragmentCompanyLoginBinding.bind(view)
+        return view
     }
 
 
