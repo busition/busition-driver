@@ -141,7 +141,7 @@ class FragmentItemDetailScreen : Fragment() {
             binding.itemListLay.show()
             test = true
             //service start func
-//            scan()
+            scan()
             tmp()
 
 
