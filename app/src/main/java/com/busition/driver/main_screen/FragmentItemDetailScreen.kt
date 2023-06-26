@@ -141,7 +141,7 @@ class FragmentItemDetailScreen : Fragment() {
             binding.itemListLay.show()
             test = true
             //service start func
-//            scan()
+            scan()
             tmp()
 
 
@@ -185,9 +185,9 @@ class FragmentItemDetailScreen : Fragment() {
 //            )
 //        )
 
-        var longitude = PlaceholderContent.ITEMS.get(0).station_longitude
-        var latitude = PlaceholderContent.ITEMS.get(0).station_latitude
-        val title = "첫 번째 정류장"
+        var longitude = PlaceholderContent.ITEMS.get(PlaceholderContent.ind).station_longitude
+        var latitude = PlaceholderContent.ITEMS.get(PlaceholderContent.ind).station_latitude
+        val title = PlaceholderContent.ITEMS.get(PlaceholderContent.ind).station_name
         var intent = Intent(Intent.ACTION_VIEW, Uri.parse("tmap://route?goalx=$longitude&goaly=$latitude&goalname=$title")).apply {
             `package` = "com.skt.tmap.ku"
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)

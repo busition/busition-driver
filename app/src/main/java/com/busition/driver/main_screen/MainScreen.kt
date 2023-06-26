@@ -45,9 +45,11 @@ class MainScreen : AppCompatActivity() {
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var userName: String
 
+
+
     private var tmpBleList: MutableList<String> = ArrayList()
 
-    private val SCAN_PERIOD: Long = 10000
+    private val SCAN_PERIOD: Long = 60000
     private val PERMISSIONS_REQUEST_CODE = 191
 
     private val BLE_PERMISSIONS = arrayOf(
@@ -79,6 +81,7 @@ class MainScreen : AppCompatActivity() {
         binding = ActivityMainScreenBinding.inflate(layoutInflater)
         setSupportActionBar(binding.toolbar)
         setContentView(binding.root)
+
 
         val navController = findNavController(R.id.main_screen_nav)
         appBarConfiguration = AppBarConfiguration(navController.graph)
@@ -134,24 +137,24 @@ class MainScreen : AppCompatActivity() {
     fun scanLeDevice(enable: Boolean) {
         requestBlePermissions(this, PERMISSIONS_REQUEST_CODE)
         val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        Log.d("Mainscreen", bluetoothManager.toString())
         val mBluetoothAdapter = bluetoothManager.adapter
         val mBluetoothLeScanner = mBluetoothAdapter.bluetoothLeScanner
-        Log.d("error", mBluetoothAdapter.toString())
-        var mScanning = true
-        val mHandler = Handler()
         Log.d("ble test ", mBluetoothAdapter.toString())
+        val mHandler = Handler()
         if (enable) {
-            // Stops scanning after a pre-defined scan period.
             mHandler.postDelayed({
-                mScanning = false
                 mBluetoothLeScanner.stopScan(scanCallback)
+                if (scanning){
+                    scanLeDevice(true)
+                }else{
+                    scanLeDevice(false)
+                }
             }, SCAN_PERIOD)
-            mScanning = true
+            Log.d("ble log", "start scan")
             mBluetoothLeScanner.startScan(scanCallback)
         } else {
-            mScanning = false
             mBluetoothLeScanner.stopScan(scanCallback)
+            Log.d("ble log", "stop scan")
         }
 
     }
@@ -246,6 +249,8 @@ class MainScreen : AppCompatActivity() {
         var company_user_uuid: ArrayList<String> = ArrayList()
         var company_check_uuid: ArrayList<String> = ArrayList()
         var user_type: String = "normal"
+        var scanning:Boolean = true
+
     }
 
 }

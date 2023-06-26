@@ -1,14 +1,24 @@
 package com.busition.driver.placeholder
 
+import android.location.Location
+import android.util.Log
 import com.busition.driver.data.schedule_route.StationData
+import com.busition.driver.main_screen.MainScreen
+import java.lang.Math.asin
+import java.lang.Math.atan2
+import java.lang.Math.cos
+import java.lang.Math.sin
+import java.lang.Math.sqrt
 import java.util.ArrayList
+import kotlin.math.pow
 
 
 object PlaceholderContent {
 
 
     val ITEMS: MutableList<StationData> = ArrayList()
-
+    var ind:Int = 0
+    var check: Boolean = false
 
     init {
 
@@ -27,6 +37,35 @@ object PlaceholderContent {
 
     }
 
+    fun checkStation(lat:Double, lon:Double){
+        val tmpDistance = getDistance(ITEMS.get(ind).station_latitude, ITEMS.get(ind).station_longitude, lat, lon)
+        if (tmpDistance < 300 && !check){
+            check = true
+            Log.d("change station", "get in range")
+        }
+
+        if (tmpDistance > 300 && check){
+            check = false
+            ind++
+            Log.d("change station", ITEMS.get(ind).station_name)
+            MainScreen.scanning = false
+        }
+        Log.d("distance" , tmpDistance.toString())
+    }
+    fun getDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
+        val tmp = Location("A")
+        tmp.latitude = lat1
+        tmp.longitude = lon1
+        val tmp2 = Location("B")
+        tmp2.latitude = lat2
+        tmp2.longitude = lon2
+
+        return tmp.distanceTo(tmp2)
+    }
+
+
 
 
 }
+
+

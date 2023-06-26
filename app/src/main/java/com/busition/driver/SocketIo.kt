@@ -5,6 +5,7 @@ import android.os.Looper
 import android.util.Log
 import com.busition.driver.data.passenger_list.PassengerData
 import com.busition.driver.main_screen.FragmentItemDetailScreen
+import com.busition.driver.placeholder.PlaceholderContent
 import com.busition.driver.placeholder.UserInfoDataContent
 import io.socket.client.IO
 import io.socket.client.Socket
@@ -95,6 +96,7 @@ object SocketIo {
         tmp.put("latitude", lat)
         tmp.put("longitude", lon)
         tmp.put("speed", speed)
+        tmp.put("stationName", PlaceholderContent.ITEMS.get(PlaceholderContent.ind).station_name)
         Log.d("socket location jsonObject", tmp.toString())
         Log.d("socket type", socketServer.toString())
         socketServer.emit("send_location", tmp)

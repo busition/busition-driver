@@ -97,7 +97,8 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
 
     override fun onLocationChanged(location: Location) {
 //        Log.d("gps", location.latitude.toString() + " " + location.longitude.toString())
-        updateLocationIndex()
+//        updateLocationIndex()
+        PlaceholderContent.checkStation(location.latitude, location.longitude)
         updateGmapPolyline(location)
         SocketIo.sendLocation(location.latitude,location.longitude, location.speed)
 //        val boundsBuilder = LatLngBounds.Builder()
