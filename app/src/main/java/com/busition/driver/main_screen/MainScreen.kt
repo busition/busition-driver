@@ -47,7 +47,7 @@ class MainScreen : AppCompatActivity() {
 
     private var tmpBleList: MutableList<String> = ArrayList()
 
-    private val SCAN_PERIOD: Long = 1000000
+    private val SCAN_PERIOD: Long = 10000
     private val PERMISSIONS_REQUEST_CODE = 191
 
     private val BLE_PERMISSIONS = arrayOf(
@@ -140,13 +140,12 @@ class MainScreen : AppCompatActivity() {
         Log.d("error", mBluetoothAdapter.toString())
         var mScanning = true
         val mHandler = Handler()
-        Log.d("bleble ", mBluetoothAdapter.toString())
+        Log.d("ble test ", mBluetoothAdapter.toString())
         if (enable) {
             // Stops scanning after a pre-defined scan period.
             mHandler.postDelayed({
                 mScanning = false
                 mBluetoothLeScanner.stopScan(scanCallback)
-
             }, SCAN_PERIOD)
             mScanning = true
             mBluetoothLeScanner.startScan(scanCallback)
@@ -201,31 +200,41 @@ class MainScreen : AppCompatActivity() {
 
             }
             if (result?.rssi!! > -50) {
-                Log.d(
-                    "ble instance",
-                    "${result?.device?.name} ${result?.scanRecord?.serviceUuids?.get(0)} ${result?.rssi}"
-                )
-                if (check_uuid.contains(result?.scanRecord?.serviceUuids?.get(0).toString()) && !user_uuid.contains(
-                        result?.scanRecord?.serviceUuids?.get(0).toString()
-                    )) {
-                    user_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
-                    check_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
+//                Log.d(
+//                    "ble instance",
+//                    "${result?.device?.name} ${result?.scanRecord?.serviceUuids?.get(0)} ${result?.rssi}"
+//                )
+                if (user_type == "normal"){
+                    if (check_uuid.contains(result?.scanRecord?.serviceUuids?.get(0).toString()) && !user_uuid.contains(
+                            result?.scanRecord?.serviceUuids?.get(0).toString()
+                        )) {
+                        user_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
+                        check_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
 //                    check_uuid.remove(result?.scanRecord?.serviceUuids?.get(0).toString())
-                    userInfoRecyclerAdapter.notifyDataSetChanged()
+//                        userInfoRecyclerAdapter.notifyDataSetChanged()
 
+                    }
+                }else{
+                    if (!company_check_uuid.contains(result?.scanRecord?.serviceUuids?.get(0).toString())) {
+                        Log.d("test socket log ", result?.scanRecord?.serviceUuids?.get(0).toString())
+                        SocketIo.sendUserUuid(result?.scanRecord?.serviceUuids?.get(0).toString(),"1")
+//                        company_check_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
+                    }
                 }
 
+                userInfoRecyclerAdapter.notifyDataSetChanged()
             }
 
         }
 
         override fun onBatchScanResults(results: MutableList<ScanResult>?) {
-            Log.d("ble", results.toString())
+            Log.d("ble batch scan ", results.toString())
         }
 
         override fun onScanFailed(errorCode: Int) {
             Log.d("ble error", errorCode.toString())
         }
+
     }
 
     companion object {
@@ -234,6 +243,9 @@ class MainScreen : AppCompatActivity() {
         var test_code: Boolean = false
         var user_uuid: ArrayList<String> = ArrayList()
         var check_uuid: ArrayList<String> = ArrayList()
+        var company_user_uuid: ArrayList<String> = ArrayList()
+        var company_check_uuid: ArrayList<String> = ArrayList()
+        var user_type: String = "normal"
     }
 
 }

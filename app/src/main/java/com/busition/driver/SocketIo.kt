@@ -3,7 +3,9 @@ package com.busition.driver
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.busition.driver.data.passenger_list.PassengerData
 import com.busition.driver.main_screen.FragmentItemDetailScreen
+import com.busition.driver.placeholder.UserInfoDataContent
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -30,6 +32,7 @@ object SocketIo {
             socketServer.emit("open_room", tmp.toString())
 //            recvLocation()
 //            recvClose()
+            recvUserUuid()
 
         } catch (e: Exception) {
             Log.d("socket", e.toString())
@@ -65,11 +68,28 @@ object SocketIo {
         val tmp = JSONObject()
         tmp.put("uuid", uuid)
         tmp.put("id", id)
-        socketServer.emit("check_passenger", tmp)
+        socketServer.emit("company user", tmp)
         Log.d("socket check_passenger", tmp.toString())
         FragmentItemDetailScreen.check_passenger_list.add(uuid)
     }
 
+    fun recvUserUuid(){
+        try {
+            val onMessage = Emitter.Listener { args ->
+                val obj = JSONObject(args[0].toString())
+                val uuid:String = obj.getString("uuid")
+                val stationUuid:String = obj.getString("station uuid")
+                val name:String = obj.getString("name")
+                UserInfoDataContent.addItem(PassengerData(uuid, name, "", "", stationUuid))
+//                UserInfoDataFragment.userInfoRecyclerAdapter.notifyDataSetChanged()
+                Log.d("socket", obj.toString())
+
+            }
+            socketServer.on("user uuid", onMessage)
+        } catch (e: Exception) {
+            Log.d("socket recv error", e.toString())
+        }
+    }
     fun sendLocation(lat: Double, lon: Double, speed: Float) {
         val tmp = JSONObject()
         tmp.put("latitude", lat)

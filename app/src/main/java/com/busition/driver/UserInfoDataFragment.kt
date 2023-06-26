@@ -77,66 +77,67 @@ class UserInfoDataFragment : Fragment() {
     }
 
     fun requestApi() {
-        binding.userInfoList.gone()
-        binding.loadBarUserInfo.show()
-        val retrofit = Retrofit.Builder()
-            .baseUrl(base_api_url)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val service = retrofit.create(RetrofitServiceInterface::class.java)
-        LoginViewModel.auth.currentUser?.getIdToken(true)
-            ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
-                if (t.isSuccessful) {
-                    val idToken = t.result.token
-                    token = "Bearer " + idToken.toString()
-                    Log.d("id token", idToken.toString())
+        if (MainScreen.user_type == "normal") {
+            binding.userInfoList.gone()
+            binding.loadBarUserInfo.show()
+            val retrofit = Retrofit.Builder()
+                .baseUrl(base_api_url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            val service = retrofit.create(RetrofitServiceInterface::class.java)
+            LoginViewModel.auth.currentUser?.getIdToken(true)
+                ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
+                    if (t.isSuccessful) {
+                        val idToken = t.result.token
+                        token = "Bearer " + idToken.toString()
+                        Log.d("id token", idToken.toString())
 
 
-                } else {
-                    // Handle error -> task.getException();
+                    } else {
+                        // Handle error -> task.getException();
+                    }
+                })
+            service.getPassengerList(
+                token,
+                FragmentItemDetailScreen.route_uuid,
+                station_uuid,
+                shuttle_direction
+            ).enqueue(object : retrofit2.Callback<PassengerListData> {
+                override fun onResponse(
+                    call: retrofit2.Call<PassengerListData>,
+                    response: retrofit2.Response<PassengerListData>
+                ) {
+                    if (response.isSuccessful) {
+                        val route = response.body()
+                        Log.d("route", route.toString())
+                        // 리사이클러 업데이트 ㅍ추가가가가가가가
+                        val tmpList = ArrayList<PassengerData>()
+                        for (i in 0 until route?.passengerList?.size!!) {
+                            val tmp = PassengerData(
+                                route.passengerList[i].passenger_uid ?: "",
+                                route.passengerList[i].passenger_name ?: "",
+                                route.passengerList[i].passenger_phone ?: "",
+                                route.passengerList[i].passenger_email ?: "",
+                            )
+                            tmpList.add(tmp)
+                        }
+
+                        UserInfoDataContent.makeItem(tmpList)
+                        userInfoRecyclerAdapter.notifyDataSetChanged()
+                    } else {
+                        Log.d("fail ", "onResponse: ${response}")
+
+                    }
+                    binding.userInfoList.show()
+                    binding.loadBarUserInfo.gone()
+                }
+
+                override fun onFailure(call: retrofit2.Call<PassengerListData>, t: Throwable) {
+                    Log.d("fail", "onFailure: ${t.message}")
+                    Log.d("fail ", "onResponse: ${call}")
                 }
             })
-        service.getPassengerList(
-            token,
-            FragmentItemDetailScreen.route_uuid,
-            station_uuid,
-            shuttle_direction
-        ).enqueue(object : retrofit2.Callback<PassengerListData> {
-            override fun onResponse(
-                call: retrofit2.Call<PassengerListData>,
-                response: retrofit2.Response<PassengerListData>
-            ) {
-                if (response.isSuccessful) {
-                    val route = response.body()
-                    Log.d("route", route.toString())
-                    // 리사이클러 업데이트 ㅍ추가가가가가가가
-                    val tmpList = ArrayList<PassengerData>()
-                    for (i in 0 until route?.passengerList?.size!!) {
-                        val tmp = PassengerData(
-                            route.passengerList[i].passenger_uid ?: "",
-                            route.passengerList[i].passenger_name ?: "",
-                            route.passengerList[i].passenger_phone ?: "",
-                            route.passengerList[i].passenger_email ?: "",
-                        )
-                        tmpList.add(tmp)
-                    }
-
-                    UserInfoDataContent.makeItem(tmpList)
-                    userInfoRecyclerAdapter.notifyDataSetChanged()
-                } else {
-                    Log.d("fail ", "onResponse: ${response}")
-
-                }
-                binding.userInfoList.show()
-                binding.loadBarUserInfo.gone()
-            }
-
-            override fun onFailure(call: retrofit2.Call<PassengerListData>, t: Throwable) {
-                Log.d("fail", "onFailure: ${t.message}")
-                Log.d("fail ", "onResponse: ${call}")
-            }
-        })
-
+        }
     }
     companion object{
         var userInfoRecyclerAdapter: MyuserInfoDataRecyclerViewAdapter = MyuserInfoDataRecyclerViewAdapter(UserInfoDataContent.ITEMS)

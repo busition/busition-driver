@@ -94,6 +94,9 @@ class LoginFragment : Fragment() {
 
         Log.d("route_uuid", FragmentItemDetailScreen.route_uuid.toString())
         binding.googlesignin.setOnClickListener { signIn() }
+        binding.companyLogin.setOnClickListener {
+            Navigation.findNavController(view).navigate(R.id.action_BusitionLogin_to_companyLogin)
+        }
         loginViewModel.loginFormState.observe(viewLifecycleOwner,
             Observer { loginFormState ->
                 if (loginFormState == null) {
