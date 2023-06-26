@@ -14,7 +14,7 @@ object UserInfoDataContent {
     }
 
 
-    private fun addItem(item: PassengerData) {
+    fun addItem(item: PassengerData) {
         ITEMS.add(item)
     }
 

@@ -51,37 +51,49 @@ class MyuserInfoDataRecyclerViewAdapter(
         return tmp
     }
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = values[position]
-        holder.itemNumber.text = (position+1).toString()
-        holder.passengerName.text = item.passenger_name
-        holder.contentView.text = "탑승 대기"
-        if (position == 0 && MainScreen.test_code){
-            holder.contentView.text = "탑승중"
-            holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
-        }
-        Log.d("user_uuid",item.passenger_uid.toString())
-        if (MainScreen.user_uuid.contains(compressString(item.passenger_uid))){
-            holder.contentView.text = "탑승중"
-            holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
-        }else if (!MainScreen.check_uuid.contains(item.passenger_uid)){
-            MainScreen.check_uuid.add(compressString(item.passenger_uid))
-            holder.contentView.setBackgroundColor("#FFE792".toColorInt())
-        }
-        holder.callBtn.setOnClickListener {
-            val call = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + item.passenger_phone))
-            ContextCompat.startActivity(holder.itemView.context, call, null)
 
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+
+        if (MainScreen.user_type == "normal") {
+            val item = values[position]
+            holder.itemNumber.text = (position+1).toString()
+            holder.passengerName.text = item.passenger_name
+            holder.contentView.text = "탑승 대기"
+
+            if (position == 0 && MainScreen.test_code){
+                holder.contentView.text = "탑승중"
+                holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
+            }
+            Log.d("user_uuid",item.passenger_uid.toString())
+            if (MainScreen.user_uuid.contains(compressString(item.passenger_uid))){
+                holder.contentView.text = "탑승중"
+                holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
+            }else if (!MainScreen.check_uuid.contains(item.passenger_uid)){
+                MainScreen.check_uuid.add(compressString(item.passenger_uid))
+                holder.contentView.setBackgroundColor("#FFE792".toColorInt())
+            }
+            holder.callBtn.setOnClickListener {
+                val call = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + item.passenger_phone))
+                ContextCompat.startActivity(holder.itemView.context, call, null)
+
+            }
+        }else{
+            val item = values[position]
+            holder.itemNumber.text = (position+1).toString()
+            holder.passengerName.text = item.passenger_name
+            holder.contentView.text = "탑승중"
+            holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
+            holder.callBtn.gone()
         }
+
 
     }
 
     override fun getItemCount(): Int {
-        if(values.size == 0){
-            return  10
-        }else{
-            return values.size
-        }
+
+        return values.size
+
     }
 
     inner class ViewHolder(binding: FragmentUserInfoDataBinding) :

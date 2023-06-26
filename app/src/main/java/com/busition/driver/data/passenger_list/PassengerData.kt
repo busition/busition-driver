@@ -18,5 +18,7 @@ data class PassengerData(
 
     @SerializedName("passenger_email")
     @Expose
-    val passenger_email:String
+    val passenger_email:String,
+
+    var station_uid:String = "",
 )
