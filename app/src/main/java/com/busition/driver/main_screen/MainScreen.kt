@@ -220,8 +220,9 @@ class MainScreen : AppCompatActivity() {
                 }else{
                     if (!company_check_uuid.contains(result?.scanRecord?.serviceUuids?.get(0).toString())) {
                         Log.d("test socket log ", result?.scanRecord?.serviceUuids?.get(0).toString())
-                        SocketIo.sendUserUuid(result?.scanRecord?.serviceUuids?.get(0).toString(),"1")
-//                        company_check_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
+//                        SocketIo.sendUserUuid(result?.scanRecord?.serviceUuids?.get(0).toString(),"1")
+                        company_check_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
+
                     }
                 }
 
@@ -250,6 +251,7 @@ class MainScreen : AppCompatActivity() {
         var company_check_uuid: ArrayList<String> = ArrayList()
         var user_type: String = "normal"
         var scanning:Boolean = true
+        var firebaseToken:String = ""
 
     }
 

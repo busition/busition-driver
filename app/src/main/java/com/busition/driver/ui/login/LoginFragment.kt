@@ -95,8 +95,10 @@ class LoginFragment : Fragment() {
         Log.d("route_uuid", FragmentItemDetailScreen.route_uuid.toString())
         binding.googlesignin.setOnClickListener { signIn() }
         binding.companyLogin.setOnClickListener {
-            Navigation.findNavController(view).navigate(R.id.action_BusitionLogin_to_companyLogin)
+//            Navigation.findNavController(view).navigate(R.id.action_BusitionLogin_to_companyLogin)
+            Toast.makeText(requireContext(), "곧 오픈 예정", Toast.LENGTH_SHORT).show()
         }
+
         loginViewModel.loginFormState.observe(viewLifecycleOwner,
             Observer { loginFormState ->
                 if (loginFormState == null) {
@@ -274,7 +276,7 @@ class LoginFragment : Fragment() {
                     // Sign in success, update UI with the signed-in user's information
                     Log.d("fire base google", "signInWithCredential:success")
                     val user = auth.currentUser
-
+                    MainScreen.firebaseToken = user.toString()
 
                     val retrofit = Retrofit.Builder()
                         .baseUrl(base_api_url)
