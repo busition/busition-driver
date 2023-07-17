@@ -20,17 +20,7 @@ object PlaceholderContent {
     }
 
     fun addItem(item: PlaceholderItem) {
-
-//        Log.d("PlaceholderContent", "addItem: ${item.departure_time.day_time}")
-//        if (item.departure_time.day_time.time == null || item.departure_time.day_time.time.toString() == "null") {
-//            Log.d("PlaceholderContent", "addItem: null")
-//        }else{
-//            val timeData = item.departure_time.day_time.converIso(item.departure_time.day_time.time.S)
-//            item.departure_time.day_time.time.S = timeData
             ITEMS.add(item)
-//        }
-
-
     }
 
 

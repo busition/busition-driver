@@ -43,6 +43,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
                     // Sign in success, update UI with the signed-in user's information
                     Log.d(TAG, "signInWithEmail:success")
                     val user = auth.currentUser
+
                     auth = auth
                     Log.d("login user ", user.toString())
 
@@ -113,5 +114,6 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
     companion object {
         var auth: FirebaseAuth = Firebase.auth
+
     }
 }

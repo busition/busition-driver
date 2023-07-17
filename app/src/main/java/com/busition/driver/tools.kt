@@ -27,10 +27,9 @@ val prod_api_protocol = "https"
 val prod_api_host = "api.busition.com"
 val prod_api_url = "${prod_api_protocol}://${prod_api_host}/"
 
-val dev_api_host = "api.dev.busition.com"
-val dev_api_protocol = "http"
-val dev_api_port = 8001
+val dev_api_host = "api.dev2.busition.com"
+val dev_api_protocol = "https"
 val dev_api_version = "latest"
-val dev_api_url = "${dev_api_protocol}://${dev_api_host}:${dev_api_port}/${dev_api_version}/"
+val dev_api_url = "${dev_api_protocol}://${dev_api_host}/${dev_api_version}/"
 
 val base_api_url = dev_api_url

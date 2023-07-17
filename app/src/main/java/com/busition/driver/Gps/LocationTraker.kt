@@ -12,10 +12,13 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import androidx.core.content.ContextCompat
+import androidx.core.content.ContextCompat.getSystemService
 import com.busition.driver.R
 import com.busition.driver.SocketIo
 import com.busition.driver.main_screen.FragmentItemDetailScreen
+import com.busition.driver.main_screen.MainScreen
 import com.busition.driver.placeholder.PlaceholderContent
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
@@ -75,13 +78,12 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
             } else {
 
                 locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
+                    LocationManager.FUSED_PROVIDER,
                     1000L,
                     20f, this
+
                 )
             }
-
-
 //            if (!checkNetwork) {
 //                errorMsg += "\nError for network"
 //            } else {
@@ -101,6 +103,7 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
         PlaceholderContent.checkStation(location.latitude, location.longitude)
         updateGmapPolyline(location)
         SocketIo.sendLocation(location.latitude,location.longitude, location.speed)
+
 //        val boundsBuilder = LatLngBounds.Builder()
 //        boundsBuilder.include(nowLocation)
 //        val bounds = boundsBuilder.build()

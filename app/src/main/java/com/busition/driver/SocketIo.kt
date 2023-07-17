@@ -5,6 +5,7 @@ import android.os.Looper
 import android.util.Log
 import com.busition.driver.data.passenger_list.PassengerData
 import com.busition.driver.main_screen.FragmentItemDetailScreen
+import com.busition.driver.main_screen.MainScreen
 import com.busition.driver.placeholder.PlaceholderContent
 import com.busition.driver.placeholder.UserInfoDataContent
 import io.socket.client.IO
@@ -25,7 +26,8 @@ object SocketIo {
             val tmp = JSONObject()
             tmp.put("route_id", id)
             tmp.put("type", type)
-            socketServer = IO.socket("http://api.dev.busition.com:3000/user")
+            tmp.put("user_id", "123")
+            socketServer = IO.socket("https://socket.dev2.busition.com/user")
             socketServer.connect()
             Log.d("socket type", socketServer.toString())
             Log.d("socket pack jsonObject", tmp.toString())
@@ -36,7 +38,7 @@ object SocketIo {
             recvUserUuid()
 
         } catch (e: Exception) {
-            Log.d("socket", e.toString())
+            Log.d("socket error", e.toString())
         }
 
     }
