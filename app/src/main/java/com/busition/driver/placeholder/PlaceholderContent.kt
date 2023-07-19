@@ -43,8 +43,10 @@ object PlaceholderContent {
             check = true
             Log.d("change station", "get in range")
         }
-
-        if (tmpDistance > 300 && check){
+        if ( 500 > tmpDistance && check){
+            check = false
+        }
+        if (tmpDistance > 500 && check){
             check = false
             ind++
             Log.d("change station", ITEMS.get(ind).station_name)
