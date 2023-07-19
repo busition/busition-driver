@@ -25,10 +25,11 @@ object PlaceholderContent {
 
 
     data class PlaceholderItem(
-        val route_uuid: String,
+        val route_uuid: Int,
         val departure_point: String,
         val destination: String,
 //        val departure_time: DepartureTime,
+        val route_name:String,
         val shuttle_direction: Int,
     ) : Serializable {
 

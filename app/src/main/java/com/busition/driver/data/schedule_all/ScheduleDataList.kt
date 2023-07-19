@@ -11,4 +11,5 @@ data class ScheduleDataList(
     @SerializedName("schedule_data")
     @Expose
     var schedule_data: List<ScheduleData>,
+
 )

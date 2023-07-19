@@ -202,7 +202,7 @@ class MainScreen : AppCompatActivity() {
                 userInfoRecyclerAdapter.notifyDataSetChanged()
 
             }
-            if (result?.rssi!! > -50) {
+            if (result?.rssi!! > -50 && !outofbus) {
 //                Log.d(
 //                    "ble instance",
 //                    "${result?.device?.name} ${result?.scanRecord?.serviceUuids?.get(0)} ${result?.rssi}"
@@ -228,6 +228,9 @@ class MainScreen : AppCompatActivity() {
 
                 userInfoRecyclerAdapter.notifyDataSetChanged()
             }
+            if (outofbus){
+
+            }
 
         }
 
@@ -252,6 +255,7 @@ class MainScreen : AppCompatActivity() {
         var user_type: String = "normal"
         var scanning:Boolean = true
         var firebaseToken:String = ""
+        var outofbus:Boolean = false
 
     }
 

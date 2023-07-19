@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
@@ -27,6 +28,8 @@ import com.busition.driver.show
 import com.busition.driver.ui.login.LoginViewModel
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.GetTokenResult
+import retrofit2.Call
+import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -113,74 +116,70 @@ class ScheduleList : Fragment() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
-        Log.d("current user", LoginViewModel.auth.currentUser.toString())
-        LoginViewModel.auth.currentUser?.getIdToken(true)
-            ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
-                if (t.isSuccessful) {
-                    val idToken = t.result.token
-                    token = "Bearer " + idToken.toString()
-                    Log.d("token", token)
-                    service.getSchedule(token)
-                        .enqueue(object : retrofit2.Callback<ScheduleDataList> {
-                            override fun onResponse(
-                                call: retrofit2.Call<ScheduleDataList>,
-                                response: retrofit2.Response<ScheduleDataList>
-                            ) {
-                                if (response.isSuccessful) {
-                                    val scheduleDataList = response.body()
-                                    Log.d("ScheduleDataList", scheduleDataList.toString())
+        Log.d("current user", LoginViewModel.auth_token)
+        service.getSchedule(LoginViewModel.auth_token)
+            .enqueue(object : retrofit2.Callback<ScheduleDataList> {
+                override fun onResponse(
+                    call: Call<ScheduleDataList>,
+                    response: Response<ScheduleDataList>
+                ) {
+                    if (response.isSuccessful) {
+                        val scheduleDataList = response.body()
+                        Log.d("ScheduleDataList", scheduleDataList.toString())
 
-                                    if (scheduleDataList?.schedule_count != PlaceholderContent.ITEMS.size) {
-                                        PlaceholderContent.ITEMS.clear()
-                                        for (i in 0 until (scheduleDataList?.schedule_count ?: 0)) {
-                                            PlaceholderContent.addItem(
-                                                PlaceholderContent.PlaceholderItem(
+                        if (scheduleDataList?.schedule_count != PlaceholderContent.ITEMS.size) {
+                            PlaceholderContent.ITEMS.clear()
+                            for (i in 0 until (scheduleDataList?.schedule_count ?: 0)) {
+                                PlaceholderContent.addItem(
+                                    PlaceholderContent.PlaceholderItem(
 
-                                                    scheduleDataList?.schedule_data?.get(i)?.route_uuid
-                                                        ?: "",
-                                                    scheduleDataList?.schedule_data?.get(i)?.departure_point
-                                                        ?: "",
-                                                    scheduleDataList?.schedule_data?.get(i)?.destination
-                                                        ?: "",
+                                        scheduleDataList?.schedule_data?.get(i)?.route_uuid?: -1,
+                                        scheduleDataList?.schedule_data?.get(i)?.departure_point
+                                            ?: "",
+                                        scheduleDataList?.schedule_data?.get(i)?.destination
+                                            ?: "",
 //                                                    scheduleDataList?.schedule_data?.get(i)?.departure_time
 //                                                        ?: DepartureTime(
 //                                                            DayTime(S(""), S(""))
 //
 //                                                        ),
-                                                    scheduleDataList?.schedule_data?.get(i)?.shuttle_direction
-                                                        ?: 0,
-                                                )
-                                            )
-                                        }
-                                        Log.d("ITEMS", PlaceholderContent.ITEMS.toString())
-                                        recyclerViewAdapter?.notifyDataSetChanged()
-
-
-                                    }
-
-                                } else {
-                                    Log.d("Error for network", response.toString())
-//                                    Log.d("Error for network", MainScreen.token)
-                                }
-                                binding?.recyclerScheduleList?.show()
-                                binding?.loadingBar?.gone()
+                                        scheduleDataList?.schedule_data?.get(i)?.name ?: "",
+                                        scheduleDataList?.schedule_data?.get(i)?.shuttle_direction
+                                            ?: 0,
+                                    )
+                                )
                             }
+                            Log.d("ITEMS", PlaceholderContent.ITEMS.toString())
+                            recyclerViewAdapter?.notifyDataSetChanged()
+                        }
+                    } else {
+                        Log.d("Error for network", response.toString())
+                        Log.d("Error for network", MainScreen.token)
 
-                            override fun onFailure(
-                                call: retrofit2.Call<ScheduleDataList>,
-                                t: Throwable
-                            ) {
-                                Log.d("Error", t.toString())
-                            }
-                        })
-
-                } else {
-                    // Handle error -> task.getException();
-                    Log.d("fire base error", t.exception.toString())
+                        Toast.makeText(
+                            activity,
+                            "Error for network",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                    binding?.loadingBar?.gone()
+                    binding?.recyclerScheduleList?.show()
                 }
-            })
 
+                override fun onFailure(call: Call<ScheduleDataList>, t: Throwable) {
+                    Log.d("Error for network", t.toString())
+                    Log.d("Error for network", MainScreen.token)
+                    binding?.loadingBar?.gone()
+                    Toast.makeText(
+                        activity,
+                        "Error for network",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+
+            })
     }
+
 
     companion object {
         lateinit var recyclerViewAdapter: MyItemRecyclerViewAdapter

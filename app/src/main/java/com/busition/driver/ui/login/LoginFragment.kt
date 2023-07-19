@@ -93,7 +93,7 @@ class LoginFragment : Fragment() {
         val passbtn = binding.pass
 
         Log.d("route_uuid", FragmentItemDetailScreen.route_uuid.toString())
-        binding.googlesignin.setOnClickListener { signIn() }
+//        binding.googlesignin.setOnClickListener { signIn() }
         binding.companyLogin.setOnClickListener {
 //            Navigation.findNavController(view).navigate(R.id.action_BusitionLogin_to_companyLogin)
             Toast.makeText(requireContext(), "곧 오픈 예정", Toast.LENGTH_SHORT).show()
@@ -191,7 +191,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome) + model.driver_uuid
+//        val welcome = getString(R.string.welcome) + model.driver_uuid
         // TODO : initiate successful logged in experience
         val appContext = context?.applicationContext ?: return
 //        Toast.makeText(appContext, welcome, Toast.LENGTH_LONG).show()
@@ -243,74 +243,10 @@ class LoginFragment : Fragment() {
     }
 
     private val signInLauncher =
-        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->
-            handleSignInResult(result.data)
-        }
+        registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result ->    }
     private lateinit var signInClient: SignInClient
-    private fun handleSignInResult(data: Intent?) {
-        // Result returned from launching the Sign In PendingIntent
-        try {
-            // Google Sign In was successful, authenticate with Firebase
-            val credential = signInClient.getSignInCredentialFromIntent(data)
-            val idToken = credential.googleIdToken
-            if (idToken != null) {
-                Log.d("fire base google", "firebaseAuthWithGoogle: ${credential.id}")
-                firebaseAuthWithGoogle(idToken)
 
-            } else {
-                // Shouldn't happen.
-                Log.d("fire base google", "No ID token!")
-            }
-        } catch (e: ApiException) {
-            // Google Sign In failed, update UI appropriately
-            Log.w("fire base google", "Google sign in failed", e)
 
-        }
-    }
-
-    private fun firebaseAuthWithGoogle(idToken: String) {
-        val credential = GoogleAuthProvider.getCredential(idToken, null)
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener(requireActivity()) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d("fire base google", "signInWithCredential:success")
-                    val user = auth.currentUser
-                    MainScreen.firebaseToken = user.toString()
-
-                    val retrofit = Retrofit.Builder()
-                        .baseUrl(base_api_url)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build()
-                    val service = retrofit.create(RetrofitServiceInterface::class.java)
-                    var data: SignIn = SignIn()
-                    service.sighIn(MainScreen.token,data).enqueue(object : retrofit2.Callback<SigninResponse> {
-                        override fun onResponse(
-                            call: Call<SigninResponse>,
-                            response: Response<SigninResponse>
-                        ) {
-                            if (response.body()?.status == 0){
-                                val navController = Navigation.findNavController(requireView())
-                                val bundle = bundleOf("type" to 1, "googleId" to idToken)
-                                navController.navigate(R.id.action_Register_to_Login_Fragment,bundle)
-                            }else{
-                                loginSuccess()
-                            }
-                        }
-
-                        override fun onFailure(call: Call<SigninResponse>, t: Throwable) {
-                            TODO("Not yet implemented")
-                        }
-                    })
-
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w("fire base google", "signInWithCredential:failure", task.exception)
-
-                }
-
-            }
-    }
 
     private fun launchSignIn(pendingIntent: PendingIntent) {
         try {

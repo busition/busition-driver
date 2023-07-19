@@ -5,7 +5,12 @@ import com.google.gson.annotations.SerializedName
 
 data class SigninResponse(
     @Expose
-    @SerializedName("status")
-    var status: Int,
+    @SerializedName("access_token")
+    var access_token: String,
+
+    @Expose
+    @SerializedName("token_type")
+    var token_type: String,
+
 
 )

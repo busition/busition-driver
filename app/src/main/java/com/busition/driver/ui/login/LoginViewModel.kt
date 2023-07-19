@@ -3,18 +3,25 @@ package com.busition.driver.ui.login
 import android.content.ContentValues.TAG
 import android.util.Log
 import android.util.Patterns
+import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.busition.driver.R
+import com.busition.driver.base_api_url
+import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.data.login.LoginRepository
 import com.busition.driver.data.login.Result
+import com.busition.driver.data.signin.SignIn
 import com.busition.driver.main_screen.MainScreen
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GetTokenResult
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.firebase.messaging.FirebaseMessaging
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 
 class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel() {
@@ -26,66 +33,61 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
-    fun login(username: String, password: String){
-        // can be launched in a separate asynchronous job
-//        val result = loginRepository.login(username, password)
 
-        var token:String = ""
-        Log.d("firebase user name", "signIn:$username")
+    fun login(username: String, password: String) {
+        Log.d("login", "username: $username, password: $password")
         if (username == "" || password == "") {
             _loginResult.value = LoginResult(error = R.string.login_failed)
             return
         }
-        //ㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴㄴ
-        auth.signInWithEmailAndPassword(username, password)
-            .addOnCompleteListener() { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d(TAG, "signInWithEmail:success")
-                    val user = auth.currentUser
-
-                    auth = auth
-                    Log.d("login user ", user.toString())
-
-                    _loginResult.value =
-                        LoginResult(success = LoggedInUserView(driver_uuid = auth.currentUser!!.uid))
-//                    if (user != null) {
-//                        user.getIdToken(true)
-//                            .addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
-//                                if (t.isSuccessful) {
-//                                    val idToken = t.result.token
-//                                    token = "Bearer "+idToken.toString()
-//                                    Log.d("id token" , idToken.toString())
-//
-//
-//                                } else {
-//                                    // Handle error -> task.getException();
-//                                }
-//                            })
-//
-//
-////                        user.updatePhoneNumber()
-//                    }
-//                    updateUI(user)
-
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w("fierbase login fail", "signInWithEmail:failure", task.exception)
-                    _loginResult.value = LoginResult(error = R.string.login_failed)
-                    //updateUI(null) 로그인 완료시
-                    //checkForMultiFactorFailure(task.exception!!)
-                }
-
-                if (!task.isSuccessful) {
-//                    binding.status.setText(R.string.auth_failed)
-                    _loginResult.value = LoginResult(error = R.string.login_failed)
-                }
-
+        var token = ""
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (!task.isSuccessful) {
+                Log.w(TAG, "Fetching FCM registration token failed", task.exception)
+                _loginResult.value = LoginResult(error = R.string.login_failed)
+                return@OnCompleteListener
             }
 
-        //ㄴㄴㄴㄴㄴㄴㄴㄴ
+            // Get new FCM registration token
+            token = task.result
 
+            // Log and toast
 
+        })
+        Log.d("fcm device token : => ", token)
+        val retrofit = Retrofit.Builder()
+            .baseUrl(base_api_url)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+        val service = retrofit.create(RetrofitServiceInterface::class.java)
+        service.sighIn(username,password,token).enqueue(object : retrofit2.Callback<com.busition.driver.data.signin.SigninResponse> {
+            override fun onResponse(
+                call: retrofit2.Call<com.busition.driver.data.signin.SigninResponse>,
+                response: retrofit2.Response<com.busition.driver.data.signin.SigninResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val token = "Bearer"+ " " + response.body()!!.access_token
+                    Log.d("token", token.toString())
+                    auth_token = token
+                    MainScreen.token = token
+                    _loginResult.value =
+                        LoginResult(success = LoggedInUserView(Authorization = token.toString()))
+
+                } else {
+                    Log.d("login failed", "login failed $response")
+                    _loginResult.value = LoginResult(error = R.string.login_failed)
+                }
+            }
+
+            override fun onFailure(
+                call: retrofit2.Call<com.busition.driver.data.signin.SigninResponse>,
+                t: Throwable
+            ) {
+                Log.d("login failed", "login failed $t")
+                _loginResult.value = LoginResult(error = R.string.login_failed)
+            }
+        }
+        )
     }
 
     fun loginDataChanged(username: String, password: String) {
@@ -114,6 +116,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
     companion object {
         var auth: FirebaseAuth = Firebase.auth
+        var auth_token :String = ""
 
     }
 }

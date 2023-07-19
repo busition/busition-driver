@@ -26,7 +26,7 @@ object PlaceholderContent {
     fun makeItem(tmp:MutableList<StationData>){
         ITEMS.clear()
         if (tmp.size == 0){
-            addItem(StationData("","",0,0.0,0.0,0,0,true))
+            addItem(StationData(-1,"",0,0.0,0.0,0,"",0,true))
         }
         for(i in 0 until (tmp.size)){
             addItem(tmp.get(i))
@@ -43,8 +43,10 @@ object PlaceholderContent {
             check = true
             Log.d("change station", "get in range")
         }
-
-        if (tmpDistance > 300 && check){
+        if ( 500 > tmpDistance && check){
+            check = false
+        }
+        if (tmpDistance > 500 && check){
             check = false
             ind++
             Log.d("change station", ITEMS.get(ind).station_name)
