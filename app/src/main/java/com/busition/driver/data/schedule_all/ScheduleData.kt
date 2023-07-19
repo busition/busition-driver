@@ -5,9 +5,9 @@ import com.google.gson.annotations.SerializedName
 
 
 data class ScheduleData (
-    @SerializedName("route_uuid")
+    @SerializedName("id")
     @Expose
-    var route_uuid: String,
+    var route_uuid: Int,
 
     @SerializedName("departure_point")
     @Expose
@@ -24,4 +24,8 @@ data class ScheduleData (
     @SerializedName("shuttle_direction")
     @Expose
     var shuttle_direction: Int,
+
+    @SerializedName("name")
+    @Expose
+    var name: String,
 )

@@ -40,6 +40,7 @@ class MyItemRecyclerViewAdapter(
         holder.typeView.text = type
         holder.destinationView.text = "종착 : " + item.destination
         holder.timeView.text = "다음 일정 : "
+        holder.routeNameView.text = item.route_name
 //        + item.departure_time.day_time.time.S
 //        holder.routeNameView.text = item.departure_time.route_name
 

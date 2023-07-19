@@ -42,7 +42,7 @@ class RegistFragment : Fragment() {
     // This property is only valid between onCreateView and
     // onDestroyView.
     private val binding get() = _binding!!
-    private lateinit var loginButton : Button
+    private lateinit var registbutton : Button
     var type = 0
     var googleId = ""
 
@@ -74,8 +74,8 @@ class RegistFragment : Fragment() {
         val passwordEditText = binding.password
         val nameEditText = binding.editname
         val phoneEditText = binding.editTextPhone
-        loginButton = binding.login
-        loginButton.isEnabled = false
+        registbutton = binding.regist
+        registbutton.isEnabled = false
         val loadingProgressBar = binding.loading
 
 //        loginViewModel.loginFormState.observe(viewLifecycleOwner,
@@ -132,123 +132,101 @@ class RegistFragment : Fragment() {
         nameEditText.addTextChangedListener(afterTextChangedListener)
         phoneEditText.addTextChangedListener(afterTextChangedListener)
 
+//        fire base regist
+//        registbutton.setOnClickListener {
+////            loadingProgressBar.visibility = View.VISIBLE
+//            //regist
+//            if (type == 1){
+//                val data = SignUpBody(
+//                    1,
+//                    googleId,
+//                    nameEditText.text.toString(),
+//                    phoneEditText.text.toString(),
+//                )
+//                val retrofit = Retrofit.Builder()
+//                    .baseUrl(base_api_url)
+//                    .addConverterFactory(GsonConverterFactory.create())
+//                    .build()
+//                val service = retrofit.create(RetrofitServiceInterface::class.java)
+//                auth.currentUser?.getIdToken(true)
+//                    ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
+//                        if (t.isSuccessful) {
+//                            val idToken = t.result.token
+//                            MainScreen.token = "Bearer " + idToken.toString()
+//                            Log.d("id token", idToken.toString())
+//
+//
+//                        } else {
+//                            // Handle error -> task.getException();
+//                        }
+//                    })
+//                service.signUp(token,data).enqueue(object : retrofit2.Callback<SignUpResponse> {
+//                    override fun onResponse(
+//                        call: Call<SignUpResponse>,
+//                        response: Response<SignUpResponse>
+//                    ) {
+//                        val navController = Navigation.findNavController(view!!)
+//                        navController.navigate(R.id.action_BusitionRegister_to_BusitionLogin)
+//                    }
+//
+//                    override fun onFailure(call: Call<SignUpResponse>, t: Throwable) {
+//                        TODO("Not yet implemented")
+//                    }
+//                })
+//            }else{
+//                createAccount(nameEditText.text.toString(),usernameEditText.text.toString(), passwordEditText.text.toString(), phoneEditText.text.toString())
+//            }
+//        }
 
-        loginButton.setOnClickListener {
-//            loadingProgressBar.visibility = View.VISIBLE
-            //regist
-            if (type == 1){
-                val data = SignUpBody(
-                    1,
-                    googleId,
-                    nameEditText.text.toString(),
-                    phoneEditText.text.toString(),
-                )
-                val retrofit = Retrofit.Builder()
-                    .baseUrl(base_api_url)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build()
-                val service = retrofit.create(RetrofitServiceInterface::class.java)
-                auth.currentUser?.getIdToken(true)
-                    ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
-                        if (t.isSuccessful) {
-                            val idToken = t.result.token
-                            MainScreen.token = "Bearer " + idToken.toString()
-                            Log.d("id token", idToken.toString())
-
-
-                        } else {
-                            // Handle error -> task.getException();
-                        }
-                    })
-                service.signUp(token,data).enqueue(object : retrofit2.Callback<SignUpResponse> {
-                    override fun onResponse(
-                        call: Call<SignUpResponse>,
-                        response: Response<SignUpResponse>
-                    ) {
+        registbutton.setOnClickListener {
+            Log.d("regist ", "create Account : ${usernameEditText.text.toString()}")
+            val retrofit = Retrofit.Builder()
+                .baseUrl(base_api_url)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+            val data = SignUpBody(
+                nameEditText.text.toString(),
+                usernameEditText.text.toString(),
+                passwordEditText.text.toString(),
+            )
+            val service = retrofit.create(RetrofitServiceInterface::class.java)
+            service.signUp(data).enqueue(object : retrofit2.Callback<SignUpResponse> {
+                override fun onResponse(
+                    call: Call<SignUpResponse>,
+                    response: Response<SignUpResponse>
+                ) {
+                    if (response.isSuccessful){
                         val navController = Navigation.findNavController(view!!)
                         navController.navigate(R.id.action_BusitionRegister_to_BusitionLogin)
+                        Toast.makeText(requireContext(), "회원가입이 완료되었습니다.", Toast.LENGTH_LONG).show()
+                    }else{
+                        Log.d("regist fail ", "create Account : $response")
                     }
 
-                    override fun onFailure(call: Call<SignUpResponse>, t: Throwable) {
-                        TODO("Not yet implemented")
-                    }
-                })
-            }else{
-                createAccount(nameEditText.text.toString(),usernameEditText.text.toString(), passwordEditText.text.toString(), phoneEditText.text.toString())
-            }
+                }
+
+                override fun onFailure(call: Call<SignUpResponse>, t: Throwable) {
+                    Log.d("regist ", "create Account : ${t.message}")
+                }
+            })
 
 
 
         }
+
     }
 
-    private fun createAccount(name: String,email: String, password: String, phone: String) {
-        Log.d("fire base", "createAccount:$email")
-        auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(requireActivity()) { task ->
-                if (task.isSuccessful) {
-                    // Sign in success, update UI with the signed-in user's information
-                    Log.d("fire base", "createUserWithEmail:success")
-                    val user = auth.currentUser
-                    val data = SignUpBody(
-                        1,
-                        email,
-                        name,
-                        phone
-                    )
-                    val retrofit = Retrofit.Builder()
-                        .baseUrl(base_api_url)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build()
-                    val service = retrofit.create(RetrofitServiceInterface::class.java)
-                    user?.getIdToken(true)
-                        ?.addOnCompleteListener(OnCompleteListener<GetTokenResult> { t ->
-                            if (t.isSuccessful) {
-                                val idToken = t.result.token
-                                MainScreen.token = "Bearer " + idToken.toString()
-                                Log.d("id token", idToken.toString())
-
-
-                            } else {
-                                // Handle error -> task.getException();
-                            }
-                        })
-                    service.signUp(token,data).enqueue(object : retrofit2.Callback<SignUpResponse> {
-                        override fun onResponse(
-                            call: Call<SignUpResponse>,
-                            response: Response<SignUpResponse>
-                        ) {
-                            val navController = Navigation.findNavController(view!!)
-                            navController.navigate(R.id.action_BusitionRegister_to_BusitionLogin)
-                        }
-
-                        override fun onFailure(call: Call<SignUpResponse>, t: Throwable) {
-                            TODO("Not yet implemented")
-                        }
-                    })
-                } else {
-                    // If sign in fails, display a message to the user.
-                    Log.w("fire base", "createUserWithEmail:failure", task.exception)
-                    Toast.makeText(
-                        context,
-                        "Authentication failed.",
-                        Toast.LENGTH_SHORT,
-                    ).show()
-                }
-
-            }
-    }
     fun registDataChanged(username: String, password: String,name:String,phone:String) {
         if (username=="" || phone == "") {
 
         } else if (password =="" || name == "" ) {
 
         } else {
-            loginButton.isEnabled = true
+            registbutton.isEnabled = true
         }
     }
     private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome) + model.driver_uuid
+//        val welcome = getString(R.string.welcome) + model.driver_uuid
         // TODO : initiate successful logged in experience
         val appContext = context?.applicationContext ?: return
 //        Toast.makeText(appContext, welcome, Toast.LENGTH_LONG).show()

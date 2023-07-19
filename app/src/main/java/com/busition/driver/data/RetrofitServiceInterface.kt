@@ -10,6 +10,8 @@ import com.busition.driver.data.signup.SignUpBody
 import com.busition.driver.data.signup.SignUpResponse
 import retrofit2.Call
 import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
@@ -18,20 +20,19 @@ import retrofit2.http.Query
 
 interface RetrofitServiceInterface {
 
-    @GET("schedule/driver")
+    @GET("schedule/driver/")
     fun getSchedule(@Header("Authorization") token: String): Call<ScheduleDataList>
 
     @GET("station")
     fun getStation(
         @Header("Authorization") token: String,
-        @Query("route_uuid") route_uuid: String,
-        @Query("shuttle_direction") shuttle_direction: Int
+        @Query("route_id") route_uuid: Int,
     ): Call<StationListData>
 
     @GET("passenger/list")
     fun getPassengerList(
         @Header("Authorization") token: String,
-        @Query("route_uuid") route_uuid: String,
+        @Query("route_uuid") route_uuid: Int,
         @Query("station_uuid") station_uuid: String,
         @Query("shuttle_direction") shuttle_direction: Int
     ): Call<PassengerListData>
@@ -39,20 +40,21 @@ interface RetrofitServiceInterface {
     @GET("route/{route_uuid}")
     fun getRoute(
         @Header("Authorization") token: String,
-        @Path("route_uuid") route_uuid: String,
-        @Query("shuttle_direction") shuttle_direction: Int
+        @Path("route_uuid") route_uuid: Int,
     ): Call<RouteData>
 
-    @POST("signup")
+    @POST("users/")
     fun signUp(
-        @Header("Authorization") token: String,
         @Body body: SignUpBody
     ): Call<SignUpResponse>
 
-    @GET("signin")
+    @FormUrlEncoded
+    @POST("users/token")
     fun sighIn(
-        @Header("Authorization") token: String,
-        @Body body: SignIn
+        @Field("username") username: String,
+        @Field("password") password: String,
+        @Query("device_token") device_token:String,
+        @Query("busition_platform") busition_platform:String = "Busition-Driver",
     ): Call<SigninResponse>
 
 }

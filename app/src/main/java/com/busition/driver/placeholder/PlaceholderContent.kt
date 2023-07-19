@@ -26,7 +26,7 @@ object PlaceholderContent {
     fun makeItem(tmp:MutableList<StationData>){
         ITEMS.clear()
         if (tmp.size == 0){
-            addItem(StationData("","",0,0.0,0.0,0,0,true))
+            addItem(StationData(-1,"",0,0.0,0.0,0,"",0,true))
         }
         for(i in 0 until (tmp.size)){
             addItem(tmp.get(i))

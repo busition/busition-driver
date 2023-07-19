@@ -33,7 +33,7 @@ class GpsForegroundService : Service() {
         when (intent?.action) {
             "stop" -> {
                 Log.d("service", "stop")
-                SocketIo.closeSocket(FragmentItemDetailScreen.route_uuid,FragmentItemDetailScreen.shuttle_direction.toString())
+                SocketIo.closeSocket(FragmentItemDetailScreen.route_uuid.toString(),FragmentItemDetailScreen.shuttle_direction.toString())
                 Log.d("check exit service", "exit service")
             stopSelf()
                 stopForeground(true)
@@ -43,7 +43,7 @@ class GpsForegroundService : Service() {
                 stopForeground(true)
             }
             "start" ->{
-                SocketIo.startSocket(FragmentItemDetailScreen.route_uuid,FragmentItemDetailScreen.shuttle_direction.toString())
+                SocketIo.startSocket(FragmentItemDetailScreen.route_uuid.toString(),FragmentItemDetailScreen.shuttle_direction.toString())
                 generateForegroundNotification()
                 gpsWorker()
 
