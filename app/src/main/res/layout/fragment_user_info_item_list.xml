@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="horizontal"
     tools:context=".UserInfoDataFragment"
-    android:background="#E2E2E2"
+    android:background="@color/white"
     android:keepScreenOn="true">
 
     <LinearLayout

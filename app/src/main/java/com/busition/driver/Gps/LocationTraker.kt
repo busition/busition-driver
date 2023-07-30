@@ -11,6 +11,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
 import com.busition.driver.R
@@ -75,6 +76,7 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
         if (canGetLocation) {
             if (!checkGps) {
                 errorMsg = "Error for gps module"
+                Toast.makeText(mContext, errorMsg, Toast.LENGTH_LONG).show()
             } else {
 
                 locationManager.requestLocationUpdates(
@@ -98,7 +100,7 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
     }
 
     override fun onLocationChanged(location: Location) {
-//        Log.d("gps", location.latitude.toString() + " " + location.longitude.toString())
+        Log.d("location changed", location.latitude.toString() + " " + location.longitude.toString())
 //        updateLocationIndex()
         PlaceholderContent.checkStation(location.latitude, location.longitude)
         updateGmapPolyline(location)

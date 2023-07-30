@@ -53,7 +53,7 @@ class MyItemRecyclerViewAdapter(
         holder.itemView.setOnClickListener {
             Log.d("onBindViewHolder ", item.toString())
 
-            val bundle = bundleOf("route_uuid" to item.route_uuid, "shuttle_direction" to item.shuttle_direction, "passListView" to true)
+            val bundle = bundleOf("route_uuid" to item.route_uuid, "shuttle_direction" to item.shuttle_direction, "passListView" to true ,"route_name" to item.route_name)
             val navController = Navigation.findNavController(holder.itemView)
             navController.navigate(R.id.action_scheduleList_to_fragment_item_detial_screen,bundle)
 

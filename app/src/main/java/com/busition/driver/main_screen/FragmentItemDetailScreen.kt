@@ -51,6 +51,7 @@ class FragmentItemDetailScreen : Fragment() {
     private lateinit var estimated_time: TextView
     private lateinit var passenger_count: TextView
     private lateinit var travel_distance: TextView
+    private lateinit var travelName: String
     private  var passListView:Boolean = false
 
     private var route_list = ArrayList<ArrayList<Double>>()
@@ -65,6 +66,8 @@ class FragmentItemDetailScreen : Fragment() {
         Log.d("route_uuid", route_uuid.toString())
         shuttle_direction = arg.getInt("shuttle_direction")
         passListView = arg.getBoolean("passListView")
+        travelName = arg.getString("route_name").toString()
+
         Log.d("passs", passListView.toString())
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
             if(test){
@@ -117,10 +120,11 @@ class FragmentItemDetailScreen : Fragment() {
         estimated_time = binding.estimatedTime
         passenger_count = binding.numberOfPasenger
         travel_distance = binding.travelDistance
+        binding.routeName.text = travelName
+        binding.routeName2.text = travelName
         binding.runBtn.isEnabled = false
         requestApiServer()
-        //ToDo
-//        requestRouteApiServer()
+        requestRouteApiServer()
         if (!test) {
             binding.textList.show()
             binding.itemListLay.gone()
@@ -142,7 +146,7 @@ class FragmentItemDetailScreen : Fragment() {
             binding.itemListLay.show()
             test = true
             //service start func
-            scan()
+//            scan()
             tmp()
 
 
@@ -296,7 +300,8 @@ class FragmentItemDetailScreen : Fragment() {
                         station_count.text =
                             appendString(
                                 station_count.text.toString(),
-                                route?.station_count.toString()
+                                route?.station_count.toString(),
+                                " 개"
                             )
                         passenger_count.text =
                             appendString(

@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class StationListData(
+
     @SerializedName("station_count")
     @Expose
     var station_count: Int,
