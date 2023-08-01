@@ -12,5 +12,4 @@
     tools:listitem="@layout/fragment_station_item"
     android:layout_gravity="center"
     android:overScrollMode="never"
-    android:backgroundTint="@color/gray_bar"
     />

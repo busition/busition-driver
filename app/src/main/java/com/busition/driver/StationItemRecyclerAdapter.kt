@@ -9,6 +9,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -21,6 +23,7 @@ import com.busition.driver.databinding.FragmentItemDetailScreenBinding
 import com.busition.driver.databinding.FragmentStationItemBinding
 import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.MainScreen
+import com.busition.driver.placeholder.PlaceholderContent
 
 
 class StationItemRecyclerAdapter(
@@ -45,16 +48,59 @@ class StationItemRecyclerAdapter(
         Log.d("position", position.toString())
         holder.stationName.text = item.station_name
         holder.stationPssengerNumber.text = appendString(item.nowPassengerNumber.toString(), " / ", item.passenger_count.toString())
-//        holder.station_time.text = item.station_id.toString()
-        if (item.nowStation) {
-            holder.stationCardView.setBackgroundColor(Color.parseColor("#FFEBB4"))
+        if (item.station_state == "not arrived"){
+            holder.startDot.visibility = View.INVISIBLE
+            holder.endDot.visibility = View.INVISIBLE
+            holder.busMidTop.visibility = View.INVISIBLE
+            holder.busMidBottom.visibility = View.INVISIBLE
+            holder.busTop.visibility = View.INVISIBLE
+            holder.busBottom.visibility = View.INVISIBLE
+            holder.stationDotTop.visibility = View.VISIBLE
+            holder.stationDotBottom.visibility = View.VISIBLE
         }
-//        if (delay == 0){
-//            holder.station_lay.gone()
-//        }else{
-//            holder.station_lay.show()
-//            holder.station_delay.text = delay.toString()
-//        }
+        if(item.nowStation && position == 0){
+            holder.startDot.visibility = View.VISIBLE
+            holder.endDot.visibility = View.INVISIBLE
+            holder.busMidTop.visibility = View.INVISIBLE
+            holder.busMidBottom.visibility = View.INVISIBLE
+            holder.busTop.visibility = View.INVISIBLE
+            holder.busBottom.visibility = View.INVISIBLE
+            holder.stationDotTop.visibility = View.VISIBLE
+            holder.stationDotBottom.visibility = View.VISIBLE
+        }
+        if(position == values.size-1){
+            holder.startDot.visibility = View.INVISIBLE
+            holder.endDot.visibility = View.VISIBLE
+            holder.busMidTop.visibility = View.INVISIBLE
+            holder.busMidBottom.visibility = View.INVISIBLE
+            holder.busTop.visibility = View.INVISIBLE
+            holder.busBottom.visibility = View.INVISIBLE
+            holder.stationDotTop.visibility = View.INVISIBLE
+            holder.stationDotBottom.visibility = View.INVISIBLE
+            holder.line.visibility = View.INVISIBLE
+        }
+        if(PlaceholderContent.ind-1 == position){
+            holder.startDot.visibility = View.INVISIBLE
+            holder.endDot.visibility = View.INVISIBLE
+            holder.busMidTop.visibility = View.INVISIBLE
+            holder.busMidBottom.visibility = View.INVISIBLE
+            holder.busTop.visibility = View.INVISIBLE
+            holder.busBottom.visibility = View.VISIBLE
+            holder.stationDotTop.visibility = View.VISIBLE
+            holder.stationDotBottom.visibility = View.VISIBLE
+        }
+        if(PlaceholderContent.ind == position){
+            holder.startDot.visibility = View.INVISIBLE
+            holder.endDot.visibility = View.INVISIBLE
+            holder.busMidTop.visibility = View.INVISIBLE
+            holder.busMidBottom.visibility = View.INVISIBLE
+            holder.busTop.visibility = View.VISIBLE
+            holder.busBottom.visibility = View.INVISIBLE
+            holder.stationDotTop.visibility = View.VISIBLE
+            holder.stationDotBottom.visibility = View.VISIBLE
+        }
+
+
 
         holder.btn.setOnClickListener {
             Log.d("btn", "test")
@@ -70,6 +116,7 @@ class StationItemRecyclerAdapter(
 
     }
 
+
     override fun getItemCount(): Int {
         return values.size
     }
@@ -82,9 +129,17 @@ class StationItemRecyclerAdapter(
 //        val station_delay: TextView = binding.stationTimeDelay
 //        val station_time: TextView = binding.stationTime
 //        val station_lay: LinearLayout = binding.stationTiemLay
-        val btn: Button = binding.button
+        val btn: ImageButton = binding.button
         val stationCardView: LinearLayout = binding.stationCard
-
+        val startDot: ImageView = binding.startDot
+        val endDot: ImageView = binding.endDot
+        val busMidTop:ImageView = binding.midBusDotTop
+        val busMidBottom:ImageView = binding.midBusDotBottom
+        val busTop:ImageView = binding.busDotTop
+        val busBottom:ImageView = binding.busDotBottom
+        val stationDotTop:ImageView = binding.stationDotTop
+        val stationDotBottom:ImageView = binding.stationDotBottom
+        val line:View = binding.bottomLine
 
 
         override fun toString(): String {

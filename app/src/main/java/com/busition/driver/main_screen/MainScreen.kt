@@ -245,6 +245,7 @@ class MainScreen : AppCompatActivity() {
     }
 
     companion object {
+        var stop:Boolean = false
         var driver_uuid: String = ""
         var token: String = ""
         var test_code: Boolean = false

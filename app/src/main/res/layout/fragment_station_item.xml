@@ -1,27 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/stationCard"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center"
 
-    android:background="#E2E2E2"
+    android:background="@color/white"
     android:orientation="vertical">
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="100dp"
-        android:layout_margin="15dp"
-        android:background="@color/white"
-        android:orientation="horizontal">
+        android:background="@drawable/station_card_boarder"
+        android:orientation="horizontal"
+        >
 
         <LinearLayout
-            android:padding="5dp"
+            android:id="@+id/main_station_card"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@drawable/boarder">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+                <FrameLayout
+                    android:layout_width="25dp"
+                    android:layout_marginLeft="30dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+
+                    >
+                    <View
+                        android:id="@+id/view2"
+                        android:layout_width="5dp"
+                        android:layout_height="match_parent"
+                        android:background="@color/gray_bar"
+                        android:layout_gravity="center"/>
+
+
+
+
+                    <ImageView
+                        android:id="@+id/startDot"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        app:srcCompat="@drawable/baseline_bus_dot"
+                        android:layout_gravity="top|center"
+
+                        />
+
+                    <ImageView
+                        android:id="@+id/busDotTop"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_gravity="top"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/bus_dot_top"
+                        />
+                    <ImageView
+                        android:id="@+id/midBusDotTop"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_gravity="bottom"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/bus_dot_bottom"
+                        />
+
+                    <ImageView
+                        android:id="@+id/stationDotTop"
+                        android:layout_width="15dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center|bottom"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/semicircle" />
+                    <ImageView
+                        android:id="@+id/endDot"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        app:srcCompat="@drawable/baseline_end_dot"
+                        android:layout_gravity="center|bottom"
+                        />
+                </FrameLayout>
+                <FrameLayout
+                    android:layout_marginLeft="30dp"
+                    android:layout_width="25dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5">
+
+                    <View
+                        android:id="@+id/bottomLine"
+                        android:layout_width="5dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@color/gray_bar" />
+
+
+
+                    <ImageView
+                        android:id="@+id/midBusDotBottom"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_gravity="center|top"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/bus_dot_top"
+                        />
+                    <ImageView
+                        android:id="@+id/busDotBottom"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        android:layout_gravity="center|bottom"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/bus_dot_bottom"
+                        />
+                    <ImageView
+                        android:id="@+id/stationDotBottom"
+                        android:layout_width="15dp"
+                        android:layout_height="15dp"
+                        android:layout_gravity="center|top"
+                        android:scaleType="centerCrop"
+                        app:srcCompat="@drawable/semicircle_reverse"
+                        />
+                </FrameLayout>
+
+
+
+
+
+            </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -56,17 +167,15 @@
 
             </LinearLayout>
 
-            <Button
+            <ImageButton
                 android:id="@+id/button"
-                style="@style/Widget.Material3.Button.TonalButton.Icon"
-                android:layout_width="0dp"
+                android:layout_width="50dp"
                 android:layout_height="match_parent"
                 android:layout_margin="16dp"
-                android:layout_weight="1"
-                android:autoSizeTextType="uniform"
-                android:backgroundTint="@color/gray_bar"
+                android:background="@color/white"
+                android:src="@drawable/baseline_chevron_right_24"
                 android:gravity="center"
-                android:text="탑승자 목록" />
+                 />
 
         </LinearLayout>
 
