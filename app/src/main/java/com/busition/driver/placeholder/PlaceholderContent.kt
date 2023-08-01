@@ -47,19 +47,31 @@ object PlaceholderContent {
             MainScreen.scanning = true
             MainScreen.stop = true
             Log.d("change station", "get in range")
+            ITEMS.get(ind).nowStation = true
             FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
+
         }
-        if ( 300 > tmpDistance && check){
+        if ( 300 < tmpDistance && check){
             check = false
             MainScreen.stop = false
+            Log.d("change station", "get out range")
+            ITEMS.get(ind).station_state = "arrived"
             FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
         }
-        if (tmpDistance > 500 && check){
+        if (tmpDistance > 500 && !check){
             check = false
-            ind++
-            Log.d("change station", ITEMS.get(ind).station_name)
-            MainScreen.scanning = false
-            FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
+            ITEMS.get(ind).nowStation = false
+            if(ind+1 == ITEMS.size){
+                ITEMS.get(ind).station_state = "done"
+                FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
+            }else{
+                ind++
+                ITEMS.get(ind).nowStation = true
+                Log.d("change station", ITEMS.get(ind).station_name)
+                MainScreen.scanning = false
+                FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
+            }
+
         }
         Log.d("distance" , tmpDistance.toString())
     }

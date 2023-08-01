@@ -124,7 +124,6 @@ class FragmentItemDetailScreen : Fragment() {
         binding.routeName2.text = travelName
         binding.runBtn.isEnabled = false
         requestApiServer()
-        requestRouteApiServer()
         if (!test) {
             binding.textList.show()
             binding.itemListLay.gone()
@@ -231,7 +230,6 @@ class FragmentItemDetailScreen : Fragment() {
     }
 
     fun requestRouteApiServer() {
-        PlaceholderContent.ITEMS.clear()
         route_list.clear()
         val retrofit = Retrofit.Builder()
             .baseUrl(base_api_url)
@@ -319,6 +317,9 @@ class FragmentItemDetailScreen : Fragment() {
                                 route?.station_data?.get(i)?.passenger_count ?: 0,
                                 route?.station_data?.get(i)?.travel_distance ?: "",
                             )
+                            if (i == 0){
+                                tmp.nowStation = true
+                            }
                             stationDataList.add(tmp)
                         }
                         Log.d("check list", stationDataList.toString())
@@ -369,6 +370,8 @@ class FragmentItemDetailScreen : Fragment() {
             var bounds = boundsBuilder.build()
             gmap?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
         }
+        requestRouteApiServer()
+
 
 
     }

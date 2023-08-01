@@ -33,6 +33,7 @@ data class StationData(
     var travel_distance: String,
 
     var nowPassengerNumber: Int = 0,
-    var nowStation: Boolean = false
+    var nowStation: Boolean = false,
+    var station_state: String = "not arrived",
 
 )

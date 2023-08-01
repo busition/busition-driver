@@ -7,19 +7,20 @@
         <deviceKey>
           <Key>
             <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="$PROJECT_DIR$/../.android/avd/Pixel_4_API_26.avd" />
+            <value value="C:\Users\user\.android\avd\Pixel_6_API_33.avd" />
           </Key>
         </deviceKey>
       </Target>
     </targetSelectedWithDropDown>
-    <timeTargetWasSelectedWithDropDown value="2023-07-28T05:41:50.669169Z" />
+    <timeTargetWasSelectedWithDropDown value="2023-07-31T06:58:48.200272600Z" />
+    <multipleDevicesSelectedInDropDown value="true" />
     <runningDeviceTargetsSelectedWithDialog>
       <Target>
         <type value="RUNNING_DEVICE_TARGET" />
         <deviceKey>
           <Key>
-            <type value="SERIAL_NUMBER" />
-            <value value="R3CRB0ASXRX" />
+            <type value="VIRTUAL_DEVICE_PATH" />
+            <value value="C:\Users\user\.android\avd\Pixel_6_Pro_API_26.avd" />
           </Key>
         </deviceKey>
       </Target>
@@ -28,7 +29,7 @@
         <deviceKey>
           <Key>
             <type value="VIRTUAL_DEVICE_PATH" />
-            <value value="C:\Users\user\.android\avd\Pixel_6_API_32.avd" />
+            <value value="C:\Users\user\.android\avd\Pixel_6_API_33.avd" />
           </Key>
         </deviceKey>
       </Target>

@@ -78,9 +78,8 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
                 errorMsg = "Error for gps module"
                 Toast.makeText(mContext, errorMsg, Toast.LENGTH_LONG).show()
             } else {
-
                 locationManager.requestLocationUpdates(
-                    LocationManager.FUSED_PROVIDER,
+                    LocationManager.GPS_PROVIDER,
                     1000L,
                     20f, this
 
@@ -102,6 +101,7 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
     override fun onLocationChanged(location: Location) {
         Log.d("location changed", location.latitude.toString() + " " + location.longitude.toString())
 //        updateLocationIndex()
+        Log.d("location changed place holder", PlaceholderContent.ITEMS.toString())
         PlaceholderContent.checkStation(location.latitude, location.longitude)
         updateGmapPolyline(location)
         SocketIo.sendLocation(location.latitude,location.longitude, location.speed)

@@ -70,13 +70,20 @@
                         android:scaleType="centerCrop"
                         app:srcCompat="@drawable/bus_dot_bottom"
                         />
+
                     <ImageView
                         android:id="@+id/stationDotTop"
                         android:layout_width="15dp"
-                        android:layout_height="15dp"
+                        android:layout_height="16dp"
                         android:layout_gravity="center|bottom"
                         android:scaleType="centerCrop"
-                        app:srcCompat="@drawable/semicircle"
+                        app:srcCompat="@drawable/semicircle" />
+                    <ImageView
+                        android:id="@+id/endDot"
+                        android:layout_width="25dp"
+                        android:layout_height="25dp"
+                        app:srcCompat="@drawable/baseline_end_dot"
+                        android:layout_gravity="center|bottom"
                         />
                 </FrameLayout>
                 <FrameLayout
@@ -86,20 +93,14 @@
                     android:layout_weight="0.5">
 
                     <View
-                        android:id="@+id/view3"
+                        android:id="@+id/bottomLine"
                         android:layout_width="5dp"
                         android:layout_height="match_parent"
-                        android:background="@color/gray_bar"
-                        android:layout_gravity="center"/>
+                        android:layout_gravity="center"
+                        android:background="@color/gray_bar" />
 
 
-                    <ImageView
-                        android:id="@+id/endDot"
-                        android:layout_width="25dp"
-                        android:layout_height="25dp"
-                        app:srcCompat="@drawable/baseline_end_dot"
-                        android:layout_gravity="bottom|center"
-                        />
+
                     <ImageView
                         android:id="@+id/midBusDotBottom"
                         android:layout_width="25dp"
