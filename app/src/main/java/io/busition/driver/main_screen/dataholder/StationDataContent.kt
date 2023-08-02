@@ -13,7 +13,8 @@ object StationDataContent {
 
     val ITEMS: MutableList<StationData> = ArrayList()
     var ind:Int = 0
-    var check: Boolean = false
+    var inStationRange: Boolean = false
+    var check:Boolean = false
 
     init {
 
@@ -35,23 +36,25 @@ object StationDataContent {
 
     fun checkStation(lat:Double, lon:Double){
         val tmpDistance = getDistance(ITEMS.get(ind).station_latitude, ITEMS.get(ind).station_longitude, lat, lon)
-        if (tmpDistance < 300 && !check){
-            check = true
+        if (tmpDistance < 300 && !inStationRange){
+            inStationRange = true
             MainScreen.scanning = true
             MainScreen.stop = true
             Log.d("change station", "get in range")
+            ITEMS.get(ind).station_state = "arrived"
             ITEMS.get(ind).nowStation = true
             BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
 
         }
-        if ( 300 < tmpDistance && check){
-            check = false
+        if ( 300 < tmpDistance && inStationRange){
+            inStationRange = false
+            check = true
             MainScreen.stop = false
             Log.d("change station", "get out range")
-            ITEMS.get(ind).station_state = "arrived"
+            ITEMS.get(ind).station_state = "done"
             BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
         }
-        if (tmpDistance > 500 && !check){
+        if (tmpDistance > 500 && check){
             check = false
             ITEMS.get(ind).nowStation = false
             if(ind +1 == ITEMS.size){
