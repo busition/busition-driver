@@ -50,7 +50,7 @@
             </intent-filter>
         </service>
         <service
-            android:name=".Service.FloatingService"
+            android:name="io.busition.driver.Service.FloatingService"
             android:enabled="true"
             android:exported="true" />
         <service
