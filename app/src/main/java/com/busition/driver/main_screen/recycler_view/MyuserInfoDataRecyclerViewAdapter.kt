@@ -1,5 +1,4 @@
-package com.busition.driver
-
+package com.busition.driver.main_screen.recycler_view
 
 import android.content.Intent
 import android.net.Uri
@@ -13,6 +12,7 @@ import androidx.core.graphics.toColorInt
 import androidx.recyclerview.widget.RecyclerView
 import com.busition.driver.data.passenger_list.PassengerData
 import com.busition.driver.databinding.FragmentUserInfoDataBinding
+import com.busition.driver.gone
 import com.busition.driver.main_screen.MainScreen
 import java.util.UUID
 
@@ -45,9 +45,9 @@ class MyuserInfoDataRecyclerViewAdapter(
             tmp = string.encodeToByteArray().joinToString("") { it.toString(16) }
         }
 
-        Log.d("compressString",string)
+        Log.d("compressString", string)
         tmp = tmp.substring(0, 8) + "-" + tmp.substring(8, 12) + "-" + tmp.substring(12, 16) + "-" + tmp.substring(16, 20) + "-" + tmp.substring(20, 32)
-        Log.d("compressString",tmp)
+        Log.d("compressString", tmp)
         return tmp
     }
 
@@ -65,7 +65,7 @@ class MyuserInfoDataRecyclerViewAdapter(
                 holder.contentView.text = "탑승중"
                 holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
             }
-            Log.d("user_uuid",item.passenger_uid.toString())
+            Log.d("user_uuid", item.passenger_uid.toString())
             if (MainScreen.user_uuid.contains(compressString(item.passenger_uid))){
                 holder.contentView.text = "탑승중"
                 holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
@@ -109,8 +109,4 @@ class MyuserInfoDataRecyclerViewAdapter(
         }
     }
 
-}
-
-private fun MainScreen.Companion.startActivity(call: Intent) {
-    startActivity(call)
 }

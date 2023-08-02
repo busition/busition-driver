@@ -1,24 +1,20 @@
-package com.busition.driver
+package com.busition.driver.Service.Gps
 
 import android.app.*
 import android.app.PendingIntent.FLAG_MUTABLE
-import android.app.PendingIntent.getActivity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_LOCATION
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
-import com.busition.driver.Gps.LocationTraker
-import com.busition.driver.main_screen.FragmentItemDetailScreen
-import com.busition.driver.main_screen.MainScreen
-import com.busition.driver.main_screen.ScheduleList
+import com.busition.driver.R
+import com.busition.driver.Service.SocketIo
+import com.busition.driver.main_screen.fragment.BusStartMainScreen
 
 
 class GpsForegroundService : Service() {
@@ -33,7 +29,9 @@ class GpsForegroundService : Service() {
         when (intent?.action) {
             "stop" -> {
                 Log.d("service", "stop")
-                SocketIo.closeSocket(FragmentItemDetailScreen.route_uuid.toString(),FragmentItemDetailScreen.shuttle_direction.toString())
+                SocketIo.closeSocket(
+                    BusStartMainScreen.route_uuid.toString()
+                )
                 Log.d("check exit service", "exit service")
             stopSelf()
                 stopForeground(true)
@@ -43,7 +41,9 @@ class GpsForegroundService : Service() {
                 stopForeground(true)
             }
             "start" ->{
-                SocketIo.startSocket(FragmentItemDetailScreen.route_uuid.toString(),FragmentItemDetailScreen.shuttle_direction.toString())
+                SocketIo.startSocket(
+                    BusStartMainScreen.route_uuid.toString(),
+                )
                 generateForegroundNotification()
                 gpsWorker()
 
@@ -108,11 +108,11 @@ class GpsForegroundService : Service() {
 
     private fun gpsWorker() {
         locationTraker =
-            FragmentItemDetailScreen.gmap?.let {
+            BusStartMainScreen.gmap?.let {
                 LocationTraker(
                     applicationContext,
                     it,
-                    FragmentItemDetailScreen.polyList!!
+                    BusStartMainScreen.polyList!!
                 )
             }
     }

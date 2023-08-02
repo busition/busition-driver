@@ -5,10 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.ActivityManager
 import android.bluetooth.BluetoothAdapter
-import android.bluetooth.BluetoothGatt
-import android.bluetooth.BluetoothGattCallback
 import android.bluetooth.BluetoothManager
-import android.bluetooth.BluetoothProfile
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
@@ -30,21 +27,19 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
-import com.busition.driver.FloatingService
+import com.busition.driver.Service.FloatingService
 import com.busition.driver.R
-import com.busition.driver.SocketIo
-import com.busition.driver.UserInfoDataFragment.Companion.userInfoRecyclerAdapter
+import com.busition.driver.Service.SocketIo
+import com.busition.driver.main_screen.fragment.UserInfoDataFragment.Companion.userInfoRecyclerAdapter
 import com.busition.driver.databinding.ActivityMainScreenBinding
-import com.busition.driver.main_screen.ScheduleList.Companion.driver_uuid
+import com.busition.driver.main_screen.fragment.ScheduleList
 import com.google.android.material.snackbar.Snackbar
-import java.util.UUID
 
 class MainScreen : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainScreenBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var userName: String
-
 
 
     private var tmpBleList: MutableList<String> = ArrayList()
@@ -144,9 +139,9 @@ class MainScreen : AppCompatActivity() {
         if (enable) {
             mHandler.postDelayed({
                 mBluetoothLeScanner.stopScan(scanCallback)
-                if (scanning){
+                if (scanning) {
                     scanLeDevice(true)
-                }else{
+                } else {
                     scanLeDevice(false)
                 }
             }, SCAN_PERIOD)
@@ -207,19 +202,28 @@ class MainScreen : AppCompatActivity() {
 //                    "ble instance",
 //                    "${result?.device?.name} ${result?.scanRecord?.serviceUuids?.get(0)} ${result?.rssi}"
 //                )
-                if (user_type == "normal"){
-                    if (check_uuid.contains(result?.scanRecord?.serviceUuids?.get(0).toString()) && !user_uuid.contains(
+                if (user_type == "normal") {
+                    if (check_uuid.contains(
                             result?.scanRecord?.serviceUuids?.get(0).toString()
-                        )) {
+                        ) && !user_uuid.contains(
+                            result?.scanRecord?.serviceUuids?.get(0).toString()
+                        )
+                    ) {
                         user_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
                         check_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
 //                    check_uuid.remove(result?.scanRecord?.serviceUuids?.get(0).toString())
 //                        userInfoRecyclerAdapter.notifyDataSetChanged()
 
                     }
-                }else{
-                    if (!company_check_uuid.contains(result?.scanRecord?.serviceUuids?.get(0).toString())) {
-                        Log.d("test socket log ", result?.scanRecord?.serviceUuids?.get(0).toString())
+                } else {
+                    if (!company_check_uuid.contains(
+                            result?.scanRecord?.serviceUuids?.get(0).toString()
+                        )
+                    ) {
+                        Log.d(
+                            "test socket log ",
+                            result?.scanRecord?.serviceUuids?.get(0).toString()
+                        )
 //                        SocketIo.sendUserUuid(result?.scanRecord?.serviceUuids?.get(0).toString(),"1")
                         company_check_uuid.add(result?.scanRecord?.serviceUuids?.get(0).toString())
 
@@ -228,9 +232,7 @@ class MainScreen : AppCompatActivity() {
 
                 userInfoRecyclerAdapter.notifyDataSetChanged()
             }
-            if (outofbus){
 
-            }
 
         }
 
@@ -245,7 +247,7 @@ class MainScreen : AppCompatActivity() {
     }
 
     companion object {
-        var stop:Boolean = false
+        var stop: Boolean = false
         var driver_uuid: String = ""
         var token: String = ""
         var test_code: Boolean = false
@@ -254,9 +256,9 @@ class MainScreen : AppCompatActivity() {
         var company_user_uuid: ArrayList<String> = ArrayList()
         var company_check_uuid: ArrayList<String> = ArrayList()
         var user_type: String = "normal"
-        var scanning:Boolean = true
-        var firebaseToken:String = ""
-        var outofbus:Boolean = false
+        var scanning: Boolean = true
+        var firebaseToken: String = ""
+        var outofbus: Boolean = false
 
     }
 

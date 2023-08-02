@@ -42,7 +42,7 @@
             android:name="firebase_analytics_collection_enabled"
             android:value="false" />
         <service
-            android:name=".FirebaseMS"
+            android:name=".Service.firebase.FirebaseMS"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
@@ -50,11 +50,11 @@
             </intent-filter>
         </service>
         <service
-            android:name=".FloatingService"
+            android:name=".Service.FloatingService"
             android:enabled="true"
             android:exported="true" />
         <service
-            android:name=".GpsForegroundService"
+            android:name=".Service.Gps.GpsForegroundService"
             android:enabled="true"
             android:exported="true"
             android:foregroundServiceType="location" />
@@ -66,7 +66,7 @@
             android:label="busition driver"
             android:theme="@style/Theme.Busition_driver" />
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.login.LoginActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.Busition_driver">

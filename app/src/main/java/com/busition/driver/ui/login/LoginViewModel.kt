@@ -3,7 +3,6 @@ package com.busition.driver.ui.login
 import android.content.ContentValues.TAG
 import android.util.Log
 import android.util.Patterns
-import android.widget.Toast
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,14 +10,8 @@ import com.busition.driver.R
 import com.busition.driver.base_api_url
 import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.data.login.LoginRepository
-import com.busition.driver.data.login.Result
-import com.busition.driver.data.signin.SignIn
 import com.busition.driver.main_screen.MainScreen
 import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GetTokenResult
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.FirebaseMessaging
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -47,12 +40,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
                 _loginResult.value = LoginResult(error = R.string.login_failed)
                 return@OnCompleteListener
             }
-
-            // Get new FCM registration token
             token = task.result
-
-            // Log and toast
-
         })
         Log.d("fcm device token : => ", token)
         val retrofit = Retrofit.Builder()
@@ -68,7 +56,7 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
                 if (response.isSuccessful) {
                     val token = "Bearer"+ " " + response.body()!!.access_token
                     Log.d("token", token.toString())
-                    auth_token = token
+                    auth_bearer_token = token
                     MainScreen.token = token
                     _loginResult.value =
                         LoginResult(success = LoggedInUserView(Authorization = token.toString()))
@@ -100,23 +88,21 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         }
     }
 
-    // A placeholder username validation check
     private fun isUserNameValid(username: String): Boolean {
         return if (username.contains("@")) {
             Patterns.EMAIL_ADDRESS.matcher(username).matches()
         } else {
-            username.isNotBlank()
+            false
         }
     }
 
-    // A placeholder password validation check
     private fun isPasswordValid(password: String): Boolean {
-        return password.length > 5
+        val pattern = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,20}$".toRegex()
+        return pattern.matches(password)
     }
 
     companion object {
-        var auth: FirebaseAuth = Firebase.auth
-        var auth_token :String = ""
+        var auth_bearer_token :String = ""
 
     }
 }

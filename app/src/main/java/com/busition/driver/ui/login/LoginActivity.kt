@@ -1,9 +1,7 @@
-package com.busition.driver
+package com.busition.driver.ui.login
 
-import android.Manifest
 import android.content.DialogInterface
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -13,16 +11,14 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
+import com.busition.driver.R
 import com.busition.driver.databinding.ActivityMainBinding
 
-class MainActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
@@ -35,11 +31,8 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-
         val navController = findNavController(R.id.main_nav)
         appBarConfiguration = AppBarConfiguration(navController.graph)
-
-//        LocationPermissionDialog().show(supportFragmentManager, "locationPermissionDialog")
         if (!checkOverDisplayPermission()) {
             requestOverDisplayPermission()
             AlertDialog.Builder(this)
@@ -60,24 +53,6 @@ class MainActivity : AppCompatActivity() {
                 .create()
                 .show()
         }
-
-
-
-
-        binding.fab.setOnClickListener { view ->
-//            Snackbar.make(view, "1:1 문의사항....", Snackbar.LENGTH_LONG)
-//                .setAnchorView(R.id.fab)
-//                .setAction("Action", null).show()
-//            startService(Intent(this, FloatingWindowGFG::class.java))
-            startService(Intent(this, FloatingService::class.java))
-//            startForegroundService(Intent(this@MainActivity, FloatingService::class.java))
-//            finish()
-//            val lc = LocationTraker(this,this)
-
-        }
-
-
-
     }
 
     override fun onSupportNavigateUp(): Boolean {
@@ -111,58 +86,9 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun gpsPermissionRequest() {
-
-
-        // 권한 체크해서 권한이 있을 때
-        if (ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-            && ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-            && ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            Log.d("permission", "권한 있음")
-        }
-
-        // 권한이 없을 때 권한을 요구함
-        else {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
-                    ),
-                    1
-                )
-            } else {
-                ActivityCompat.requestPermissions(
-                    this,
-                    arrayOf(
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION,
-                        android.Manifest.permission.ACCESS_FINE_LOCATION
-                    ),
-                    1
-                )
-            }
-
-        }
-
-    }
-
     private fun checkOverDisplayPermission(): Boolean {
         Log.d("permission", Settings.canDrawOverlays(this).toString())
         return Settings.canDrawOverlays(this)
     }
-    companion object {
-        var type = 0
-    }
+
 }

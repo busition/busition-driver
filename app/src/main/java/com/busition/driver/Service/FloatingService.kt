@@ -1,4 +1,4 @@
-package com.busition.driver
+package com.busition.driver.Service
 
 import android.app.Service
 import android.content.Intent
@@ -11,9 +11,11 @@ import android.view.View.OnTouchListener
 import android.widget.Button
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.busition.driver.R
+import com.busition.driver.main_screen.recycler_view.StationItemRecyclerAdapter
 import com.busition.driver.databinding.FloatingViewBinding
 import com.busition.driver.main_screen.MainScreen
-import com.busition.driver.placeholder.PlaceholderContent
+import com.busition.driver.main_screen.dataholder.StationDataContent
 
 class FloatingService: Service() {
     private lateinit var floatView : ViewGroup
@@ -43,7 +45,7 @@ class FloatingService: Service() {
 
         val recyclerView = floatView.findViewById(R.id.itemList) as RecyclerView
         recyclerView.layoutManager = layoutManger
-        recyclerView.adapter = StationItemRecyclerAdapter(PlaceholderContent.ITEMS)
+        recyclerView.adapter = StationItemRecyclerAdapter(StationDataContent.ITEMS)
         floatWindowLayoutParam = WindowManager.LayoutParams(
             (width * 0.55f).toInt(),
             (height * 0.2f).toInt(),

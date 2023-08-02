@@ -1,10 +1,9 @@
-package com.busition.driver.Gps
+package com.busition.driver.Service.Gps
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Canvas
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.location.Location
 import android.location.LocationListener
@@ -13,13 +12,10 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import com.busition.driver.R
-import com.busition.driver.SocketIo
-import com.busition.driver.main_screen.FragmentItemDetailScreen
-import com.busition.driver.main_screen.MainScreen
-import com.busition.driver.placeholder.PlaceholderContent
-import com.google.android.gms.location.LocationServices
+import com.busition.driver.Service.SocketIo
+import com.busition.driver.main_screen.fragment.BusStartMainScreen
+import com.busition.driver.main_screen.dataholder.StationDataContent
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.*
@@ -101,8 +97,8 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
     override fun onLocationChanged(location: Location) {
         Log.d("location changed", location.latitude.toString() + " " + location.longitude.toString())
 //        updateLocationIndex()
-        Log.d("location changed place holder", PlaceholderContent.ITEMS.toString())
-        PlaceholderContent.checkStation(location.latitude, location.longitude)
+        Log.d("location changed place holder", StationDataContent.ITEMS.toString())
+        StationDataContent.checkStation(location.latitude, location.longitude)
         updateGmapPolyline(location)
         SocketIo.sendLocation(location.latitude,location.longitude, location.speed)
 
@@ -142,10 +138,10 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
         currentLocationMarker.showInfoWindow()
         var list:MutableList<LatLng> = arrayListOf()
         var tmp:LatLng = LatLng(0.0,0.0)
-        FragmentItemDetailScreen.gmap?.animateCamera(CameraUpdateFactory.newLatLng(nowLocation))
-        PlaceholderContent.ITEMS.forEach {
+        BusStartMainScreen.gmap?.animateCamera(CameraUpdateFactory.newLatLng(nowLocation))
+        StationDataContent.ITEMS.forEach {
             tmp = LatLng(it.station_latitude, it.station_longitude)
-            FragmentItemDetailScreen.gmap?.addMarker(
+            BusStartMainScreen.gmap?.addMarker(
                 MarkerOptions()
                     .position(tmp)
                     .title(it.station_name)

@@ -10,7 +10,6 @@ import com.busition.driver.R
 import com.busition.driver.databinding.FragmentCompanyLoginBinding
 import com.busition.driver.main_screen.MainScreen
 
-
 class CompanyLogin : Fragment() {
     lateinit var binding: FragmentCompanyLoginBinding
 

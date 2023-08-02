@@ -1,4 +1,4 @@
-package com.busition.driver.main_screen
+package com.busition.driver.main_screen.recycler_view
 
 import android.util.Log
 import androidx.recyclerview.widget.RecyclerView
@@ -10,12 +10,12 @@ import androidx.navigation.Navigation
 import com.busition.driver.R
 import com.busition.driver.databinding.FragmentScheduleItemBinding
 import com.busition.driver.databinding.FragmentScheduleListBinding
-import com.busition.driver.main_screen.placeholder.PlaceholderContent
+import com.busition.driver.main_screen.dataholder.ScheduleData
 
 
-class MyItemRecyclerViewAdapter(
-    private val values: MutableList<PlaceholderContent.PlaceholderItem>, private val binding: FragmentScheduleListBinding?
-) : RecyclerView.Adapter<MyItemRecyclerViewAdapter.ViewHolder>() {
+class ScheduleItemRecyclerViewAdapter(
+    private val values: MutableList<ScheduleData.PlaceholderItem>, private val binding: FragmentScheduleListBinding?
+) : RecyclerView.Adapter<ScheduleItemRecyclerViewAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
@@ -28,13 +28,16 @@ class MyItemRecyclerViewAdapter(
 
     }
 
+    override fun getItemCount(): Int {
+        return values.size
+    }
+
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = values[position]
-        val type:String
-        if(item.shuttle_direction == 0){
-            type = "등교"
+        val type:String = if(item.shuttle_direction == 0){
+            "등교"
         }else{
-            type = "하교"
+            "하교"
         }
         holder.departureView.text = "출발 : " + item.departure_point
         holder.typeView.text = type
@@ -49,20 +52,15 @@ class MyItemRecyclerViewAdapter(
     }
 
 
-    private fun viewItemDetails(holder:ViewHolder,item: PlaceholderContent.PlaceholderItem) {
+    private fun viewItemDetails(holder: ViewHolder, item: ScheduleData.PlaceholderItem) {
         holder.itemView.setOnClickListener {
             Log.d("onBindViewHolder ", item.toString())
 
-            val bundle = bundleOf("route_uuid" to item.route_uuid, "shuttle_direction" to item.shuttle_direction, "passListView" to true ,"route_name" to item.route_name)
+            val bundle = bundleOf("route_uuid" to item.route_uuid,"route_name" to item.route_name)
             val navController = Navigation.findNavController(holder.itemView)
-            navController.navigate(R.id.action_scheduleList_to_fragment_item_detial_screen,bundle)
+            navController.navigate(R.id.action_scheduleList_to_bus_start_main_screen,bundle)
 
         }
-    }
-    override fun getItemCount(): Int  {
-        Log.d("getItemCount", values.size.toString())
-        Log.d("getItemCount", values.toString())
-        return values.size
     }
 
     inner class ViewHolder(binding: FragmentScheduleItemBinding) :

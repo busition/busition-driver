@@ -1,4 +1,4 @@
-package com.busition.driver.main_screen
+package com.busition.driver.main_screen.fragment
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -11,66 +11,64 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.busition.driver.*
+import com.busition.driver.Service.FloatingService
+import com.busition.driver.Service.Gps.GpsForegroundService
 import com.busition.driver.data.RetrofitServiceInterface
 import com.busition.driver.data.bus_route.RouteData
 import com.busition.driver.data.schedule_route.StationData
 import com.busition.driver.data.schedule_route.StationListData
-import com.busition.driver.databinding.FragmentItemDetailScreenBinding
+import com.busition.driver.databinding.BusStartMainScreenBinding
+import com.busition.driver.main_screen.MainScreen
 import com.busition.driver.main_screen.MainScreen.Companion.token
-import com.busition.driver.placeholder.PlaceholderContent
-import com.busition.driver.ui.login.LoginViewModel
+import com.busition.driver.main_screen.recycler_view.StationItemRecyclerAdapter
+import com.busition.driver.main_screen.dataholder.StationDataContent
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.firebase.auth.GetTokenResult
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class FragmentItemDetailScreen : Fragment() {
+class BusStartMainScreen : Fragment() {
 
-    private lateinit var binding: FragmentItemDetailScreenBinding
+    private lateinit var binding: BusStartMainScreenBinding
 
 
     private lateinit var station_count: TextView
     private lateinit var estimated_time: TextView
     private lateinit var passenger_count: TextView
     private lateinit var travel_distance: TextView
-    private lateinit var travelName: String
-    private  var passListView:Boolean = false
-
+    private lateinit var route_name: String
+    private lateinit var station_simple_info: LinearLayout
+    private lateinit var station_list: LinearLayout
     private var route_list = ArrayList<ArrayList<Double>>()
-
-    private var permissionRequestCode = false
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val arg = requireArguments()
         route_uuid = arg.getInt("route_uuid")
         Log.d("route_uuid", route_uuid.toString())
-        shuttle_direction = arg.getInt("shuttle_direction")
-        passListView = arg.getBoolean("passListView")
-        travelName = arg.getString("route_name").toString()
+        route_name = arg.getString("route_name").toString()
 
-        Log.d("passs", passListView.toString())
-        val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
-            if(test){
+        /**
+         * 뒤로가기 버튼을 눌렀을 때, 운행 종료 여부를 묻는다.
+         */
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
+            if (busRunning) {
                 context?.let {
                     AlertDialog.Builder(it)
                         .setTitle("운행 종료")
@@ -84,7 +82,7 @@ class FragmentItemDetailScreen : Fragment() {
                                 val gpsIntent = Intent(activity, GpsForegroundService::class.java)
                                 gpsIntent.setAction("stop")
                                 activity?.startService(gpsIntent)
-                                test = false
+                                busRunning = false
                             }
                         })
                         .setNegativeButton("아니오", object : DialogInterface.OnClickListener {
@@ -95,77 +93,78 @@ class FragmentItemDetailScreen : Fragment() {
                         .create()
                         .show()
                 }
-            }else{
+            } else {
                 val intent = Intent(getActivity(), MainScreen::class.java)
                 intent.flags =
                     Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
             }
-
-
         }
-        //imsi use key
-
-
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        val view = inflater.inflate(R.layout.bus_start_main_screen, container, false)
+        binding = BusStartMainScreenBinding.bind(view)
+        binding.itemList.stationListView.layoutManager = LinearLayoutManager(context)
+        stationItemRecyclerAdapter =
+            StationItemRecyclerAdapter(StationDataContent.ITEMS, activity as MainScreen)
+        binding.itemList.stationListView.adapter = stationItemRecyclerAdapter
+
+
+        return view
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
+        /**
+         * 구글 맵을 불러오기
+         */
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(callback)
         station_count = binding.numberOfStation
         estimated_time = binding.estimatedTime
         passenger_count = binding.numberOfPasenger
         travel_distance = binding.travelDistance
-        binding.routeName.text = travelName
-        binding.routeName2.text = travelName
+        station_simple_info = binding.staionSimpleInfo
+        station_list = binding.stationList
+
+        binding.routeName.text = route_name
+        binding.routeName2.text = route_name
         binding.runBtn.isEnabled = false
         requestApiServer()
-        if (!test) {
-            binding.textList.show()
-            binding.itemListLay.gone()
-        }else{
-            binding.itemListLay.show()
-            binding.textList.gone()
+        if (!busRunning) {
+            station_simple_info.show()
+            station_list.gone()
+        } else {
+            station_list.show()
+            station_simple_info.gone()
             Log.d("schedule list", stationDataList.toString())
         }
 
         binding.runBtn.setOnClickListener {
             MainScreen.test_code = false
-            val bundle = bundleOf("item" to binding.estimatedTime.text)
-            val navController = Navigation.findNavController(view)
-//            navController.navigate(
-//                R.id.action_fragment_item_detial_screen_to_fragment_station_item_screen,
-//                bundle
-//            )
-            binding.textList.gone()
-            binding.itemListLay.show()
-            test = true
-            //service start func
+            station_simple_info.gone()
+            station_list.show()
+            busRunning = true
 //            scan()
-            tmp()
-
-
+            startForegroundService()
         }
-        binding.stopBtn.setOnClickListener{
-
+        binding.stopBtn.setOnClickListener {
             val gpsIntent = Intent(activity, GpsForegroundService::class.java)
             gpsIntent.setAction("stop")
             activity?.startService(gpsIntent)
-//            Toast.makeText(activity, "service stop", Toast.LENGTH_LONG).show()
             val intent = Intent(getActivity(), MainScreen::class.java)
             intent.flags =
                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
-            test = false
+            busRunning = false
         }
 
         binding.floatingActionButton.setOnClickListener {
             val intent = Intent(activity, FloatingService::class.java)
-
             activity?.startService(intent)
             navigate()
         }
@@ -173,26 +172,18 @@ class FragmentItemDetailScreen : Fragment() {
     }
 
 
-    fun navigate(){
-//        val uriNaverMap = Uri.parse("navermaps://")
-//        val uriKakaoNavi = Uri.parse("kakaonavi://")
+    /**
+     * 임시로 Tmap 연결하는 함수
+     */
+    fun navigate() {
         val uriTmap = Uri.parse("tmap://")
-
-//        val intent = Intent(Intent.ACTION_VIEW)
-//        intent.data = Uri.parse("geo:0,0?q="+PlaceholderContent.ITEMS.get(0).station_latitude+","+PlaceholderContent.ITEMS.get(0).station_longitude) // 출발지 좌표
-//        intent.putExtra(Intent.EXTRA_TITLE, "Select navigation app") // 다이얼로그 타이틀
-//        intent.putExtra(
-//            Intent.EXTRA_INITIAL_INTENTS, arrayOf(
-////                Intent(Intent.ACTION_VIEW, uriNaverMap),
-////                Intent(Intent.ACTION_VIEW, uriKakaoNavi),
-//                Intent(Intent.ACTION_VIEW, uriTmap)
-//            )
-//        )
-
-        var longitude = PlaceholderContent.ITEMS.get(PlaceholderContent.ind).station_longitude
-        var latitude = PlaceholderContent.ITEMS.get(PlaceholderContent.ind).station_latitude
-        val title = PlaceholderContent.ITEMS.get(PlaceholderContent.ind).station_name
-        var intent = Intent(Intent.ACTION_VIEW, Uri.parse("tmap://route?goalx=$longitude&goaly=$latitude&goalname=$title")).apply {
+        var longitude = StationDataContent.ITEMS.get(StationDataContent.ind).station_longitude
+        var latitude = StationDataContent.ITEMS.get(StationDataContent.ind).station_latitude
+        val title = StationDataContent.ITEMS.get(StationDataContent.ind).station_name
+        var intent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse("tmap://route?goalx=$longitude&goaly=$latitude&goalname=$title")
+        ).apply {
             `package` = "com.skt.tmap.ku"
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
@@ -200,35 +191,41 @@ class FragmentItemDetailScreen : Fragment() {
         startActivity(intent)
     }
 
-    fun scan(){
+    /**
+     * ble 스캔 시작하는 함수
+     */
+    fun bleScan() {
         (activity as MainScreen?)?.scanLeDevice(true)
     }
+
+    /**
+     * 구글맵 콜백 함수
+     */
     private val callback = OnMapReadyCallback { googleMap ->
         gmap = googleMap
+        val seoul = LatLng(37.56, 126.97)
+        val cameraPosition = CameraPosition.Builder()
+            .target(seoul)
+            .zoom(15f) // 줌 레벨 조정 가능
+            .build()
+        gmap!!.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition))
+
     }
 
-    fun tmp() {
+    /**
+     * GPS 관련 서비스 및 전반적인 백그라운드 서비스 시작
+     */
+    fun startForegroundService() {
         val gpsIntent = Intent(activity, GpsForegroundService::class.java)
         gpsIntent.setAction("start")
         activity?.startService(gpsIntent)
-//        Toast.makeText(activity, "service start", Toast.LENGTH_LONG).show()
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        val view = inflater.inflate(R.layout.fragment_item_detail_screen, container, false)
-        binding = FragmentItemDetailScreenBinding.bind(view)
-        binding.itemList.stationListView.layoutManager = LinearLayoutManager(context)
-        stationItemRecyclerAdapter =
-            StationItemRecyclerAdapter(PlaceholderContent.ITEMS, activity as MainScreen)
-        binding.itemList.stationListView.adapter = stationItemRecyclerAdapter
 
-
-        return view
-    }
-
+    /**
+     * 노선 경로 받아오기 위한 api 서버 연결 함수
+     * 경로를 받아온 뒤에는 운행 시작 버튼 활성화
+     */
     fun requestRouteApiServer() {
         route_list.clear()
         val retrofit = Retrofit.Builder()
@@ -249,12 +246,12 @@ class FragmentItemDetailScreen : Fragment() {
                             "api",
                             "onResponse: ${response.body()}"
                         )
-                        if (response.body()?.path?.get(0) != null){
+                        if (response.body()?.path?.get(0) != null) {
                             route_list =
                                 route?.path as ArrayList<ArrayList<Double>>
                             Log.d("polypoly", route_list.toString())
                             makePolyRoute()
-                        }else{
+                        } else {
                             Log.d("polypoly", "null")
                             binding.runBtn.isEnabled = true
                         }
@@ -270,16 +267,19 @@ class FragmentItemDetailScreen : Fragment() {
                     Log.d("api", "onFailure: ${t.message}")
                 }
             })
-
     }
 
+    /**
+     * 노선의 기본정보 받아오기 및 정거장의 세부정보 받아오기
+     * -> 구글 지도에 정거장 좌표 찍기
+     */
     fun requestApiServer() {
         binding.loadBar.show()
         Log.d("requestApiServer", "requestApiServer")
-        PlaceholderContent.ITEMS.clear()
+        StationDataContent.ITEMS.clear()
         stationDataList.clear()
 //        binding.textList.gone()
-//        binding.loadBar.show()
+        binding.loadBar.show()
         val retrofit = Retrofit.Builder()
             .baseUrl(base_api_url)
             .addConverterFactory(GsonConverterFactory.create())
@@ -317,15 +317,18 @@ class FragmentItemDetailScreen : Fragment() {
                                 route?.station_data?.get(i)?.passenger_count ?: 0,
                                 route?.station_data?.get(i)?.travel_distance ?: "",
                             )
-                            if (i == 0){
+                            if (i == 0) {
                                 tmp.nowStation = true
                             }
                             stationDataList.add(tmp)
                         }
                         Log.d("check list", stationDataList.toString())
-                        Log.d("check size", ScheduleList.recyclerViewAdapter.itemCount.toString())
-                        PlaceholderContent.makeItem(stationDataList)
-                        ScheduleList.recyclerViewAdapter.notifyDataSetChanged()
+                        Log.d(
+                            "check size",
+                            ScheduleList.scheduleRecyclerViewAdapter.itemCount.toString()
+                        )
+                        StationDataContent.makeItem(stationDataList)
+                        ScheduleList.scheduleRecyclerViewAdapter.notifyDataSetChanged()
 
 
                     } else {
@@ -333,7 +336,7 @@ class FragmentItemDetailScreen : Fragment() {
                         Log.d("response", "onResponse: $response, $token")
                     }
                     binding.loadBar.gone()
-                    binding.itemListLay.show()
+                    station_list.show()
 //                                binding.textList.show()
                     makeRoute()
 
@@ -349,13 +352,17 @@ class FragmentItemDetailScreen : Fragment() {
 
     }
 
+    /**
+     * 구글맵에 정거장 좌표 찍기
+     * -> 노선 경로 불러오는 api 호출
+     */
     fun makeRoute() {
         gmap?.clear()
         var list: MutableList<LatLng> = mutableListOf()
         var tmp: LatLng = LatLng(0.0, 0.0)
         var boundsBuilder = LatLngBounds.Builder()
-        if (PlaceholderContent.ITEMS.size != 0) {
-            PlaceholderContent.ITEMS.forEach {
+        if (StationDataContent.ITEMS.size != 0) {
+            StationDataContent.ITEMS.forEach {
                 tmp = LatLng(it.station_latitude, it.station_longitude)
                 list.add(tmp)
                 Log.d("makeRoute func", it.station_name)
@@ -371,11 +378,7 @@ class FragmentItemDetailScreen : Fragment() {
             gmap?.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100))
         }
         requestRouteApiServer()
-
-
-
     }
-
 
     fun makePolyRoute() {
         var list: MutableList<LatLng> = mutableListOf()
@@ -397,97 +400,18 @@ class FragmentItemDetailScreen : Fragment() {
         binding.runBtn.isEnabled = true
     }
 
-
-    //in use global service google route api decode code
-//    fun getRouteUrl() {
-//        var origin: String = ""
-//        var dest: String = ""
-//        var waypoints: String = "&waypoints="
-//
-//        val url = "https://maps.googleapis.com/maps/api/directions/json?origin=Disneyland&destination=Universal+Studios+Hollywood"+
-//                "&key=AIzaSyBUNnlsuMCJth1VWvY4HV0pa5eoFmqya_A"
-//        Log.d("route", url)
-//        GetDirection(url).execute()
-//    }
-
-
-//    @SuppressLint("StaticFieldLeak")
-//    private inner class GetDirection(val url: String) :
-//        AsyncTask<Void, Void, List<List<LatLng>>>() {
-//        override fun doInBackground(vararg params: Void?): List<List<LatLng>> {
-//            val client = OkHttpClient()
-//            val request = Request.Builder().url(url).build()
-//            val response = client.newCall(request).execute()
-//            val data = response.body()?.string()
-//            Log.d("route", data.toString())
-//            val result = ArrayList<List<LatLng>>()
-//            try {
-//                val respObj = Gson().fromJson(data, MapData::class.java)
-//                val path = ArrayList<LatLng>()
-//                for (i in 0 until respObj.routes[0].legs[0].steps.size) {
-//                    path.addAll(decodePolyline(respObj.routes[0].legs[0].steps[i].polyline.points))
-//                }
-//                result.add(path)
-//            } catch (e: Exception) {
-//                e.printStackTrace()
-//            }
-//            return result
-//        }
-//
-//        override fun onPostExecute(result: List<List<LatLng>>) {
-//            val lineoption = PolylineOptions()
-//            for (i in result.indices) {
-//                lineoption.addAll(result[i])
-//                lineoption.width(10f)
-//                lineoption.color(Color.GREEN)
-//                lineoption.geodesic(true)
-//            }
-//            gmap.addPolyline(lineoption)
-//        }
-//    }
-
-
-//    fun decodePolyline(encoded: String): List<LatLng> {
-//        val poly = ArrayList<LatLng>()
-//        var index = 0
-//        val len = encoded.length
-//        var lat = 0
-//        var lng = 0
-//        while (index < len) {
-//            var b: Int
-//            var shift = 0
-//            var result = 0
-//            do {
-//                b = encoded[index++].code - 63
-//                result = result or (b and 0x1f shl shift)
-//                shift += 5
-//            } while (b >= 0x20)
-//            val dlat = if (result and 1 != 0) (result shr 1).inv() else result shr 1
-//            lat += dlat
-//            shift = 0
-//            result = 0
-//            do {
-//                b = encoded[index++].code - 63
-//                result = result or (b and 0x1f shl shift)
-//                shift += 5
-//            } while (b >= 0x20)
-//            val dlng = if (result and 1 != 0) (result shr 1).inv() else result shr 1
-//            lng += dlng
-//            val latLng = LatLng((lat.toDouble() / 1E5), (lng.toDouble() / 1E5))
-//            poly.add(latLng)
-//        }
-//        Log.d("poly", poly.toString())
-//        return poly
-//
-//    }
-
     fun onBackPressed() {
-            Toast.makeText(context, "한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, "한번 더 누르면 종료됩니다.", Toast.LENGTH_SHORT).show()
     }
-    fun tm(){
-    binding.textList.gone()
-    binding.itemListLay.gone()
+
+    fun tm() {
+        station_simple_info.gone()
+        station_list.gone()
     }
+
+    /**
+     * 소켓 응답을 받는 브로드캐스트 리시버
+     */
     inner class socketBR : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
             if (p1?.action == "update") {
@@ -501,7 +425,6 @@ class FragmentItemDetailScreen : Fragment() {
 
         val stationDataList: MutableList<StationData> = ArrayList()
         var route_uuid: Int = -1
-        var shuttle_direction: Int = 0
         var gmap: GoogleMap? = null
         var polyList: MutableList<LatLng> = LatLng(37.611983, 126.9976509).let {
             mutableListOf(
@@ -511,7 +434,7 @@ class FragmentItemDetailScreen : Fragment() {
         lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
         var check_passenger_list: MutableList<String> = ArrayList()
         var passenger_list: MutableList<String> = ArrayList()
-        var test:Boolean = false
-        var t:Boolean = false
+        var busRunning: Boolean = false
+        var t: Boolean = false
     }
 }

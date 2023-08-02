@@ -1,29 +1,22 @@
-package com.busition.driver
+package com.busition.driver.main_screen.recycler_view
 
-import android.app.Activity
-import android.content.Intent
-import android.graphics.Color
-import android.text.Layout
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.os.bundleOf
 import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
+import com.busition.driver.R
+import com.busition.driver.appendString
 import com.busition.driver.data.schedule_route.StationData
-import com.busition.driver.databinding.FragmentItemDetailScreenBinding
 import com.busition.driver.databinding.FragmentStationItemBinding
-import com.busition.driver.main_screen.FragmentItemDetailScreen
 import com.busition.driver.main_screen.MainScreen
-import com.busition.driver.placeholder.PlaceholderContent
+import com.busition.driver.main_screen.dataholder.StationDataContent
 
 
 class StationItemRecyclerAdapter(
@@ -79,7 +72,7 @@ class StationItemRecyclerAdapter(
             holder.stationDotBottom.visibility = View.INVISIBLE
             holder.line.visibility = View.INVISIBLE
         }
-        if(PlaceholderContent.ind-1 == position){
+        if(StationDataContent.ind-1 == position){
             holder.startDot.visibility = View.INVISIBLE
             holder.endDot.visibility = View.INVISIBLE
             holder.busMidTop.visibility = View.INVISIBLE
@@ -89,7 +82,7 @@ class StationItemRecyclerAdapter(
             holder.stationDotTop.visibility = View.VISIBLE
             holder.stationDotBottom.visibility = View.VISIBLE
         }
-        if(PlaceholderContent.ind == position){
+        if(StationDataContent.ind == position){
             holder.startDot.visibility = View.INVISIBLE
             holder.endDot.visibility = View.INVISIBLE
             holder.busMidTop.visibility = View.INVISIBLE

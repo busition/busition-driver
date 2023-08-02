@@ -34,7 +34,6 @@ interface RetrofitServiceInterface {
         @Header("Authorization") token: String,
         @Query("route_uuid") route_uuid: Int,
         @Query("station_uuid") station_uuid: String,
-        @Query("shuttle_direction") shuttle_direction: Int
     ): Call<PassengerListData>
 
     @GET("route/{route_uuid}")

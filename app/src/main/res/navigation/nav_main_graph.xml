@@ -6,30 +6,30 @@
     app:startDestination="@id/scheduleList">
     <fragment
         android:id="@+id/scheduleList"
-        android:name="com.busition.driver.main_screen.ScheduleList"
+        android:name="com.busition.driver.main_screen.fragment.ScheduleList"
         android:label="스케줄"
         tools:layout="@layout/fragment_schedule_list" >
         <action
-            android:id="@+id/action_scheduleList_to_fragment_item_detial_screen"
-            app:destination="@id/fragment_item_detial_screen" />
+            android:id="@+id/action_scheduleList_to_bus_start_main_screen"
+            app:destination="@id/bus_start_main_screen" />
 
     </fragment>
     <fragment
-        android:id="@+id/fragment_item_detial_screen"
-        android:name="com.busition.driver.main_screen.FragmentItemDetailScreen"
+        android:id="@+id/bus_start_main_screen"
+        android:name="com.busition.driver.main_screen.fragment.BusStartMainScreen"
         android:label="운행중"
-        tools:layout="@layout/fragment_item_detail_screen" >
+        tools:layout="@layout/bus_start_main_screen" >
         <action
             android:id="@+id/action_fragment_item_detial_screen_to_userInfoDataFragment"
             app:destination="@id/userInfoDataFragment" />
     </fragment>
     <fragment
         android:id="@+id/userInfoDataFragment"
-        android:name="com.busition.driver.UserInfoDataFragment"
+        android:name="com.busition.driver.main_screen.fragment.UserInfoDataFragment"
         android:label="탑승자 목록"
         tools:layout="@layout/fragment_user_info_item_list" >
         <action
             android:id="@+id/action_userInfoDataFragment_to_fragment_item_detial_screen"
-            app:destination="@id/fragment_item_detial_screen" />
+            app:destination="@id/bus_start_main_screen" />
     </fragment>
 </navigation>

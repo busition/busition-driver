@@ -1,22 +1,14 @@
-package com.busition.driver.placeholder
+package com.busition.driver.main_screen.dataholder
 
 import android.location.Location
 import android.util.Log
-import androidx.fragment.app.Fragment
-import com.busition.driver.StationItemRecyclerAdapter
 import com.busition.driver.data.schedule_route.StationData
-import com.busition.driver.main_screen.FragmentItemDetailScreen
+import com.busition.driver.main_screen.fragment.BusStartMainScreen
 import com.busition.driver.main_screen.MainScreen
-import java.lang.Math.asin
-import java.lang.Math.atan2
-import java.lang.Math.cos
-import java.lang.Math.sin
-import java.lang.Math.sqrt
 import java.util.ArrayList
-import kotlin.math.pow
 
 
-object PlaceholderContent {
+object StationDataContent {
 
 
     val ITEMS: MutableList<StationData> = ArrayList()
@@ -48,7 +40,7 @@ object PlaceholderContent {
             MainScreen.stop = true
             Log.d("change station", "get in range")
             ITEMS.get(ind).nowStation = true
-            FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
+            BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
 
         }
         if ( 300 < tmpDistance && check){
@@ -56,20 +48,20 @@ object PlaceholderContent {
             MainScreen.stop = false
             Log.d("change station", "get out range")
             ITEMS.get(ind).station_state = "arrived"
-            FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
+            BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
         }
         if (tmpDistance > 500 && !check){
             check = false
             ITEMS.get(ind).nowStation = false
-            if(ind+1 == ITEMS.size){
+            if(ind +1 == ITEMS.size){
                 ITEMS.get(ind).station_state = "done"
-                FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
+                BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
             }else{
                 ind++
                 ITEMS.get(ind).nowStation = true
                 Log.d("change station", ITEMS.get(ind).station_name)
                 MainScreen.scanning = false
-                FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
+                BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
             }
 
         }

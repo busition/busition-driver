@@ -1,13 +1,13 @@
-package com.busition.driver
+package com.busition.driver.Service
 
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
+import com.busition.driver.main_screen.recycler_view.StationItemRecyclerAdapter
 import com.busition.driver.data.passenger_list.PassengerData
-import com.busition.driver.main_screen.FragmentItemDetailScreen
-import com.busition.driver.main_screen.MainScreen
-import com.busition.driver.placeholder.PlaceholderContent
-import com.busition.driver.placeholder.UserInfoDataContent
+import com.busition.driver.main_screen.fragment.BusStartMainScreen
+import com.busition.driver.main_screen.dataholder.StationDataContent
+import com.busition.driver.main_screen.dataholder.UserInfoDataContent
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -18,14 +18,13 @@ object SocketIo {
     private var socketIo: SocketIo? = null
     private lateinit var socketServer: Socket
 
-    fun startSocket(id: String, type: String) {
+    fun startSocket(id: String) {
         socketIo = SocketIo
         try {
 //            val pack = JSONObject()
 //            pack.put("id", id)
             val tmp = JSONObject()
             tmp.put("route_id", id)
-            tmp.put("type", type)
             tmp.put("user_id", "123")
             socketServer = IO.socket("https://socket.dev2.busition.com/user")
             socketServer.connect()
@@ -51,7 +50,7 @@ object SocketIo {
                     val handler = Handler(Looper.getMainLooper())
                     handler.post(Runnable {
                         StationItemRecyclerAdapter.delay = obj.getInt("delayed")
-                        FragmentItemDetailScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
+                        BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
                     })
 
                 }
@@ -73,7 +72,7 @@ object SocketIo {
         tmp.put("id", id)
         socketServer.emit("company user", tmp)
         Log.d("socket check_passenger", tmp.toString())
-        FragmentItemDetailScreen.check_passenger_list.add(uuid)
+        BusStartMainScreen.check_passenger_list.add(uuid)
     }
 
     fun recvUserUuid(){
@@ -98,7 +97,7 @@ object SocketIo {
         tmp.put("latitude", lat)
         tmp.put("longitude", lon)
         tmp.put("speed", speed)
-        tmp.put("stationName", PlaceholderContent.ITEMS.get(PlaceholderContent.ind).station_name)
+        tmp.put("stationName", StationDataContent.ITEMS.get(StationDataContent.ind).station_name)
         Log.d("socket location jsonObject", tmp.toString())
         Log.d("socket type", socketServer.toString())
         socketServer.emit("send_location", tmp)
@@ -107,10 +106,9 @@ object SocketIo {
 
 
 
-    fun closeSocket(id: String, type: String) {
+    fun closeSocket(id: String) {
         val tmp = JSONObject()
         tmp.put("route_id", id)
-        tmp.put("type", type)
         Log.d("close socket", tmp.toString())
         socketServer.emit("exit", tmp)
         socketServer.disconnect()
