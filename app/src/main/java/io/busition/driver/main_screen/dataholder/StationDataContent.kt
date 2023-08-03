@@ -41,6 +41,7 @@ object StationDataContent {
             MainScreen.scanning = true
             MainScreen.stop = true
             Log.d("change station", "get in range")
+            ITEMS.get(ind-1).station_state = "done"
             ITEMS.get(ind).station_state = "arrived"
             ITEMS.get(ind).nowStation = true
             BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
@@ -51,22 +52,19 @@ object StationDataContent {
             check = true
             MainScreen.stop = false
             Log.d("change station", "get out range")
-            ITEMS.get(ind).station_state = "done"
+            ITEMS.get(ind).station_state = "pass"
+            ITEMS.get(ind+1).station_state = "next"
             BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
         }
         if (tmpDistance > 500 && check){
             check = false
             ITEMS.get(ind).nowStation = false
-            if(ind +1 == ITEMS.size){
-                ITEMS.get(ind).station_state = "done"
-                BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
-            }else{
                 ind++
                 ITEMS.get(ind).nowStation = true
                 Log.d("change station", ITEMS.get(ind).station_name)
                 MainScreen.scanning = false
                 BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
-            }
+
 
         }
         Log.d("distance" , tmpDistance.toString())

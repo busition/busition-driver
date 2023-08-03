@@ -320,6 +320,9 @@ class BusStartMainScreen : Fragment() {
                             )
                             if (i == 0) {
                                 tmp.nowStation = true
+                                tmp.station_state = "start"
+                            }else if (i == route?.station_count!! - 1) {
+                                tmp.station_state = "end"
                             }
                             stationDataList.add(tmp)
                         }

@@ -53,6 +53,7 @@ class StationItemRecyclerAdapter(
             holder.stationDotTop.visibility = View.VISIBLE
             holder.stationDotBottom.visibility = View.VISIBLE
         } else if (item.station_state == "arrived") {
+            // 버스 도착 시
             holder.startDot.visibility = View.INVISIBLE
             holder.endDot.visibility = View.INVISIBLE
             holder.busMidTop.visibility = View.VISIBLE
@@ -61,26 +62,7 @@ class StationItemRecyclerAdapter(
             holder.busBottom.visibility = View.INVISIBLE
             holder.stationDotTop.visibility = View.INVISIBLE
             holder.stationDotBottom.visibility = View.INVISIBLE
-        } else if (item.nowStation && position == 0) {
-            holder.startDot.visibility = View.VISIBLE
-            holder.endDot.visibility = View.INVISIBLE
-            holder.busMidTop.visibility = View.INVISIBLE
-            holder.busMidBottom.visibility = View.INVISIBLE
-            holder.busTop.visibility = View.INVISIBLE
-            holder.busBottom.visibility = View.INVISIBLE
-            holder.stationDotTop.visibility = View.VISIBLE
-            holder.stationDotBottom.visibility = View.VISIBLE
-        } else if (position == values.size - 1) {
-            holder.startDot.visibility = View.INVISIBLE
-            holder.endDot.visibility = View.VISIBLE
-            holder.busMidTop.visibility = View.INVISIBLE
-            holder.busMidBottom.visibility = View.INVISIBLE
-            holder.busTop.visibility = View.INVISIBLE
-            holder.busBottom.visibility = View.INVISIBLE
-            holder.stationDotTop.visibility = View.INVISIBLE
-            holder.stationDotBottom.visibility = View.INVISIBLE
-            holder.line.visibility = View.INVISIBLE
-        } else if (StationDataContent.ind - 1 == position) {
+        } else if (item.station_state == "pass") {
             holder.startDot.visibility = View.INVISIBLE
             holder.endDot.visibility = View.INVISIBLE
             holder.busMidTop.visibility = View.INVISIBLE
@@ -89,7 +71,7 @@ class StationItemRecyclerAdapter(
             holder.busBottom.visibility = View.VISIBLE
             holder.stationDotTop.visibility = View.VISIBLE
             holder.stationDotBottom.visibility = View.VISIBLE
-        } else if (StationDataContent.ind == position) {
+        } else if (item.station_state == "next") {
             holder.startDot.visibility = View.INVISIBLE
             holder.endDot.visibility = View.INVISIBLE
             holder.busMidTop.visibility = View.INVISIBLE
@@ -98,6 +80,30 @@ class StationItemRecyclerAdapter(
             holder.busBottom.visibility = View.INVISIBLE
             holder.stationDotTop.visibility = View.VISIBLE
             holder.stationDotBottom.visibility = View.VISIBLE
+        } else if (item.station_state == "start") {
+            holder.startDot.visibility = View.VISIBLE
+            holder.endDot.visibility = View.INVISIBLE
+            holder.busMidTop.visibility = View.INVISIBLE
+            holder.busMidBottom.visibility = View.INVISIBLE
+            holder.busTop.visibility = View.INVISIBLE
+            holder.busBottom.visibility = View.INVISIBLE
+            holder.stationDotTop.visibility = View.VISIBLE
+            holder.stationDotBottom.visibility = View.VISIBLE
+        } else if (item.station_state == "end") {
+            if(item.nowStation){
+                holder.busTop.visibility = View.VISIBLE
+                holder.busBottom.visibility = View.VISIBLE
+            }else{
+                holder.busTop.visibility = View.INVISIBLE
+                holder.busBottom.visibility = View.INVISIBLE
+            }
+            holder.startDot.visibility = View.INVISIBLE
+            holder.endDot.visibility = View.VISIBLE
+            holder.busMidTop.visibility = View.INVISIBLE
+            holder.busMidBottom.visibility = View.INVISIBLE
+            holder.stationDotTop.visibility = View.INVISIBLE
+            holder.stationDotBottom.visibility = View.INVISIBLE
+            holder.line.visibility = View.INVISIBLE
         }
 
 
