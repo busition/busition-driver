@@ -85,16 +85,24 @@
             android:layout_weight="1"
             android:visibility="gone" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/userInfoList"
-            android:name="com.example.busition_driver.userInfoDataFragment"
+        <LinearLayout
+            android:id="@+id/userInfoListLayout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layoutManager="LinearLayoutManager"
-            tools:context=".main_screen.fragment.UserInfoDataFragment"
-            tools:listitem="@layout/fragment_user_info_data" >
+            android:orientation="horizontal">
 
-        </androidx.recyclerview.widget.RecyclerView>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/userInfoList"
+                android:name="com.example.busition_driver.userInfoDataFragment"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="LinearLayoutManager"
+                tools:context=".main_screen.fragment.UserInfoDataFragment"
+                tools:listitem="@layout/fragment_user_info_data">
+
+            </androidx.recyclerview.widget.RecyclerView>
+        </LinearLayout>
+
     </LinearLayout>
 
 </LinearLayout>

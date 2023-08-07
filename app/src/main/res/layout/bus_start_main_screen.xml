@@ -33,14 +33,24 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <include
+            <LinearLayout
                 android:id="@+id/passengerList"
-                layout="@layout/fragment_user_info_item_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:visibility="gone" />
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <include
+                    android:id="@+id/passenger"
+                    layout="@layout/fragment_user_info_item_list"
+                    tools:context=".main_screen.fragment.UserInfoItemListFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:visibility="visible" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/stationList"
@@ -49,8 +59,7 @@
                 android:layout_weight="1"
                 android:background="@color/white"
                 android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
+                >
 
                 <TextView
                     android:id="@+id/routeName"
@@ -106,7 +115,8 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
 
-                        android:src="@drawable/common_full_open_on_phone" />
+                        android:src="@drawable/common_full_open_on_phone"
+                        android:visibility="invisible" />
                 </LinearLayout>
             </LinearLayout>
 

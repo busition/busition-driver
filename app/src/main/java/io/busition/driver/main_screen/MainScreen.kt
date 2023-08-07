@@ -34,6 +34,10 @@ import io.busition.driver.main_screen.fragment.UserInfoDataFragment.Companion.us
 import io.busition.driver.databinding.ActivityMainScreenBinding
 import io.busition.driver.main_screen.fragment.ScheduleList
 import com.google.android.material.snackbar.Snackbar
+import io.busition.driver.main_screen.fragment.BusStartMainScreen
+import io.busition.driver.main_screen.fragment.UserInfoDataFragment
+import io.busition.driver.roomDB.AppDatabase
+import io.busition.driver.roomDB.DataManager
 
 class MainScreen : AppCompatActivity() {
 
@@ -76,13 +80,13 @@ class MainScreen : AppCompatActivity() {
         binding = ActivityMainScreenBinding.inflate(layoutInflater)
         setSupportActionBar(binding.toolbar)
         setContentView(binding.root)
-
+        DataManager.getInstance(this)
 
         val navController = findNavController(R.id.main_screen_nav)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
 
-
+        BusStartMainScreen.callPassengerListListener = UserInfoDataFragment()
 
 
 
@@ -261,5 +265,7 @@ class MainScreen : AppCompatActivity() {
         var outofbus: Boolean = false
 
     }
+
+
 
 }

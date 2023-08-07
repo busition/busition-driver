@@ -4,11 +4,11 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class PassengerListData(
-    @SerializedName("route_uuid")
+    @SerializedName("route_id")
     @Expose
     val route_uuid:String,
 
-    @SerializedName("station_uuid")
+    @SerializedName("station_id")
     @Expose
     val station_uuid:String,
 
@@ -16,7 +16,7 @@ data class PassengerListData(
     @Expose
     val passenger_count:Int,
 
-    @SerializedName("passenger_list")
+    @SerializedName("passengers")
     @Expose
     val passengerList: List<PassengerData>
 

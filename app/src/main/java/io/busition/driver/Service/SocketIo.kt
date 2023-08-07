@@ -8,6 +8,8 @@ import io.busition.driver.data.passenger_list.PassengerData
 import io.busition.driver.main_screen.fragment.BusStartMainScreen
 import io.busition.driver.main_screen.dataholder.StationDataContent
 import io.busition.driver.main_screen.dataholder.UserInfoDataContent
+import io.busition.driver.main_screen.fragment.UserInfoDataFragment
+import io.busition.driver.roomDB.DataManager
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -73,6 +75,7 @@ object SocketIo {
         socketServer.emit("company user", tmp)
         Log.d("socket check_passenger", tmp.toString())
         BusStartMainScreen.check_passenger_list.add(uuid)
+
     }
 
     fun recvUserUuid(){
@@ -83,7 +86,8 @@ object SocketIo {
                 val stationUuid:String = obj.getString("station uuid")
                 val name:String = obj.getString("name")
                 UserInfoDataContent.addItem(PassengerData(uuid, name, "", "", stationUuid))
-//                UserInfoDataFragment.userInfoRecyclerAdapter.notifyDataSetChanged()
+                DataManager.addPassengerForStation(stationUuid, uuid, name, "")
+                UserInfoDataFragment.userInfoRecyclerAdapter.notifyDataSetChanged()
                 Log.d("socket", obj.toString())
 
             }

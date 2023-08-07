@@ -13,12 +13,15 @@ import androidx.recyclerview.widget.RecyclerView
 import io.busition.driver.data.passenger_list.PassengerData
 import io.busition.driver.databinding.FragmentUserInfoDataBinding
 import io.busition.driver.gone
+import io.busition.driver.main_screen.CallPassengerList
 import io.busition.driver.main_screen.MainScreen
+import io.busition.driver.main_screen.PassengerListListener
 import java.util.UUID
 
 class MyuserInfoDataRecyclerViewAdapter(
     private val values: List<PassengerData>
 ) : RecyclerView.Adapter<MyuserInfoDataRecyclerViewAdapter.ViewHolder>() {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
@@ -59,6 +62,7 @@ class MyuserInfoDataRecyclerViewAdapter(
             val item = values[position]
             holder.itemNumber.text = (position+1).toString()
             holder.passengerName.text = item.passenger_name
+            Log.d("name", values.toString())
             holder.contentView.text = "탑승 대기"
 
             if (position == 0 && MainScreen.test_code){
