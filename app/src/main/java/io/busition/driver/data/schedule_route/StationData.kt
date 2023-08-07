@@ -4,7 +4,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class StationData(
-    @SerializedName("station_uuid")
+    @SerializedName("station_id")
     @Expose
     var station_uuid: Int,
 

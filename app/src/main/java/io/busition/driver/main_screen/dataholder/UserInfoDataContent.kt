@@ -1,5 +1,6 @@
 package io.busition.driver.main_screen.dataholder
 
+import android.util.Log
 import io.busition.driver.data.passenger_list.PassengerData
 import java.util.ArrayList
 
@@ -16,6 +17,7 @@ object UserInfoDataContent {
 
     fun addItem(item: PassengerData) {
         ITEMS.add(item)
+        Log.d("add item", item.toString())
     }
 
 

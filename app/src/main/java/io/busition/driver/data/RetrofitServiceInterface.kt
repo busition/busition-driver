@@ -32,8 +32,8 @@ interface RetrofitServiceInterface {
     @GET("passenger/list")
     fun getPassengerList(
         @Header("Authorization") token: String,
-        @Query("route_uuid") route_uuid: Int,
-        @Query("station_uuid") station_uuid: String,
+        @Query("route_id") route_uuid: Int,
+        @Query("station_id") station_uuid: Int,
     ): Call<PassengerListData>
 
     @GET("route/{route_uuid}")
@@ -52,8 +52,8 @@ interface RetrofitServiceInterface {
     fun sighIn(
         @Field("username") username: String,
         @Field("password") password: String,
-        @Query("device_token") device_token:String,
-        @Query("busition_platform") busition_platform:String = "Busition-Driver",
+        @Query("device_token") device_token: String,
+        @Query("busition_platform") busition_platform: String = "Busition-Driver",
     ): Call<SigninResponse>
 
 }

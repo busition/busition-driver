@@ -77,7 +77,7 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
          */
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (passengerListCheck) {
-                onToggleVisibility(false)
+                onToggleVisibility(false,0)
             } else if (busRunning) {
                 context?.let {
                     AlertDialog.Builder(it)
@@ -126,6 +126,9 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
         binding.passenger.userInfoList.adapter = UserInfoDataFragment.userInfoRecyclerAdapter
 
         stationItemRecyclerAdapter.setToggleListener(this)
+        binding.passenger.back.setOnClickListener {
+            onToggleVisibility(false,0)
+        }
 
 
         return view
@@ -465,13 +468,15 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
         var t: Boolean = false
     }
 
-    override fun onToggleVisibility(isVisible: Boolean) {
+    override fun onToggleVisibility(isVisible: Boolean, stationUuid: Int) {
         if (isVisible) {
             binding.passengerList.show()
             passengerListCheck = true
             station_simple_info.gone()
             station_list.gone()
-            callPassengerListListener?.callPassengerList(binding)
+            binding.passenger.loadBarUserInfo.show()
+            callPassengerListListener?.callPassengerList(stationUuid)
+            binding.passenger.loadBarUserInfo.gone()
             Log.d("passenger list", callPassengerListListener.toString())
 
         } else {

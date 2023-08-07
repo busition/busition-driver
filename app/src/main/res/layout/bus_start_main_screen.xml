@@ -59,8 +59,7 @@
                 android:layout_weight="1"
                 android:background="@color/white"
                 android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="gone">
+                >
 
                 <TextView
                     android:id="@+id/routeName"
@@ -116,7 +115,8 @@
                         android:layout_height="wrap_content"
                         android:clickable="true"
 
-                        android:src="@drawable/common_full_open_on_phone" />
+                        android:src="@drawable/common_full_open_on_phone"
+                        android:visibility="invisible" />
                 </LinearLayout>
             </LinearLayout>
 

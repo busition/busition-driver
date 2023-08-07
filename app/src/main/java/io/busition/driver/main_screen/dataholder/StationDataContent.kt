@@ -12,63 +12,67 @@ object StationDataContent {
 
 
     val ITEMS: MutableList<StationData> = ArrayList()
-    var ind:Int = 0
+    var ind: Int = 0
     var inStationRange: Boolean = false
-    var check:Boolean = false
+    var check: Boolean = false
 
     init {
 
     }
-    fun makeItem(tmp:MutableList<StationData>){
+
+    fun makeItem(tmp: MutableList<StationData>) {
         ITEMS.clear()
-        if (tmp.size == 0){
-            addItem(StationData(-1,"",0,0.0,0.0,0,"",0,true))
+        if (tmp.size == 0) {
+            addItem(StationData(-1, "", 0, 0.0, 0.0, 0, "", 0, true))
         }
-        for(i in 0 until (tmp.size)){
+        for (i in 0 until (tmp.size)) {
             addItem(tmp.get(i))
         }
         ind = 0
     }
+
     private fun addItem(item: StationData) {
         ITEMS.add(item)
 
     }
 
-    fun checkStation(lat:Double, lon:Double){
-        val tmpDistance = getDistance(ITEMS.get(ind).station_latitude, ITEMS.get(ind).station_longitude, lat, lon)
-        if (tmpDistance < 300 && !inStationRange){
+    fun checkStation(lat: Double, lon: Double) {
+        val tmpDistance =
+            getDistance(ITEMS.get(ind).station_latitude, ITEMS.get(ind).station_longitude, lat, lon)
+        if (tmpDistance < 300 && !inStationRange) {
             inStationRange = true
             MainScreen.scanning = true
             MainScreen.stop = true
             Log.d("change station", "get in range")
-            ITEMS.get(ind-1).station_state = "done"
+            ITEMS.get(ind - 1).station_state = "done"
             ITEMS.get(ind).station_state = "arrived"
             ITEMS.get(ind).nowStation = true
             BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
 
         }
-        if ( 300 < tmpDistance && inStationRange){
+        if (300 < tmpDistance && inStationRange) {
             inStationRange = false
             check = true
             MainScreen.stop = false
             Log.d("change station", "get out range")
             ITEMS.get(ind).station_state = "pass"
-            ITEMS.get(ind+1).station_state = "next"
+            ITEMS.get(ind + 1).station_state = "next"
             BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
         }
-        if (tmpDistance > 500 && check){
+        if (tmpDistance > 500 && check) {
             check = false
             ITEMS.get(ind).nowStation = false
-                ind++
-                ITEMS.get(ind).nowStation = true
-                Log.d("change station", ITEMS.get(ind).station_name)
-                MainScreen.scanning = false
-                BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
+            ind++
+            ITEMS.get(ind).nowStation = true
+            Log.d("change station", ITEMS.get(ind).station_name)
+            MainScreen.scanning = false
+            BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()
 
 
         }
-        Log.d("distance" , tmpDistance.toString())
+        Log.d("distance", tmpDistance.toString())
     }
+
     fun getDistance(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Float {
         val tmp = Location("A")
         tmp.latitude = lat1
@@ -79,8 +83,6 @@ object StationDataContent {
 
         return tmp.distanceTo(tmp2)
     }
-
-
 
 
 }

@@ -126,7 +126,8 @@ class StationItemRecyclerAdapter(
 //                R.id.action_fragment_item_detial_screen_to_userInfoDataFragment,
 //                bundle
 //            )
-            passengerListListener?.onToggleVisibility(true)
+            passengerListListener?.onToggleVisibility(true,item.station_uuid)
+
 
         }
 

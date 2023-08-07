@@ -4,21 +4,23 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class PassengerData(
-    @SerializedName("passenger_uid")
-    @Expose
-    val passenger_uid:String,
 
-    @SerializedName("passenger_name")
+
+    @SerializedName("name")
     @Expose
     val passenger_name:String,
 
-    @SerializedName("passenger_phone")
+    @SerializedName("phone")
     @Expose
     val passenger_phone:String,
 
-    @SerializedName("passenger_email")
+    @SerializedName("email")
     @Expose
     val passenger_email:String,
+
+    @SerializedName("passenger_uid")
+    @Expose
+    val passenger_uid:String = "11111111111111111111111111111111",
 
     var station_uid:String = "",
 )
