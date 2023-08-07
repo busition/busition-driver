@@ -7,8 +7,8 @@ import androidx.room.Transaction
 @Dao
 interface StationDao {
 
-    @Insert
-    fun insertStationPassengerCrossRef(ref: StationPassengerCrossRef)
+//    @Insert
+//    fun insertStationPassengerCrossRef(ref: StationPassengerCrossRef)
     @Insert
     fun insertStation(station: Station)
 
@@ -18,9 +18,9 @@ interface StationDao {
     @Query("SELECT * FROM station WHERE uuid = :uuid")
     fun getStationByUUID(uuid: String): Station?
 
-    @Transaction
-    @Query("SELECT * FROM passenger WHERE id IN (SELECT passengerId FROM station_passenger WHERE stationId = :stationId)")
-    fun getPassengersForStation(stationId: Int): List<Passenger>
+//    @Transaction
+//    @Query("SELECT * FROM passenger WHERE id IN (SELECT passengerId FROM station_passenger WHERE stationId = :stationId)")
+//    fun getPassengersForStation(stationId: Int): List<Passenger>
 }
 
 @Dao

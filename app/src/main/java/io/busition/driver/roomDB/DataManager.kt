@@ -7,25 +7,25 @@ object DataManager {
     private lateinit var instance: DataManager
     private lateinit var appDatabase: AppDatabase
 
-    fun getInstance(context: Context): DataManager {
+
+    fun getInstance(context: Context) {
         if (!::instance.isInitialized) {
             appDatabase = Room.databaseBuilder(context, AppDatabase::class.java, "my_database").build()
             instance = DataManager
         }
-        return instance
     }
 
     fun clearDatabase() {
         appDatabase.clearAllTables()
     }
-    
+
     fun addStation(stationUUID: String) {
         val station = Station(uuid = stationUUID)
         appDatabase.stationDao().insertStation(station)
     }
 
-    fun addPassenger(stationUUID: String, passengerUUID: String) {
-        val passenger = Passenger(uuid = passengerUUID)
+    fun addPassenger(stationUUID: String, passengerUUID: String, passengerName: String, passengerPhoneNumber: String) {
+        val passenger = Passenger(uuid = passengerUUID, name = passengerName, phoneNumber = passengerPhoneNumber)
         appDatabase.passengerDao().insertPassenger(passenger)
     }
 
@@ -40,15 +40,16 @@ object DataManager {
 
     fun getPassengersForStation(stationUUID: String): List<Passenger> {
         val station = appDatabase.stationDao().getStationByUUID(stationUUID)
-        return station?.let { appDatabase.stationDao().getPassengersForStation(it.id) } ?: emptyList()
+//        return station?.let { appDatabase.stationDao().getPassengersForStation(it.id) } ?: emptyList()
+        return emptyList()
     }
 
-    fun addPassengerForStation(stationUUID: String, passengerUUID: String) {
-        val station = appDatabase.stationDao().getStationByUUID(stationUUID)
-        if (station != null) {
-            val passenger = Passenger(uuid = passengerUUID)
-            val passengerId = appDatabase.passengerDao().insertPassenger(passenger)
-            appDatabase.stationDao().insertStationPassengerCrossRef(StationPassengerCrossRef(station.id, passenger.id))
-        }
+    fun addPassengerForStation(stationUUID: String, passengerUUID: String, passengerName: String, passengerPhoneNumber: String) {
+//        val station = appDatabase.stationDao().getStationByUUID(stationUUID)
+//        if (station != null) {
+//            val passenger = Passenger(uuid = passengerUUID, name = passengerName, phoneNumber = passengerPhoneNumber)
+//            val passengerId = appDatabase.passengerDao().insertPassenger(passenger)
+//            appDatabase.stationDao().insertStationPassengerCrossRef(StationPassengerCrossRef(station.id, passenger.id))
+//        }
     }
 }

@@ -4,6 +4,7 @@ plugins {
     id 'androidx.navigation.safeargs.kotlin'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
     id 'com.google.gms.google-services'
+    id 'kotlin-kapt'
 }
 
 apply plugin: "androidx.navigation.safeargs.kotlin"
@@ -94,6 +95,6 @@ dependencies {
     //room
 
     implementation("androidx.room:room-runtime:2.5.2")
-    annotationProcessor("androidx.room:room-compiler:2.5.2")
+    kapt "androidx.room:room-compiler:2.5.2"
     implementation("androidx.room:room-ktx:2.5.2")
 }

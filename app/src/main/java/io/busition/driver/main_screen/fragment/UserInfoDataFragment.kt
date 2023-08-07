@@ -12,12 +12,16 @@ import io.busition.driver.base_api_url
 import io.busition.driver.data.RetrofitServiceInterface
 import io.busition.driver.data.passenger_list.PassengerData
 import io.busition.driver.data.passenger_list.PassengerListData
+import io.busition.driver.databinding.BusStartMainScreenBinding
 import io.busition.driver.databinding.FragmentUserInfoItemListBinding
 import io.busition.driver.gone
+import io.busition.driver.main_screen.CallPassengerList
 import io.busition.driver.main_screen.MainScreen
 import io.busition.driver.main_screen.MainScreen.Companion.token
+import io.busition.driver.main_screen.PassengerListListener
 import io.busition.driver.main_screen.recycler_view.MyuserInfoDataRecyclerViewAdapter
 import io.busition.driver.main_screen.dataholder.UserInfoDataContent
+import io.busition.driver.roomDB.DataManager
 import io.busition.driver.show
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -26,7 +30,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 /**
  * A fragment representing a list of Items.
  */
-class UserInfoDataFragment : Fragment() {
+class UserInfoDataFragment : Fragment(), CallPassengerList {
 
     private var columnCount = 1
     private var station_uuid: String = ""
@@ -36,13 +40,15 @@ class UserInfoDataFragment : Fragment() {
         super.onCreate(savedInstanceState)
         station_uuid = arguments?.getString("station_uuid") ?:""
         Log.d("station uuid ", station_uuid)
+        binding.userInfoList.adapter = userInfoRecyclerAdapter
 
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.d("onViewCreated", "user info data fragment")
         binding.button2.setOnClickListener {
-            requestApi()
+//            requestApi()
         }
         binding.button3.setOnClickListener {
             scan()
@@ -72,14 +78,18 @@ class UserInfoDataFragment : Fragment() {
 
         binding.userInfoList.layoutManager = LinearLayoutManager(context)
         binding.userInfoList.adapter = userInfoRecyclerAdapter
-        requestApi()
+//        BusStartMainScreen.setListener(this)
+//        requestApi()
         return view
     }
 
-    fun requestApi() {
+    fun requestApi(bind: BusStartMainScreenBinding) {
+
         if (MainScreen.user_type == "normal") {
-            binding.userInfoList.gone()
-            binding.loadBarUserInfo.show()
+//            binding.userInfoList.gone()
+//            binding.loadBarUserInfo.show()
+//            FragmentUserInfoItemListBinding.bind(bind.root).userInfoListLayout.gone()
+//            FragmentUserInfoItemListBinding.bind(bind.root).loadBarUserInfo.show()
             val retrofit = Retrofit.Builder()
                 .baseUrl(base_api_url)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -115,8 +125,10 @@ class UserInfoDataFragment : Fragment() {
                         Log.d("fail ", "onResponse: ${response}")
 
                     }
-                    binding.userInfoList.show()
-                    binding.loadBarUserInfo.gone()
+//                    FragmentUserInfoItemListBinding.bind(bind.root).userInfoListLayout.show()
+//                    FragmentUserInfoItemListBinding.bind(bind.root).loadBarUserInfo.gone()
+//                    binding.userInfoList.show()
+//                    binding.loadBarUserInfo.gone()
                 }
 
                 override fun onFailure(call: retrofit2.Call<PassengerListData>, t: Throwable) {
@@ -124,10 +136,31 @@ class UserInfoDataFragment : Fragment() {
                     Log.d("fail ", "onResponse: ${call}")
                 }
             })
+        }else{
+            var passengerList = DataManager.getPassengersForStation(station_uuid)
+            val tmpList = ArrayList<PassengerData>()
+            for (i in 0 until passengerList.size) {
+                val tmp = PassengerData(
+                    "",
+                    passengerList[i].name,
+                    passengerList[i].phoneNumber,
+                     "",
+                )
+                tmpList.add(tmp)
+            }
+
+            UserInfoDataContent.makeItem(tmpList)
+            userInfoRecyclerAdapter.notifyDataSetChanged()
+
         }
     }
     companion object{
         var userInfoRecyclerAdapter: MyuserInfoDataRecyclerViewAdapter = MyuserInfoDataRecyclerViewAdapter(
             UserInfoDataContent.ITEMS)
+    }
+
+    override fun callPassengerList(bind: BusStartMainScreenBinding) {
+        requestApi(bind)
+        Log.d("callPassengerList", "callPassengerList: ")
     }
 }

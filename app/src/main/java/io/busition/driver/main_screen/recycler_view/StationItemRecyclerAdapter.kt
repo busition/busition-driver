@@ -16,13 +16,23 @@ import io.busition.driver.appendString
 import io.busition.driver.data.schedule_route.StationData
 import io.busition.driver.databinding.FragmentStationItemBinding
 import io.busition.driver.main_screen.MainScreen
-import io.busition.driver.main_screen.dataholder.StationDataContent
+import io.busition.driver.main_screen.PassengerListListener
 
 
 class StationItemRecyclerAdapter(
     private val values: List<StationData>, private val activity: MainScreen? = null
 ) : RecyclerView.Adapter<StationItemRecyclerAdapter.ViewHolder>() {
 
+    var passengerListListener : PassengerListListener ?= null
+    var userInfoListListener : PassengerListListener ?= null
+
+    fun setToggleListener(listener: PassengerListListener) {
+        this.passengerListListener = listener
+    }
+
+    fun setUserInfoListener(listener: PassengerListListener) {
+        this.userInfoListListener = listener
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
         return ViewHolder(
@@ -110,12 +120,13 @@ class StationItemRecyclerAdapter(
 
         holder.btn.setOnClickListener {
             Log.d("btn", "test")
-            val bundle = bundleOf("station_uuid" to item.station_uuid)
-            val navController = Navigation.findNavController(holder.itemView)
-            navController.navigate(
-                R.id.action_fragment_item_detial_screen_to_userInfoDataFragment,
-                bundle
-            )
+//            val bundle = bundleOf("station_uuid" to item.station_uuid)
+//            val navController = Navigation.findNavController(holder.itemView)
+//            navController.navigate(
+//                R.id.action_fragment_item_detial_screen_to_userInfoDataFragment,
+//                bundle
+//            )
+            passengerListListener?.onToggleVisibility(true)
 
         }
 

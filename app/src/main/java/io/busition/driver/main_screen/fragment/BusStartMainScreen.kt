@@ -18,18 +18,7 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import io.busition.driver.*
-import io.busition.driver.Service.FloatingService
-import io.busition.driver.Service.Gps.GpsForegroundService
-import io.busition.driver.data.RetrofitServiceInterface
-import io.busition.driver.data.bus_route.RouteData
-import io.busition.driver.data.schedule_route.StationData
-import io.busition.driver.data.schedule_route.StationListData
-import io.busition.driver.databinding.BusStartMainScreenBinding
-import io.busition.driver.main_screen.MainScreen
-import io.busition.driver.main_screen.MainScreen.Companion.token
-import io.busition.driver.main_screen.recycler_view.StationItemRecyclerAdapter
-import io.busition.driver.main_screen.dataholder.StationDataContent
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -39,12 +28,26 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.PolylineOptions
-import io.busition.driver.R
+import io.busition.driver.*
+import io.busition.driver.Service.Gps.GpsForegroundService
+import io.busition.driver.data.RetrofitServiceInterface
+import io.busition.driver.data.bus_route.RouteData
+import io.busition.driver.data.schedule_route.StationData
+import io.busition.driver.data.schedule_route.StationListData
+import io.busition.driver.databinding.BusStartMainScreenBinding
+import io.busition.driver.databinding.FragmentUserInfoItemListBinding
+import io.busition.driver.main_screen.CallPassengerList
+import io.busition.driver.main_screen.MainScreen
+import io.busition.driver.main_screen.MainScreen.Companion.token
+import io.busition.driver.main_screen.PassengerListListener
+import io.busition.driver.main_screen.dataholder.StationDataContent
+import io.busition.driver.main_screen.recycler_view.StationItemRecyclerAdapter
+import io.busition.driver.roomDB.DataManager
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 
-class BusStartMainScreen : Fragment() {
+class BusStartMainScreen : Fragment(), PassengerListListener {
 
     private lateinit var binding: BusStartMainScreenBinding
 
@@ -56,7 +59,11 @@ class BusStartMainScreen : Fragment() {
     private lateinit var route_name: String
     private lateinit var station_simple_info: LinearLayout
     private lateinit var station_list: LinearLayout
+    private var passengerListCheck: Boolean = false
     private var route_list = ArrayList<ArrayList<Double>>()
+
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +76,9 @@ class BusStartMainScreen : Fragment() {
          * 뒤로가기 버튼을 눌렀을 때, 운행 종료 여부를 묻는다.
          */
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
-            if (busRunning) {
+            if (passengerListCheck) {
+                onToggleVisibility(false)
+            } else if (busRunning) {
                 context?.let {
                     AlertDialog.Builder(it)
                         .setTitle("운행 종료")
@@ -84,6 +93,7 @@ class BusStartMainScreen : Fragment() {
                                 gpsIntent.setAction("stop")
                                 activity?.startService(gpsIntent)
                                 busRunning = false
+                                DataManager.clearDatabase()
                             }
                         })
                         .setNegativeButton("아니오", object : DialogInterface.OnClickListener {
@@ -113,6 +123,9 @@ class BusStartMainScreen : Fragment() {
         stationItemRecyclerAdapter =
             StationItemRecyclerAdapter(StationDataContent.ITEMS, activity as MainScreen)
         binding.itemList.stationListView.adapter = stationItemRecyclerAdapter
+        binding.passenger.userInfoList.adapter = UserInfoDataFragment.userInfoRecyclerAdapter
+
+        stationItemRecyclerAdapter.setToggleListener(this)
 
 
         return view
@@ -135,6 +148,9 @@ class BusStartMainScreen : Fragment() {
         binding.routeName.text = route_name
         binding.routeName2.text = route_name
         binding.runBtn.isEnabled = false
+
+//        open_passenger_list = false
+
         requestApiServer()
         if (!busRunning) {
             station_simple_info.show()
@@ -162,6 +178,7 @@ class BusStartMainScreen : Fragment() {
                 Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
             startActivity(intent)
             busRunning = false
+            DataManager.clearDatabase()
         }
 
         binding.floatingActionButton.setOnClickListener {
@@ -309,6 +326,7 @@ class BusStartMainScreen : Fragment() {
                                 " 명"
                             )
                         for (i in 0 until (route?.station_count ?: 0)) {
+//                            DataManager.addStation(route?.station_data?.get(i)?.station_uuid.toString())
                             val tmp = StationData(
                                 route?.station_data?.get(i)?.station_uuid ?: -1,
                                 route?.station_data?.get(i)?.station_name ?: "",
@@ -321,7 +339,7 @@ class BusStartMainScreen : Fragment() {
                             if (i == 0) {
                                 tmp.nowStation = true
                                 tmp.station_state = "start"
-                            }else if (i == route?.station_count!! - 1) {
+                            } else if (i == route?.station_count!! - 1) {
                                 tmp.station_state = "end"
                             }
                             stationDataList.add(tmp)
@@ -426,6 +444,10 @@ class BusStartMainScreen : Fragment() {
     }
 
     companion object {
+        var callPassengerListListener : CallPassengerList?= null
+        fun setListener(listener: CallPassengerList) {
+            callPassengerListListener = listener
+        }
 
         val stationDataList: MutableList<StationData> = ArrayList()
         var route_uuid: Int = -1
@@ -435,10 +457,35 @@ class BusStartMainScreen : Fragment() {
                 it
             )
         }
+
         lateinit var stationItemRecyclerAdapter: StationItemRecyclerAdapter
         var check_passenger_list: MutableList<String> = ArrayList()
         var passenger_list: MutableList<String> = ArrayList()
         var busRunning: Boolean = false
         var t: Boolean = false
+    }
+
+    override fun onToggleVisibility(isVisible: Boolean) {
+        if (isVisible) {
+            binding.passengerList.show()
+            passengerListCheck = true
+            station_simple_info.gone()
+            station_list.gone()
+            callPassengerListListener?.callPassengerList(binding)
+            Log.d("passenger list", callPassengerListListener.toString())
+
+        } else {
+            binding.passengerList.gone()
+            passengerListCheck = false
+            if (!busRunning) {
+                station_simple_info.show()
+                station_list.gone()
+            } else {
+                station_list.show()
+                station_simple_info.gone()
+                Log.d("schedule list", stationDataList.toString())
+            }
+
+        }
     }
 }

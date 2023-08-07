@@ -13,12 +13,15 @@ import androidx.recyclerview.widget.RecyclerView
 import io.busition.driver.data.passenger_list.PassengerData
 import io.busition.driver.databinding.FragmentUserInfoDataBinding
 import io.busition.driver.gone
+import io.busition.driver.main_screen.CallPassengerList
 import io.busition.driver.main_screen.MainScreen
+import io.busition.driver.main_screen.PassengerListListener
 import java.util.UUID
 
 class MyuserInfoDataRecyclerViewAdapter(
     private val values: List<PassengerData>
 ) : RecyclerView.Adapter<MyuserInfoDataRecyclerViewAdapter.ViewHolder>() {
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
 
