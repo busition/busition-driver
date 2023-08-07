@@ -6,6 +6,8 @@ import java.util.ArrayList
 
 object UserInfoDataContent {
     val ITEMS: MutableList<PassengerData> = ArrayList()
+    var number = 0
+    var onNumber = 0
 
     fun makeItem(tmp:MutableList<PassengerData>){
         ITEMS.clear()

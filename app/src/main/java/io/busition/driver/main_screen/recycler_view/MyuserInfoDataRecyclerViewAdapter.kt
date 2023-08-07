@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
@@ -16,6 +17,7 @@ import io.busition.driver.gone
 import io.busition.driver.main_screen.CallPassengerList
 import io.busition.driver.main_screen.MainScreen
 import io.busition.driver.main_screen.PassengerListListener
+import io.busition.driver.main_screen.dataholder.UserInfoDataContent
 import java.util.UUID
 
 class MyuserInfoDataRecyclerViewAdapter(
@@ -60,22 +62,26 @@ class MyuserInfoDataRecyclerViewAdapter(
 
         if (MainScreen.user_type == "normal") {
             val item = values[position]
-            holder.itemNumber.text = (position+1).toString()
             holder.passengerName.text = item.passenger_name
             Log.d("name", values.toString())
-            holder.contentView.text = "탑승 대기"
+
+            holder.passengerType.text = "탑승 대기"
+            holder.passengerTypeColor.setBackgroundColor("#FF4D00".toColorInt())
+
 
             if (position == 0 && MainScreen.test_code){
-                holder.contentView.text = "탑승중"
-                holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
+                UserInfoDataContent.onNumber +=1
+                holder.passengerType.text = "탑승중"
+                holder.passengerTypeColor.setBackgroundColor("#05FF00".toColorInt())
             }
             Log.d("user_uuid", item.passenger_uid.toString())
             if (MainScreen.user_uuid.contains(compressString(item.passenger_uid))){
-                holder.contentView.text = "탑승중"
-                holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
+                holder.passengerType.text = "탑승중"
+                UserInfoDataContent.onNumber +=1
+                holder.passengerTypeColor.setBackgroundColor("#05FF00".toColorInt())
             }else if (!MainScreen.check_uuid.contains(item.passenger_uid)){
-                MainScreen.check_uuid.add(compressString(item.passenger_uid))
-                holder.contentView.setBackgroundColor("#FFE792".toColorInt())
+                holder.passengerType.text = "탑승 대기"
+                holder.passengerTypeColor.setBackgroundColor("#FF4D00".toColorInt())
             }
             holder.callBtn.setOnClickListener {
                 val call = Intent(Intent.ACTION_DIAL, Uri.parse("tel:" + item.passenger_phone))
@@ -84,10 +90,10 @@ class MyuserInfoDataRecyclerViewAdapter(
             }
         }else{
             val item = values[position]
-            holder.itemNumber.text = (position+1).toString()
             holder.passengerName.text = item.passenger_name
-            holder.contentView.text = "탑승중"
-            holder.contentView.setBackgroundColor("#8DA6FF".toColorInt())
+            holder.passengerType.text = "탑승중"
+            UserInfoDataContent.onNumber +=1
+            holder.passengerTypeColor.setBackgroundColor("#05FF00".toColorInt())
             holder.callBtn.gone()
         }
 
@@ -103,14 +109,12 @@ class MyuserInfoDataRecyclerViewAdapter(
     inner class ViewHolder(binding: FragmentUserInfoDataBinding) :
         RecyclerView.ViewHolder(binding.root) {
         val passengerName: TextView = binding.passengerName
-        val contentView: TextView = binding.content
-        val itemNumber: TextView = binding.itemNumber
+        val passengerType: TextView = binding.passengerType
+        val passengerTypeColor: View = binding.passengerTypeColor
         val callBtn: Button = binding.callBtn
 
 
-        override fun toString(): String {
-            return super.toString() + " '" + contentView.text + "'"
-        }
+
     }
 
 }

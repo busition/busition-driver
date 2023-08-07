@@ -41,6 +41,7 @@ import io.busition.driver.main_screen.MainScreen
 import io.busition.driver.main_screen.MainScreen.Companion.token
 import io.busition.driver.main_screen.PassengerListListener
 import io.busition.driver.main_screen.dataholder.StationDataContent
+import io.busition.driver.main_screen.dataholder.UserInfoDataContent
 import io.busition.driver.main_screen.recycler_view.StationItemRecyclerAdapter
 import io.busition.driver.roomDB.DataManager
 import retrofit2.Retrofit
@@ -477,6 +478,7 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
             binding.passenger.loadBarUserInfo.show()
             callPassengerListListener?.callPassengerList(stationUuid)
             binding.passenger.loadBarUserInfo.gone()
+            binding.passenger.passengerNum.text = "${UserInfoDataContent.number} / ${UserInfoDataContent.onNumber}"
             Log.d("passenger list", callPassengerListListener.toString())
 
         } else {

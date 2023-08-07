@@ -117,7 +117,8 @@ class UserInfoDataFragment : Fragment(), CallPassengerList {
                             )
                             tmpList.add(tmp)
                         }
-
+                        UserInfoDataContent.number = tmpList.size
+                        UserInfoDataContent.onNumber = 0
                         UserInfoDataContent.makeItem(tmpList)
                         userInfoRecyclerAdapter.notifyDataSetChanged()
                     } else {
