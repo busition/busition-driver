@@ -18,7 +18,7 @@ data class PassengerData(
     @Expose
     val passenger_email:String,
 
-    @SerializedName("passenger_uid")
+    @SerializedName("service_uuid")
     @Expose
     val passenger_uid:String = "11111111111111111111111111111111",
 
