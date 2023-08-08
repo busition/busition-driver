@@ -1,5 +1,8 @@
 package io.busition.driver.main_screen.fragment
 
+import android.app.Activity
+import android.app.Activity.RESULT_OK
+import android.bluetooth.BluetoothAdapter
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.DialogInterface
@@ -15,8 +18,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -40,6 +46,7 @@ import io.busition.driver.main_screen.CallPassengerList
 import io.busition.driver.main_screen.MainScreen
 import io.busition.driver.main_screen.MainScreen.Companion.token
 import io.busition.driver.main_screen.PassengerListListener
+import io.busition.driver.main_screen.PassengerViewModel
 import io.busition.driver.main_screen.dataholder.StationDataContent
 import io.busition.driver.main_screen.dataholder.UserInfoDataContent
 import io.busition.driver.main_screen.recycler_view.StationItemRecyclerAdapter
@@ -62,8 +69,7 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
     private lateinit var station_list: LinearLayout
     private var passengerListCheck: Boolean = false
     private var route_list = ArrayList<ArrayList<Double>>()
-
-
+    private lateinit var passengerViewmodel: PassengerViewModel
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -78,7 +84,7 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
          */
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this) {
             if (passengerListCheck) {
-                onToggleVisibility(false,0)
+                onToggleVisibility(false, 0)
             } else if (busRunning) {
                 context?.let {
                     AlertDialog.Builder(it)
@@ -112,6 +118,17 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
                 startActivity(intent)
             }
         }
+
+        passengerViewmodel = PassengerViewModel()
+        val passengerNumObserver = object : Observer<String> {
+            override fun onChanged(t: String?) {
+                binding.passenger.passengerNum.text = t
+            }
+        }
+        passengerViewmodel.currentPassengerNum.observe(this, passengerNumObserver)
+
+
+
     }
 
     override fun onCreateView(
@@ -128,8 +145,9 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
 
         stationItemRecyclerAdapter.setToggleListener(this)
         binding.passenger.back.setOnClickListener {
-            onToggleVisibility(false,0)
+            onToggleVisibility(false, 0)
         }
+
 
 
         return view
@@ -165,12 +183,14 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
             Log.d("schedule list", stationDataList.toString())
         }
 
+
+
         binding.runBtn.setOnClickListener {
             MainScreen.test_code = false
             station_simple_info.gone()
             station_list.show()
             busRunning = true
-//            scan()
+            bleScan()
             startForegroundService()
         }
         binding.stopBtn.setOnClickListener {
@@ -448,7 +468,7 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
     }
 
     companion object {
-        var callPassengerListListener : CallPassengerList?= null
+        var callPassengerListListener: CallPassengerList? = null
         fun setListener(listener: CallPassengerList) {
             callPassengerListListener = listener
         }
@@ -467,6 +487,8 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
         var passenger_list: MutableList<String> = ArrayList()
         var busRunning: Boolean = false
         var t: Boolean = false
+
+        var returnString:String = ""
     }
 
     override fun onToggleVisibility(isVisible: Boolean, stationUuid: Int) {
@@ -476,9 +498,9 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
             station_simple_info.gone()
             station_list.gone()
             binding.passenger.loadBarUserInfo.show()
-            callPassengerListListener?.callPassengerList(stationUuid)
+            callPassengerListListener?.callPassengerList(stationUuid,passengerViewmodel)
             binding.passenger.loadBarUserInfo.gone()
-            binding.passenger.passengerNum.text = "${UserInfoDataContent.number} / ${UserInfoDataContent.onNumber}"
+
             Log.d("passenger list", callPassengerListListener.toString())
 
         } else {

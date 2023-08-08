@@ -6,6 +6,7 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothManager
+import android.bluetooth.le.BluetoothLeScanner
 import android.bluetooth.le.ScanCallback
 import android.bluetooth.le.ScanFilter
 import android.bluetooth.le.ScanResult
@@ -16,10 +17,13 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.ParcelUuid
+import android.provider.Settings
 import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.view.WindowCompat
@@ -44,7 +48,9 @@ class MainScreen : AppCompatActivity() {
     private lateinit var binding: ActivityMainScreenBinding
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var userName: String
-
+    private lateinit var mBluetoothAdapter: BluetoothAdapter
+    private lateinit var mBluetoothLeScanner: BluetoothLeScanner
+    private lateinit var bluetoothManager: BluetoothManager
 
     private var tmpBleList: MutableList<String> = ArrayList()
 
@@ -82,11 +88,21 @@ class MainScreen : AppCompatActivity() {
         setContentView(binding.root)
         DataManager.getInstance(this)
 
+        BusStartMainScreen.callPassengerListListener = UserInfoDataFragment()
+        bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
+        mBluetoothAdapter = bluetoothManager.adapter
+        try{
+            mBluetoothLeScanner = mBluetoothAdapter.bluetoothLeScanner
+        }catch (e: Exception){
+            Log.d("ble test", e.toString())
+            Toast.makeText(this, "블루투스를 켜주세요", Toast.LENGTH_SHORT).show()
+        }
+
+
+
         val navController = findNavController(R.id.main_screen_nav)
         appBarConfiguration = AppBarConfiguration(navController.graph)
         setupActionBarWithNavController(navController, appBarConfiguration)
-
-        BusStartMainScreen.callPassengerListListener = UserInfoDataFragment()
 
 
 
@@ -98,6 +114,10 @@ class MainScreen : AppCompatActivity() {
         if (isMyServiceRunning()) {
             stopService(Intent(this, io.busition.driver.Service.FloatingService::class.java))
         }
+
+
+
+
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -135,26 +155,29 @@ class MainScreen : AppCompatActivity() {
     @SuppressLint("MissingPermission")
     fun scanLeDevice(enable: Boolean) {
         requestBlePermissions(this, PERMISSIONS_REQUEST_CODE)
-        val bluetoothManager = getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
-        val mBluetoothAdapter = bluetoothManager.adapter
-        val mBluetoothLeScanner = mBluetoothAdapter.bluetoothLeScanner
         Log.d("ble test ", mBluetoothAdapter.toString())
         val mHandler = Handler()
-        if (enable) {
-            mHandler.postDelayed({
+        try {
+            if (enable && mBluetoothAdapter.isEnabled) {
+                mHandler.postDelayed({
+                    mBluetoothLeScanner.stopScan(scanCallback)
+                    if (scanning) {
+                        scanLeDevice(true)
+                    } else {
+                        scanLeDevice(false)
+                    }
+                }, SCAN_PERIOD)
+                Log.d("ble log", "start scan")
+                mBluetoothLeScanner.startScan(scanCallback)
+            } else {
                 mBluetoothLeScanner.stopScan(scanCallback)
-                if (scanning) {
-                    scanLeDevice(true)
-                } else {
-                    scanLeDevice(false)
-                }
-            }, SCAN_PERIOD)
-            Log.d("ble log", "start scan")
-            mBluetoothLeScanner.startScan(scanCallback)
-        } else {
-            mBluetoothLeScanner.stopScan(scanCallback)
-            Log.d("ble log", "stop scan")
+                Log.d("ble log", "stop scan")
+            }
+        }catch (e: Exception){
+            Log.d("ble test", e.toString())
+            Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
         }
+
 
     }
 

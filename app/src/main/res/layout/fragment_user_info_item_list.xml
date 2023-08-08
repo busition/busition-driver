@@ -19,7 +19,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@drawable/boarder"
+            android:layout_margin="8dp">
 
             <LinearLayout
                 android:id="@+id/appbar"
@@ -30,7 +32,7 @@
 
                 <ImageButton
                     android:id="@+id/back"
-                    android:layout_width="50dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_margin="16dp"
                     android:background="@color/white"

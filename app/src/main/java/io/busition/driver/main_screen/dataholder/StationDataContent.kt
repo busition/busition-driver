@@ -44,7 +44,9 @@ object StationDataContent {
             MainScreen.scanning = true
             MainScreen.stop = true
             Log.d("change station", "get in range")
-            ITEMS.get(ind - 1).station_state = "done"
+            if(ind !=0){
+                ITEMS.get(ind - 1).station_state = "done"
+            }
             ITEMS.get(ind).station_state = "arrived"
             ITEMS.get(ind).nowStation = true
             BusStartMainScreen.stationItemRecyclerAdapter.notifyDataSetChanged()

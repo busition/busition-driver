@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.busition.driver.R
 import io.busition.driver.base_api_url
@@ -20,6 +21,7 @@ import io.busition.driver.main_screen.CallPassengerList
 import io.busition.driver.main_screen.MainScreen
 import io.busition.driver.main_screen.MainScreen.Companion.token
 import io.busition.driver.main_screen.PassengerListListener
+import io.busition.driver.main_screen.PassengerViewModel
 import io.busition.driver.main_screen.recycler_view.MyuserInfoDataRecyclerViewAdapter
 import io.busition.driver.main_screen.dataholder.UserInfoDataContent
 import io.busition.driver.roomDB.DataManager
@@ -87,7 +89,8 @@ class UserInfoDataFragment : Fragment(), CallPassengerList {
 //        return view
 //    }
 
-    fun requestApi(station_uuid: Int) {
+    fun requestApi(station_uuid: Int,passengerViewmodel: PassengerViewModel): String {
+        var returnString = ""
         if (MainScreen.user_type == "normal") {
             val retrofit = Retrofit.Builder()
                 .baseUrl(base_api_url)
@@ -96,8 +99,9 @@ class UserInfoDataFragment : Fragment(), CallPassengerList {
             val service = retrofit.create(RetrofitServiceInterface::class.java)
             service.getPassengerList(
                 token,
-                BusStartMainScreen.route_uuid,
-                station_uuid,
+//                BusStartMainScreen.route_uuid,
+//                station_uuid,
+                1,1
             ).enqueue(object : retrofit2.Callback<PassengerListData> {
                 override fun onResponse(
                     call: retrofit2.Call<PassengerListData>,
@@ -121,6 +125,10 @@ class UserInfoDataFragment : Fragment(), CallPassengerList {
                         UserInfoDataContent.onNumber = 0
                         UserInfoDataContent.makeItem(tmpList)
                         userInfoRecyclerAdapter.notifyDataSetChanged()
+                        returnString = "${tmpList.size} / ${UserInfoDataContent.onNumber}"
+                        passengerViewmodel.setCurrentPassengerNum(returnString)
+                        Log.d("change passenger num", returnString)
+
                     } else {
                         Log.d("fail ", "onResponse: ${response}")
 
@@ -153,15 +161,17 @@ class UserInfoDataFragment : Fragment(), CallPassengerList {
             userInfoRecyclerAdapter.notifyDataSetChanged()
 
         }
+        return returnString
     }
     companion object{
         var userInfoRecyclerAdapter: MyuserInfoDataRecyclerViewAdapter = MyuserInfoDataRecyclerViewAdapter(
             UserInfoDataContent.ITEMS)
     }
 
-    override fun callPassengerList(station_uuid: Int) {
-        requestApi(station_uuid)
+    override fun callPassengerList(station_uuid: Int,passengerViewmodel:PassengerViewModel) {
+        requestApi(station_uuid,passengerViewmodel)
         Log.d("callPassengerList", "callPassengerList: ")
+
     }
 
     fun back(view: View) {

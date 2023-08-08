@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
@@ -111,7 +112,7 @@ class MyuserInfoDataRecyclerViewAdapter(
         val passengerName: TextView = binding.passengerName
         val passengerType: TextView = binding.passengerType
         val passengerTypeColor: View = binding.passengerTypeColor
-        val callBtn: Button = binding.callBtn
+        val callBtn: ImageButton = binding.callBtn
 
 
 
