@@ -50,6 +50,7 @@ class LoginActivity : AppCompatActivity() {
                         finish()
                     }
                 })
+                .setCancelable(false)
                 .create()
                 .show()
         }
