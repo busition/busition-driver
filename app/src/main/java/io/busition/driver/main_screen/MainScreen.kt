@@ -176,6 +176,8 @@ class MainScreen : AppCompatActivity() {
         }catch (e: Exception){
             Log.d("ble test", e.toString())
             Toast.makeText(this, e.toString(), Toast.LENGTH_LONG).show()
+            scanning = false
+            scanLeDevice(false)
         }
 
 

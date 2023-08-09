@@ -99,9 +99,9 @@ class UserInfoDataFragment : Fragment(), CallPassengerList {
             val service = retrofit.create(RetrofitServiceInterface::class.java)
             service.getPassengerList(
                 token,
-//                BusStartMainScreen.route_uuid,
-//                station_uuid,
-                1,1
+                BusStartMainScreen.route_uuid,
+                station_uuid,
+
             ).enqueue(object : retrofit2.Callback<PassengerListData> {
                 override fun onResponse(
                     call: retrofit2.Call<PassengerListData>,
