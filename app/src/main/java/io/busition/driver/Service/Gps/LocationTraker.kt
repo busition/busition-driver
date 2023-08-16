@@ -12,6 +12,10 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
+import com.google.android.gms.location.LocationServices
 import io.busition.driver.R
 import io.busition.driver.Service.SocketIo
 import io.busition.driver.main_screen.fragment.BusStartMainScreen
@@ -41,9 +45,12 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
     )!!
     private var errorMsg: String = ""
     lateinit var locationManager: LocationManager
+    lateinit var locationCallback: LocationCallback
+    private val fusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
 
     init {
         getLocation()
+
     }
 
     private fun BitmapFromVector(context:Context,vectorResId:Int): BitmapDescriptor? {
@@ -65,42 +72,62 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
     }
 
     @SuppressLint("MissingPermission")
-    private fun getLocation() {
-        locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        checkGps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
-        checkNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
-        if (canGetLocation) {
-            if (!checkGps) {
-                errorMsg = "Error for gps module"
-                Toast.makeText(mContext, errorMsg, Toast.LENGTH_LONG).show()
-            } else {
-                locationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    1000L,
-                    20f, this
-
-                )
-            }
-//            if (!checkNetwork) {
-//                errorMsg += "\nError for network"
+//    private fun getLocation() {
+//        locationManager = mContext.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+//        checkGps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+//        checkNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+//        if (canGetLocation) {
+//            if (!checkGps) {
+//                errorMsg = "Error for gps module"
+//                Toast.makeText(mContext, errorMsg, Toast.LENGTH_LONG).show()
 //            } else {
 //                locationManager.requestLocationUpdates(
-//                    LocationManager.NETWORK_PROVIDER,
+//                    LocationManager.GPS_PROVIDER,
 //                    1000L,
 //                    20f, this
+//
 //                )
 //            }
-        }
+////            if (!checkNetwork) {
+////                errorMsg += "\nError for network"
+////            } else {
+////                locationManager.requestLocationUpdates(
+////                    LocationManager.NETWORK_PROVIDER,
+////                    1000L,
+////                    20f, this
+////                )
+////            }
+//        }
+//
+//    }
 
+    private fun getLocation(){
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(p0: LocationResult) {
+                Log.d("location changed", p0.lastLocation?.latitude.toString() + " " + p0.lastLocation?.longitude.toString())
+                StationDataContent.checkStation(p0.lastLocation?.latitude!!,  p0.lastLocation?.longitude!!)
+                val location = LatLng(p0.lastLocation?.latitude!!, p0.lastLocation?.longitude!!)
+                updateGmapPolyline(location, p0.lastLocation?.speed!!)
+                SocketIo.sendLocation(location.latitude,location.longitude, p0.lastLocation?.speed!!)
+            }
+
+        }
+        val locationRequest = LocationRequest.Builder(500L)
+            .build()
+        fusedLocationClient.requestLocationUpdates(
+            locationRequest,
+            locationCallback,
+            null
+        )
     }
 
     override fun onLocationChanged(location: Location) {
-        Log.d("location changed", location.latitude.toString() + " " + location.longitude.toString())
-//        updateLocationIndex()
-        Log.d("location changed place holder", StationDataContent.ITEMS.toString())
-        StationDataContent.checkStation(location.latitude, location.longitude)
-        updateGmapPolyline(location)
-        SocketIo.sendLocation(location.latitude,location.longitude, location.speed)
+//        Log.d("location changed", location.latitude.toString() + " " + location.longitude.toString())
+////        updateLocationIndex()
+//        Log.d("location changed place holder", StationDataContent.ITEMS.toString())
+//        StationDataContent.checkStation(location.latitude, location.longitude)
+//        updateGmapPolyline(location)
+//        SocketIo.sendLocation(location.latitude,location.longitude, location.speed)
 
 //        val boundsBuilder = LatLngBounds.Builder()
 //        boundsBuilder.include(nowLocation)
@@ -122,7 +149,7 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
 
 
 
-    fun updateGmapPolyline(location: Location){
+    fun updateGmapPolyline(location: LatLng, speed: Float){
 //        gmap.clear()
         Log.d("gps", nowLocation.toString())
         nowLocation = LatLng(location.latitude, location.longitude)
@@ -133,7 +160,7 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
 //                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                 .icon(BitmapFromVector(mContext, R.drawable.bus_icon))
                 .position(nowLocation)
-                .title((location.speed * 3.5).toString() + "km/h")
+                .title((speed * 3.5).toString() + "km/h")
         )!!
         currentLocationMarker.showInfoWindow()
         var list:MutableList<LatLng> = arrayListOf()
@@ -187,8 +214,12 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
     }
 
     fun finish(){
-        locationManager.removeUpdates(LocationTraker(mContext, gmap, locList))
-        locationManager.removeUpdates(this)
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
+
+    companion object {
+
+
 
     }
 }
