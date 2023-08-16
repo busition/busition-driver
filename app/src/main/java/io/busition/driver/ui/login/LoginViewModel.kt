@@ -27,8 +27,8 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     val loginResult: LiveData<LoginResult> = _loginResult
 
 
-    fun login(username: String, password: String) {
-        Log.d("login", "username: $username, password: $password")
+    fun login(username: String, password: String, type: String = "Busition-Driver") {
+        Log.d("login", "username: $username, password: $password, type: $type")
         if (username == "" || password == "") {
             _loginResult.value = LoginResult(error = R.string.login_failed)
             return
@@ -48,43 +48,56 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
-        service.sighIn(username,password,token).enqueue(object : retrofit2.Callback<io.busition.driver.data.signin.SigninResponse> {
-            override fun onResponse(
-                call: retrofit2.Call<io.busition.driver.data.signin.SigninResponse>,
-                response: retrofit2.Response<io.busition.driver.data.signin.SigninResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val token = "Bearer"+ " " + response.body()!!.access_token
-                    Log.d("token", token.toString())
-                    auth_bearer_token = token
-                    MainScreen.token = token
-                    _loginResult.value =
-                        LoginResult(success = LoggedInUserView(Authorization = token.toString()))
+        service.sighIn(username, password, token, type)
+            .enqueue(object : retrofit2.Callback<io.busition.driver.data.signin.SigninResponse> {
+                override fun onResponse(
+                    call: retrofit2.Call<io.busition.driver.data.signin.SigninResponse>,
+                    response: retrofit2.Response<io.busition.driver.data.signin.SigninResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val token = "Bearer" + " " + response.body()!!.access_token
+                        Log.d("token", token.toString())
+                        auth_bearer_token = token
+                        MainScreen.token = token
+                        _loginResult.value =
+                            LoginResult(success = LoggedInUserView(Authorization = token.toString()))
 
-                } else {
-                    Log.d("login failed", "login failed $response")
+                    } else {
+                        Log.d("login failed", "login failed $response")
+                        _loginResult.value = LoginResult(error = R.string.login_failed)
+                    }
+                }
+
+                override fun onFailure(
+                    call: retrofit2.Call<io.busition.driver.data.signin.SigninResponse>,
+                    t: Throwable
+                ) {
+                    Log.d("login failed", "login failed $t")
                     _loginResult.value = LoginResult(error = R.string.login_failed)
                 }
             }
-
-            override fun onFailure(
-                call: retrofit2.Call<io.busition.driver.data.signin.SigninResponse>,
-                t: Throwable
-            ) {
-                Log.d("login failed", "login failed $t")
-                _loginResult.value = LoginResult(error = R.string.login_failed)
-            }
-        }
-        )
+            )
     }
 
-    fun loginDataChanged(username: String, password: String) {
-        if (!isUserNameValid(username)) {
-            _loginForm.value = LoginFormState(usernameError = R.string.invalid_username)
-        } else if (!isPasswordValid(password)) {
-            _loginForm.value = LoginFormState(passwordError = R.string.invalid_password)
+    fun loginDataChanged(username: String, password: String, type: String = "Busition-Driver") {
+        if (type == "Busition-Driver") {
+            Log.d("loginDataChanged", "username: $username, password: $password, type: $type")
+
+            if (!isUserNameValid(username)) {
+                _loginForm.value = LoginFormState(usernameError = R.string.invalid_username)
+            } else if (!isPasswordValid(password)) {
+                _loginForm.value = LoginFormState(passwordError = R.string.invalid_password)
+            } else {
+                _loginForm.value = LoginFormState(isDataValid = true)
+            }
         } else {
-            _loginForm.value = LoginFormState(isDataValid = true)
+            if (!isValid(username)) {
+                _loginForm.value = LoginFormState(usernameError = R.string.invalid_company_id)
+            } else if (!isPasswordValid(password)) {
+                _loginForm.value = LoginFormState(passwordError = R.string.invalid_company_password)
+            } else {
+                _loginForm.value = LoginFormState(isDataValid = true)
+            }
         }
     }
 
@@ -96,13 +109,17 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         }
     }
 
+    private fun isValid(string: String): Boolean {
+        return string != ""
+    }
+
     private fun isPasswordValid(password: String): Boolean {
         val pattern = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[@#$%^&+=!]).{8,20}$".toRegex()
         return pattern.matches(password)
     }
 
     companion object {
-        var auth_bearer_token :String = ""
+        var auth_bearer_token: String = ""
 
     }
 }

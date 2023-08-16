@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import io.busition.driver.R
 import io.busition.driver.base_api_url
@@ -26,6 +27,7 @@ import io.busition.driver.main_screen.recycler_view.MyuserInfoDataRecyclerViewAd
 import io.busition.driver.main_screen.dataholder.UserInfoDataContent
 import io.busition.driver.roomDB.DataManager
 import io.busition.driver.show
+import kotlinx.coroutines.launch
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -89,7 +91,7 @@ class UserInfoDataFragment : Fragment(), CallPassengerList {
 //        return view
 //    }
 
-    fun requestApi(station_uuid: Int,passengerViewmodel: PassengerViewModel): String {
+    fun requestApi(station_uuid: Int,passengerViewmodel: PassengerViewModel) {
         var returnString = ""
         if (MainScreen.user_type == "normal") {
             val retrofit = Retrofit.Builder()
@@ -145,23 +147,26 @@ class UserInfoDataFragment : Fragment(), CallPassengerList {
                 }
             })
         }else{
-            var passengerList = DataManager.getPassengersForStation(station_uuid.toString())
-            val tmpList = ArrayList<PassengerData>()
-            for (i in 0 until passengerList.size) {
-                val tmp = PassengerData(
-                    "",
-                    passengerList[i].name,
-                    passengerList[i].phoneNumber,
-                     "",
-                )
-                tmpList.add(tmp)
+            lifecycleScope.launch{
+                var passengerList = passengerViewmodel.getPassengersByStationId(station_uuid.toString())
+                Log.d("passengerList", passengerList.toString())
+                val tmpList = ArrayList<PassengerData>()
+                for (i in 0 until passengerList.size) {
+                    val tmp = PassengerData(
+                        "",
+                        passengerList[i].name,
+                        passengerList[i].phoneNumber,
+                        "",
+                    )
+                    tmpList.add(tmp)
+                }
+                passengerViewmodel.setCurrentPassengerNum("${tmpList.size} / ${UserInfoDataContent.onNumber}")
+                UserInfoDataContent.makeItem(tmpList)
+                userInfoRecyclerAdapter.notifyDataSetChanged()
             }
 
-            UserInfoDataContent.makeItem(tmpList)
-            userInfoRecyclerAdapter.notifyDataSetChanged()
 
         }
-        return returnString
     }
     companion object{
         var userInfoRecyclerAdapter: MyuserInfoDataRecyclerViewAdapter = MyuserInfoDataRecyclerViewAdapter(

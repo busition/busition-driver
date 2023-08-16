@@ -23,12 +23,16 @@ interface RetrofitServiceInterface {
     @GET("schedules/")
     fun getSchedule(
         @Header("Authorization") token: String,
-        @Query("platform") platform: String = "driver"): Call<ScheduleDataList>
+        @Query("auth_type") auth:String = "Email",
+        @Query("platform") platform: String = "driver"
+        ): Call<ScheduleDataList>
 
     @GET("stations/")
     fun getStation(
         @Header("Authorization") token: String,
         @Query("route_id") route_uuid: Int,
+        @Query("auth_type") auth:String = "Email",
+
     ): Call<StationListData>
 
     @GET("passengers/")
@@ -36,12 +40,14 @@ interface RetrofitServiceInterface {
         @Header("Authorization") token: String,
         @Query("route_id") route_uuid: Int,
         @Query("station_id") station_uuid: Int,
+        @Query("auth_type") auth:String = "Email",
     ): Call<PassengerListData>
 
     @GET("routes/{route_uuid}")
     fun getRoute(
         @Header("Authorization") token: String,
         @Path("route_uuid") route_uuid: Int,
+        @Query("auth_type") auth:String = "Email",
     ): Call<RouteData>
 
     @POST("users/")

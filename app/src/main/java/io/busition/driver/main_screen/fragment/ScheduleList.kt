@@ -85,15 +85,17 @@ class ScheduleList : Fragment() {
     private fun loadScheduleData() {
         binding?.loadingBar?.show()
         binding?.recyclerScheduleList?.gone()
-
+        var auth = "Email"
         val retrofit = Retrofit.Builder()
             .baseUrl(base_api_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
+        if (MainScreen.user_type == "company"){
+            auth = "Driver-for-Org"
+        }
         val service = retrofit.create(RetrofitServiceInterface::class.java)
         Log.d("current user bearer", LoginViewModel.auth_bearer_token)
-        service.getSchedule(LoginViewModel.auth_bearer_token)
+        service.getSchedule(LoginViewModel.auth_bearer_token,auth)
             .enqueue(object : retrofit2.Callback<ScheduleDataList> {
                 override fun onResponse(
                     call: Call<ScheduleDataList>,

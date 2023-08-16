@@ -1,8 +1,5 @@
 package io.busition.driver.main_screen.fragment
 
-import android.app.Activity
-import android.app.Activity.RESULT_OK
-import android.bluetooth.BluetoothAdapter
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.DialogInterface
@@ -18,13 +15,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -41,14 +35,12 @@ import io.busition.driver.data.bus_route.RouteData
 import io.busition.driver.data.schedule_route.StationData
 import io.busition.driver.data.schedule_route.StationListData
 import io.busition.driver.databinding.BusStartMainScreenBinding
-import io.busition.driver.databinding.FragmentUserInfoItemListBinding
 import io.busition.driver.main_screen.CallPassengerList
 import io.busition.driver.main_screen.MainScreen
 import io.busition.driver.main_screen.MainScreen.Companion.token
 import io.busition.driver.main_screen.PassengerListListener
 import io.busition.driver.main_screen.PassengerViewModel
 import io.busition.driver.main_screen.dataholder.StationDataContent
-import io.busition.driver.main_screen.dataholder.UserInfoDataContent
 import io.busition.driver.main_screen.recycler_view.StationItemRecyclerAdapter
 import io.busition.driver.roomDB.DataManager
 import retrofit2.Retrofit
@@ -119,7 +111,7 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
             }
         }
 
-        passengerViewmodel = PassengerViewModel()
+        passengerViewmodel = PassengerViewModel(requireContext())
         val passengerNumObserver = object : Observer<String> {
             override fun onChanged(t: String?) {
                 binding.passenger.passengerNum.text = t
@@ -270,12 +262,16 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
      */
     fun requestRouteApiServer() {
         route_list.clear()
+        var auth = "Email"
+        if (MainScreen.user_type == "company"){
+            auth = "Driver-for-Org"
+        }
         val retrofit = Retrofit.Builder()
             .baseUrl(base_api_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
-        service.getRoute(token, route_uuid)
+        service.getRoute(token, route_uuid,auth)
             .enqueue(object : retrofit2.Callback<RouteData> {
                 override fun onResponse(
                     call: retrofit2.Call<RouteData>,
@@ -322,12 +318,16 @@ class BusStartMainScreen : Fragment(), PassengerListListener {
         stationDataList.clear()
 //        binding.textList.gone()
         binding.loadBar.show()
+        var auth = "Email"
+        if (MainScreen.user_type == "company"){
+            auth = "Driver-for-Org"
+        }
         val retrofit = Retrofit.Builder()
             .baseUrl(base_api_url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         val service = retrofit.create(RetrofitServiceInterface::class.java)
-        service.getStation(token, route_uuid)
+        service.getStation(token, route_uuid,auth)
             .enqueue(object : retrofit2.Callback<StationListData> {
                 override fun onResponse(
                     call: retrofit2.Call<StationListData>,

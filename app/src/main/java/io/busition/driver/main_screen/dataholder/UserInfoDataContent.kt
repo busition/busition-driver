@@ -14,7 +14,7 @@ object UserInfoDataContent {
         for(i in 0 until (tmp.size)){
             addItem(tmp[i])
         }
-        if (ITEMS.size == 0){
+        if (ITEMS.size == -1){
             addItem(PassengerData("","","","11111111111111111111111111111111"))
         }
     }

@@ -57,8 +57,8 @@ class LoginFragment : Fragment() {
         signInClient = Identity.getSignInClient(requireContext())
 
         binding.companyLogin.setOnClickListener {
-//            Navigation.findNavController(view).navigate(R.id.action_BusitionLogin_to_companyLogin)
-            Toast.makeText(requireContext(), "곧 오픈 예정", Toast.LENGTH_SHORT).show()
+            Navigation.findNavController(view).navigate(R.id.action_BusitionLogin_to_companyLogin)
+//            Toast.makeText(requireContext(), "곧 오픈 예정", Toast.LENGTH_SHORT).show()
         }
 
         loginViewModel.loginFormState.observe(viewLifecycleOwner,

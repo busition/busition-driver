@@ -10,6 +10,7 @@ import io.busition.driver.main_screen.dataholder.StationDataContent
 import io.busition.driver.main_screen.dataholder.UserInfoDataContent
 import io.busition.driver.main_screen.fragment.UserInfoDataFragment
 import io.busition.driver.roomDB.DataManager
+import io.busition.driver.roomDB.Passenger
 import io.socket.client.IO
 import io.socket.client.Socket
 import io.socket.emitter.Emitter
@@ -86,7 +87,7 @@ object SocketIo {
                 val stationUuid:String = obj.getString("station uuid")
                 val name:String = obj.getString("name")
                 UserInfoDataContent.addItem(PassengerData(uuid, name, "", "", stationUuid))
-                DataManager.addPassengerForStation(stationUuid, uuid, name, "")
+                DataManager.insertPassenger(Passenger(uuid = uuid,name= name, phoneNumber =  "", stationId = stationUuid.toString()))
                 UserInfoDataFragment.userInfoRecyclerAdapter.notifyDataSetChanged()
                 Log.d("socket", obj.toString())
 
