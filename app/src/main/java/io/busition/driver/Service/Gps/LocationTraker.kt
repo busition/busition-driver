@@ -160,7 +160,7 @@ class LocationTraker(context: Context, googleMap: GoogleMap,
 //                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE))
                 .icon(BitmapFromVector(mContext, R.drawable.bus_icon))
                 .position(nowLocation)
-                .title((speed * 3.5).toString() + "km/h")
+                .title((speed * 3.5).toInt().toString() + "km/h")
         )!!
         currentLocationMarker.showInfoWindow()
         var list:MutableList<LatLng> = arrayListOf()
