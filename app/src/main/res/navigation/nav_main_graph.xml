@@ -12,6 +12,9 @@
         <action
             android:id="@+id/action_scheduleList_to_bus_start_main_screen"
             app:destination="@id/bus_start_main_screen" />
+        <action
+            android:id="@+id/action_scheduleList_to_setting_Fragment"
+            app:destination="@id/setting_Fragment" />
 
     </fragment>
     <fragment
@@ -22,6 +25,9 @@
         <action
             android:id="@+id/action_fragment_item_detial_screen_to_userInfoDataFragment"
             app:destination="@id/userInfoDataFragment" />
+        <action
+            android:id="@+id/action_bus_start_main_screen_to_setting_Fragment"
+            app:destination="@id/setting_Fragment" />
     </fragment>
     <fragment
         android:id="@+id/userInfoDataFragment"
@@ -31,5 +37,13 @@
         <action
             android:id="@+id/action_userInfoDataFragment_to_fragment_item_detial_screen"
             app:destination="@id/bus_start_main_screen" />
+        <action
+            android:id="@+id/action_userInfoDataFragment_to_setting_Fragment"
+            app:destination="@id/setting_Fragment" />
     </fragment>
+    <fragment
+        android:id="@+id/setting_Fragment"
+        android:name="io.busition.driver.Setting_Fragment"
+        android:label="fragment_setting_"
+        tools:layout="@layout/fragment_setting_" />
 </navigation>

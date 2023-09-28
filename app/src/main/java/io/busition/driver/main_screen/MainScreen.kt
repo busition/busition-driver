@@ -123,7 +123,10 @@ class MainScreen : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         return when (item.itemId) {
-            R.id.action_settings -> true
+            R.id.action_settings -> {
+                findNavController(R.id.main_screen_nav).navigate(R.id.action_scheduleList_to_setting_Fragment)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
