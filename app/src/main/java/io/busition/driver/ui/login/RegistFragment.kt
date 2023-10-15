@@ -58,6 +58,7 @@ class RegistFragment : Fragment() {
 
         val usernameEditText = binding.username
         val passwordEditText = binding.password
+        val repasswordEditText = binding.repassword
         val nameEditText = binding.editname
         val phoneEditText = binding.editTextPhone
         registbutton = binding.regist
@@ -77,6 +78,7 @@ class RegistFragment : Fragment() {
                 registDataChanged(
                     usernameEditText.text.toString(),
                     passwordEditText.text.toString(),
+                    repasswordEditText.text.toString(),
                     nameEditText.text.toString(),
                     phoneEditText.text.toString()
 
@@ -84,6 +86,7 @@ class RegistFragment : Fragment() {
             }
         }
         usernameEditText.addTextChangedListener(afterTextChangedListener)
+        repasswordEditText.addTextChangedListener(afterTextChangedListener)
         passwordEditText.addTextChangedListener(afterTextChangedListener)
         nameEditText.addTextChangedListener(afterTextChangedListener)
         phoneEditText.addTextChangedListener(afterTextChangedListener)
@@ -129,8 +132,12 @@ class RegistFragment : Fragment() {
 
     }
 
-    fun registDataChanged(username: String, password: String,name:String,phone:String) {
-        registbutton.isEnabled = username!="" && phone != "" && password != "" && name != ""
+    fun registDataChanged(username: String, password: String, repassword:String, name:String,phone:String) {
+        if (password != repassword){
+            registbutton.isEnabled = false
+            return
+        }
+        registbutton.isEnabled = username!="" && phone != "" && password != "" && name != "" && repassword != ""
     }
 
     override fun onDestroyView() {
