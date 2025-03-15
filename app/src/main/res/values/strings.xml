@@ -48,11 +48,15 @@
     <!-- Strings related to login -->
     <string name="prompt_email">이메일을 입력하세요</string>
     <string name="prompt_password">비밀번호를 입력하세요</string>
+    <string name="company_id">기업 아이디를 입력하세요</string>
+    <string name="company_password">기업 비밀번호를 입력하세요</string>
     <string name="action_sign_in">Sign in</string>
     <string name="action_sign_in_short">Sign in</string>
     <string name="welcome">"Welcome!"</string>
-    <string name="invalid_username">Not a valid username</string>
-    <string name="invalid_password">Password must be >5 characters</string>
+    <string name="invalid_username">올바르지 않은 이메일 양식입니다.</string>
+    <string name="invalid_password">영문, 숫자, 특수기호 포함 8 ~ 20글자</string>
+    <string name="invalid_company_id">기업아이디를 입력해주세요.</string>
+    <string name="invalid_company_password">기업비밀번호를 입력해주세요.</string>
     <string name="login_failed">"Login failed"</string>
     <string name="회원가입하기"><u>회원가입 하기</u></string>
     <string name="Login_Fragment_Label">Busition Login</string>

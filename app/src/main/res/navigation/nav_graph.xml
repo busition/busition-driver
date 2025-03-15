@@ -7,17 +7,20 @@
 
     <fragment
         android:id="@+id/BusitionLogin"
-        android:name="com.busition.driver.ui.login.LoginFragment"
+        android:name="io.busition.driver.ui.login.LoginFragment"
         android:label="@string/Login_Fragment_Label"
         tools:layout="@layout/fragment_login">
 
         <action
             android:id="@+id/action_Register_to_Login_Fragment"
             app:destination="@id/BusitionRegister" />
+        <action
+            android:id="@+id/action_BusitionLogin_to_companyLogin"
+            app:destination="@id/companyLogin" />
     </fragment>
     <fragment
         android:id="@+id/BusitionRegister"
-        android:name="com.busition.driver.ui.login.RegistFragment"
+        android:name="io.busition.driver.ui.login.RegistFragment"
         android:label="@string/Register_Fragment_Label"
         tools:layout="@layout/fragment_regist">
 
@@ -26,4 +29,9 @@
             android:id="@+id/action_BusitionRegister_to_BusitionLogin"
             app:destination="@id/BusitionLogin" />
     </fragment>
+    <fragment
+        android:id="@+id/companyLogin"
+        android:name="io.busition.driver.ui.login.CompanyLogin"
+        android:label="fragment_company_login"
+        tools:layout="@layout/fragment_company_login" />
 </navigation>

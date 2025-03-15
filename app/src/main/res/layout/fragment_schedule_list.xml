@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
 
-    tools:context=".main_screen.ScheduleList" >
+    tools:context=".main_screen.fragment.ScheduleList" >
 
     <ProgressBar
         android:id="@+id/loadingBar"

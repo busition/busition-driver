@@ -2,4 +2,5 @@
 <resources>
     <item name="detailMap" type="id" />
     <item name="fragment_item_detail_screen" type="id" />
+    <item name="backButton" type="id" />
 </resources>
