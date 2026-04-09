@@ -193,3 +193,7 @@ Check the following first:
 ### Login or schedule loading fails
 
 The app depends on the Busition backend and socket server. If those services are unavailable or credentials are invalid, login, schedule loading, route loading, and passenger synchronization will fail.
+
+## License
+
+This project is licensed under `GPL-3.0-only`. See [LICENSE](./LICENSE) for the full license text.
